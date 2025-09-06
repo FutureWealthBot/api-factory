@@ -1,0 +1,12 @@
+{
+  "name": "fwb-cli",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.2",
+    "dotenv": "^17.2.2"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "CLI: Launch server.js",
+      "type": "pwa-node",
+      "request": "launch",
+      "program": "${workspaceFolder}/tools/fwb-cli/server.js",
+      "cwd": "${workspaceFolder}/tools/fwb-cli",
+      "env": {
+        "PORT": "8787"
+      },
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
