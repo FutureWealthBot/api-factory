@@ -1,1 +1,21 @@
+# deps
+node_modules/
+.pnpm-store/
+**/.pnpm-debug.log
+
+# builds
+dist/
+build/
+.next/
+out/
+
+# env
 .env
+.env.*
+!.env.example
+
+# editor/system
+.DS_Store
+*.swp
+.vscode/
+.idea/
