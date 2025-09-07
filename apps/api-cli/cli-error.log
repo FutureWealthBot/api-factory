@@ -1,0 +1,23 @@
+
+> api-cli@0.1.0 start /workspaces/api-factory/apps/api-cli
+> node dist/apps/api-cli/src/server.js
+
+node:internal/modules/esm/resolve:275
+    throw new ERR_MODULE_NOT_FOUND(
+          ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/workspaces/api-factory/apps/api-cli/dist/apps/api-cli/src/metrics' imported from /workspaces/api-factory/apps/api-cli/dist/apps/api-cli/src/server.js
+    at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+    at moduleResolve (node:internal/modules/esm/resolve:860:10)
+    at defaultResolve (node:internal/modules/esm/resolve:984:11)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:780:12)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:704:25)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:687:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:305:38)
+    at ModuleJob._link (node:internal/modules/esm/module_job:175:49) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///workspaces/api-factory/apps/api-cli/dist/apps/api-cli/src/metrics'
+}
+
+Node.js v22.17.0
+ ELIFECYCLE  Command failed with exit code 1.
