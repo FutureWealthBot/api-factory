@@ -1,13 +1,46 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
 import { registerMetrics } from "./metrics.js";
 import { ok, err, newRequestId } from "@api-factory/core";
 
 const PORT = Number(process.env.PORT || 8787);
 const BIND = process.env.BIND_HOST || "0.0.0.0";
+const ADMIN_TOKEN = process.env.API_FACTORY_ADMIN_KEY || "dev-admin-key-change-me";
+
+// Simple admin auth middleware
+const requireAdminAuth = async (request: any, reply: any) => {
+  const authHeader = request.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw new Error('Missing or invalid authorization header');
+  }
+  
+  const token = authHeader.substring(7);
+  if (token !== ADMIN_TOKEN) {
+    throw new Error('Invalid admin token');
+  }
+};
 
 const app = Fastify({ logger: false });
 await app.register(cors, { origin: true });
+
+// Rate limiting
+await app.register(rateLimit, {
+  max: 100, // requests
+  timeWindow: '1 minute',
+  addHeaders: {
+    'x-ratelimit-limit': true,
+    'x-ratelimit-remaining': true,
+    'x-ratelimit-reset': true
+  },
+  errorResponseBuilder: (req, context) => {
+    return err("RATE_LIMITED", `Rate limit exceeded, retry after ${Math.round(context.ttl / 1000)} seconds`, newRequestId(), {
+      limit: context.max,
+      ttl: context.ttl
+    });
+  }
+});
+
 await registerMetrics(app);
 
 // Friendly index
@@ -42,7 +75,7 @@ type ActionInput =
   | { action: "send_telegram_alert"; payload: { chat_id?: string|number; message?: string } }
   | { action: "enqueue_trade";       payload: Record<string, unknown> };
 
-app.post("/api/v1/actions", async (req, reply) => {
+app.post("/api/v1/actions", { preHandler: requireAdminAuth }, async (req, reply) => {
   const rid = newRequestId();
   const body = (req.body ?? {}) as Partial<ActionInput>;
   const action = (body as any).action as ActionInput["action"] | undefined;

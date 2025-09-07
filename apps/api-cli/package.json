@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/apps/api-cli/src/server.js"
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@api-factory/core": "workspace:*",
