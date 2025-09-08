@@ -43,6 +43,8 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2
 
+  apps/admin-bot: {}
+
   apps/admin-web:
     dependencies:
       react:
@@ -92,6 +94,8 @@ importers:
       typescript:
         specifier: ^5.6.2
         version: 5.9.2
+
+  apps/user-bot: {}
 
   apps/web:
     dependencies:
