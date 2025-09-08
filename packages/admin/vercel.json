@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/tiers/:path*", "destination": "https://YOUR_API_DOMAIN/tiers/:path*" },
+    { "source": "/marketplace/:path*", "destination": "https://YOUR_API_DOMAIN/marketplace/:path*" },
+    { "source": "/billing/:path*", "destination": "https://YOUR_API_DOMAIN/billing/:path*" },
+    { "source": "/sdk-templates/:path*", "destination": "https://YOUR_API_DOMAIN/sdk-templates/:path*" }
+  ]
+}

@@ -1,0 +1,21 @@
+# Fastify API (dev-ish)
+FROM node:22-alpine
+WORKDIR /app
+COPY apps/api-cli/package.json ./apps/api-cli/package.json
+COPY apps/api-cli/dist ./apps/api-cli/dist
+# Add core package so pnpm can resolve workspace dependency
+COPY packages/core/package.json ./packages/core/package.json
+COPY packages/core/dist ./packages/core/dist
+# Make package available as a node module for bare imports
+RUN mkdir -p /app/node_modules/@api-factory && cp -r packages/core /app/node_modules/@api-factory/core
+# Fix ESM relative imports to include .js extension so Node can resolve them
+RUN if [ -f /app/packages/core/dist/index.js ]; then \
+	sed -i "s|export \* from './tiers';|export * from './tiers.js';|g" /app/packages/core/dist/index.js || true; \
+	fi
+# Install curl (used by docker healthcheck) and production dependencies (pnpm will find workspace package)
+RUN apk add --no-cache curl && \
+	corepack enable && corepack prepare pnpm@9.9.0 --activate && \
+	pnpm i --prod --filter ./apps/api-cli --workspace-root=false --reporter=silent
+ENV PORT=8787 BIND_HOST=0.0.0.0 NODE_ENV=production
+EXPOSE 8787
+CMD ["node", "apps/api-cli/dist/apps/api-cli/src/server.js"]

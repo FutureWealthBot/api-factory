@@ -1,0 +1,8 @@
+{
+  "allowedDirs": ["src", "public", "agent-templates", "agent-plugins"],
+  "maxTasksPerMinute": 5,
+  "sandboxMode": true,
+  "requireApprovalForDeletes": true,
+  "pluginWhitelist": ["creative-mode", "auto-build"],
+  "logFile": "agent-action.log"
+}

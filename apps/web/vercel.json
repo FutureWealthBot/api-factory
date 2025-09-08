@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/_api/(.*)", "destination": "http://localhost:8787/_api/$1" }
+  ],
+  "builds": [
+    { "src": "package.json", "use": "@vercel/static-build", "config": { "distDir": "dist" } }
+  ]
+}

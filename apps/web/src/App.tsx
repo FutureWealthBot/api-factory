@@ -1,20 +1,27 @@
+
 import { useState } from 'react'
 import HealthBadge from './components/HealthBadge'
 import MetricsCard from './components/MetricsCard'
 import { apiFetch } from './lib/api'
 
+type HealthResponse = { status: string; service?: string; [key: string]: unknown }
+
 export default function App() {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<HealthResponse | null>(null)
   const [err, setErr] = useState<string>('')
 
   async function checkHealth() {
     setErr('')
     setData(null)
     try {
-      const json = await apiFetch('/_api/healthz')
+      const json = await apiFetch<HealthResponse>('/_api/healthz')
       setData(json)
-    } catch (e:any) {
-      setErr(String(e.message || e))
+    } catch (e) {
+      if (e && typeof e === 'object' && 'message' in e) {
+        setErr(String((e as { message?: string }).message))
+      } else {
+        setErr(String(e))
+      }
     }
   }
 

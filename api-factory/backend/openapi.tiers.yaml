@@ -1,0 +1,33 @@
+openapi: 3.0.0
+tags:
+  - name: Tiers
+    description: API Tier validation and publishing
+paths:
+  /tiers/validate:
+    post:
+      summary: Validate API definition against a tier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                apiDef:
+                  type: object
+                tier:
+                  type: string
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  missing:
+                    type: array
+                    items:
+                      type: string

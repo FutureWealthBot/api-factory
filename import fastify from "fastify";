@@ -1,0 +1,5 @@
+import fastify from "fastify";
+import fastifyMetrics from "fastify-metrics";
+
+const app = fastify();
+app.register(fastifyMetrics, { endpoint: "/metrics" });

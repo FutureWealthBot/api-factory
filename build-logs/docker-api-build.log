@@ -1,0 +1,49 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.api
+#1 transferring dockerfile: 1.19kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:22-alpine
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/9] FROM docker.io/library/node:22-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b889310a717e0abbf9
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 14.64kB 0.0s done
+#5 DONE 0.0s
+
+#6 [5/9] COPY packages/core/package.json ./packages/core/package.json
+#6 CACHED
+
+#7 [8/9] RUN if [ -f /app/packages/core/dist/index.js ]; then 	sed -i "s|export \* from './tiers';|export * from './tiers.js';|g" /app/packages/core/dist/index.js || true; 	fi
+#7 CACHED
+
+#8 [7/9] RUN mkdir -p /app/node_modules/@api-factory && cp -r packages/core /app/node_modules/@api-factory/core
+#8 CACHED
+
+#9 [2/9] WORKDIR /app
+#9 CACHED
+
+#10 [4/9] COPY apps/api-cli/dist ./apps/api-cli/dist
+#10 CACHED
+
+#11 [6/9] COPY packages/core/dist ./packages/core/dist
+#11 CACHED
+
+#12 [3/9] COPY apps/api-cli/package.json ./apps/api-cli/package.json
+#12 CACHED
+
+#13 [9/9] RUN apk add --no-cache curl && 	corepack enable && corepack prepare pnpm@9.9.0 --activate && 	pnpm i --prod --filter ./apps/api-cli --workspace-root=false --reporter=silent
+#13 CACHED
+
+#14 exporting to image
+#14 exporting layers done
+#14 writing image sha256:86366eb1fc33103d52d63419b007d86dffc0fa5148bfd74ff13ae106529002a9 done
+#14 naming to docker.io/library/api-factory-api:local done
+#14 DONE 0.0s

@@ -1,44 +1,15 @@
-import crypto from 'crypto';
+export type ApiSuccess<T=unknown> = {
+  success: true; data: T; error: null; meta: { request_id: string };
+};
+export type ApiError = {
+  success: false; data: null; error: { code: string; message: string; details?: unknown }; meta: { request_id: string };
+};
+export const ok = <T>(data:T, request_id:string): ApiSuccess<T> =>
+  ({ success:true, data, error:null, meta:{ request_id } });
+export const err = (code:string, message:string, request_id:string, details?:unknown): ApiError =>
+  ({ success:false, data:null, error:{ code, message, details }, meta:{ request_id } });
 
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: {
-    code: string;
-    message: string;
-    details?: any;
-  };
-  requestId: string;
-  timestamp: string;
-}
+export const newRequestId = () =>
+  (Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,8)).toUpperCase();
 
-export function newRequestId(): string {
-  return crypto.randomBytes(8).toString('hex');
-}
-
-export function ok<T>(data: T, requestId?: string): ApiResponse<T> {
-  return {
-    success: true,
-    data,
-    requestId: requestId || newRequestId(),
-    timestamp: new Date().toISOString(),
-  };
-}
-
-export function err(
-  code: string, 
-  message: string, 
-  requestId?: string, 
-  details?: any
-): ApiResponse<never> {
-  return {
-    success: false,
-    error: {
-      code,
-      message,
-      details,
-    },
-    requestId: requestId || newRequestId(),
-    timestamp: new Date().toISOString(),
-  };
-}
+export * from './tiers';

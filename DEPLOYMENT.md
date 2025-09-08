@@ -1,71 +1,105 @@
-# API Factory - Deployment Guide
+## Deployment guide
 
-## Quick Start
+This document shows quick, repeatable ways to deploy the project locally (Docker Compose), build images, and use the existing CI that publishes images to GHCR.
 
-1. **Install Dependencies**
-   ```bash
-   pnpm install  # or npm install
-   ```
+Summary of what exists in the repository
 
-2. **Build All Applications**
-   ```bash
-   # Build core package
-   cd packages/core && pnpm build
 
-   # Build API CLI
-   cd apps/api-cli && pnpm build
+Prerequisites
 
-   # Build Web Apps
-   cd apps/web && pnpm build
-   cd apps/admin-web && pnpm build
-   ```
 
-3. **Configure Environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
+Local Docker Compose (quick)
 
-4. **Start the API Server**
-   ```bash
-   cd apps/api-cli
-   pnpm start  # or node dist/server.js
-   ```
+1. From the repository root run:
 
-## Configuration
+```bash
+docker compose up --build -d
+```
 
-### API Server
-- `PORT`: Server port (default: 8787)
-- `BIND_HOST`: Bind address (default: 0.0.0.0)
-- `API_FACTORY_ADMIN_KEY`: Admin authentication token (default: dev-admin-key-change-me)
+2. Check logs:
 
-### Admin Web Interface
-- `VITE_API_FACTORY_ADMIN_KEY`: Must match API_FACTORY_ADMIN_KEY for admin actions
+```bash
+docker compose logs -f api
+docker compose logs -f web
+```
 
-## API Endpoints
+3. Stop and remove:
 
-- `GET /_api/healthz` - Health check
-- `GET /_api/metrics` - Prometheus metrics
-- `GET /api/v1/hello/ping` - Ping test
-- `POST /api/v1/actions` - Admin actions (requires auth)
+```bash
+docker compose down
+```
 
-## Features
+Ports
 
-✅ **Implemented**
-- Rate limiting (100 requests/minute)
-- Admin authentication
-- Prometheus metrics
-- Health monitoring
-- CORS support
-- TypeScript build system
-- ESLint configuration
 
-📋 **Production Checklist**
-- [ ] Change default admin key
-- [ ] Set up HTTPS/TLS
-- [ ] Configure rate limiting for production
-- [ ] Set up monitoring/alerting
-- [ ] Add logging
-- [ ] Configure database connections
-- [ ] Set up CI/CD pipeline
-- [ ] Add comprehensive tests
+Build images locally (manual)
+
+If you prefer to build images manually and tag/push them yourself:
+
+```bash
+docker build -f Dockerfile.api -t <your-registry>/api-factory-api:latest .
+docker build -f Dockerfile.web -t <your-registry>/api-factory-web:latest .
+
+# push (requires login to your registry)
+docker push <your-registry>/api-factory-api:latest
+docker push <your-registry>/api-factory-web:latest
+```
+
+GitHub Actions (CI)
+
+There is an existing workflow at `.github/workflows/docker.yml` which uses `docker/build-push-action` to build and push two images to GitHub Container Registry (GHCR) under `ghcr.io/<owner>/...` when commits are pushed to `main`.
+
+To use it as-is:
+
+
+Vercel
+
+Front-end apps include `vercel.json` under `apps/web` and `apps/admin-web` which makes them easy to deploy on Vercel — connect the repo and Vercel will use the config to build and publish the site.
+
+Notes & gotchas
+
+
+Next steps I can perform for you
+
+
+Debugging builds and GHCR login
+
+If a build fails locally, run the verbose helper which captures logs to `./build-logs`:
+
+```bash
+# If the script is executable:
+./scripts/verbose-build.sh
+
+# Or use the Makefile target (works even without +x permission):
+make verbose-build
+```
+
+To push to GitHub Container Registry (GHCR):
+
+1. Create a Personal Access Token (PAT) with `write:packages` and `repo` scopes (or use `GITHUB_TOKEN` in Actions).
+
+2. Login locally:
+
+```bash
+echo "<GHCR_PAT>" | docker login ghcr.io -u <github-username> --password-stdin
+```
+
+3. Then tag and push (or use the provided Makefile):
+
+```bash
+# Tag and push via make (example)
+make push OWNER=<github-username> REGISTRY=ghcr.io
+```
+
+If you see authentication errors when pushing, verify your PAT scopes and that the username is correct.
+
+If you want me to continue, tell me which of the next steps above to run.
+
+CI image tags
+
+The GitHub Actions workflow tags images with both `latest` and the commit SHA so you can reference a specific build. Example image names:
+
+- `ghcr.io/<owner>/fwb-web:latest`
+- `ghcr.io/<owner>/fwb-web:<commit-sha>`
+
+Use the SHA-tagged image for reproducible deploys and rollbacks.

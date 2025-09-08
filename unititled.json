@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "sdk:gen:py": "openapi-generator-cli generate -i openapi.yaml -g python -o packages/sdk-py --package-name api_factory_sdk",
+    "sdk:gen:go": "openapi-generator-cli generate -i openapi.yaml -g go -o packages/sdk-go --package-name api_factory_sdk"
+  }
+}
