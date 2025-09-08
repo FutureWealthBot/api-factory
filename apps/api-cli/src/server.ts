@@ -88,11 +88,37 @@ app.post("/api/v1/actions", { preHandler: requireAdminAuth }, async (req, reply)
       case "trigger_collection":
         return reply.send(ok({ received: "trigger_collection", started: true }, rid));
       case "send_telegram_alert": {
-        const { chat_id, message } = payload as any;
-        if (!chat_id || !message) {
-          return reply.status(400).send(err("BAD_REQUEST", "chat_id and message are required", rid));
-        }
-        return reply.send(ok({ received: "send_telegram_alert", delivered: true }, rid));
+            const { chat_id, message } = payload as any;
+            if (!chat_id || !message) {
+              return reply.status(400).send(err("BAD_REQUEST", "chat_id and message are required", rid));
+            }
+
+            const token = process.env.TELEGRAM_BOT_TOKEN;
+            if (!token) {
+              // Token not configured — respond with delivered:false but accept the request
+              return reply.send(ok({ received: "send_telegram_alert", delivered: false, reason: "missing_telegram_token" }, rid));
+            }
+
+            try {
+              const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
+              const body = {
+                chat_id: String(chat_id),
+                text: String(message)
+              };
+
+              const res = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+              });
+
+              const data = await res.json().catch(() => ({}));
+              const delivered = res.ok && (data?.ok === true);
+
+              return reply.send(ok({ received: "send_telegram_alert", delivered, telegram: { status: res.status, ok: data?.ok ?? false } }, rid));
+            } catch (e: any) {
+              return reply.send(ok({ received: "send_telegram_alert", delivered: false, error: String(e?.message ?? e) }, rid));
+            }
       }
       case "enqueue_trade":
         return reply.send(ok({ received: "enqueue_trade", queued: true }, rid));
