@@ -13,5 +13,33 @@
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]
     }
+    ,
+    {
+      "name": "API: Debug api-cli (tsx)",
+      "type": "pwa-node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/api-cli",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "--require",
+        "${workspaceFolder}/node_modules/.pnpm/tsx@*/node_modules/tsx/dist/preflight.cjs",
+        "--import",
+        "file://${workspaceFolder}/node_modules/.pnpm/tsx@*/node_modules/tsx/dist/loader.mjs",
+        "src/server.ts"
+      ],
+      "env": {
+        "PORT": "8787",
+        "BIND_HOST": "0.0.0.0"
+      },
+      "console": "integratedTerminal",
+      "preLaunchTask": "pnpm: start api-cli",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+  "compounds": [
+    {
+      "name": "Debug -> Dev",
+      "configurations": ["API: Debug api-cli (tsx)"]
+    }
   ]
 }
