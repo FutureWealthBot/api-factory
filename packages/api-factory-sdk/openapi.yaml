@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: API Factory
+  version: 0.1.0
+servers:
+  - url: http://localhost:8787
+paths:
+  /_api/healthz:
+    get:
+      operationId: health
+      responses: 
+        "200": 
+          description: ok
+  /api/v1/hello/ping:
+    get:
+      operationId: ping
+      responses: 
+        "200": 
+          description: ok
+  /api/v1/hello/echo:
+    post:
+      operationId: echo
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: 
+              type: object
+              additionalProperties: true
+      responses: 
+        "200": 
+          description: ok
+  /api/v1/actions:
+    post:
+      operationId: actions
+      parameters:
+        - in: header
+          name: Authorization
+          schema: 
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  properties:
+                    action: 
+                      enum: [trigger_collection]
+                - type: object
+                  properties:
+                    action: 
+                      enum: [upsert_opportunities]
+                    payload:
+                      type: object
+                      properties:
+                        items:
+                          type: array
+                          items: 
+                            type: object
+                            additionalProperties: true
+                - type: object
+                  properties:
+                    action: 
+                      enum: [send_telegram_alert]
+                    payload:
+                      type: object
+                      properties:
+                        chat_id: 
+                          type: string
+                        message: 
+                          type: string
+      responses: 
+        "200": 
+          description: ok

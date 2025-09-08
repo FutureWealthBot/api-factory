@@ -1,10 +1,12 @@
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+console.log('API BASE:', API_BASE);
 export async function apiFetch<T = unknown>(
   path: string,
   opts: RequestInit = {},
   retries = 2,
   backoffMs = 400
 ): Promise<T> {
-  const url = path.startsWith('/') ? path : `/${path}`
+  const url = path.startsWith('http') ? path : `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
   try {
     const res = await fetch(url, {
       ...opts,

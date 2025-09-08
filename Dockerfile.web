@@ -1,0 +1,14 @@
+# Admin Web (static build + preview)
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY pnpm-workspace.yaml package.json tsconfig.json ./
+COPY apps/admin-web ./apps/admin-web
+RUN corepack enable && corepack prepare pnpm@9.9.0 --activate \
+ && pnpm -F admin-web i \
+ && pnpm -F admin-web build
+# Use vite preview (simple)
+FROM nginx:alpine
+# Copy built static files into nginx html directory
+COPY --from=build /app/apps/admin-web/dist /usr/share/nginx/html
+EXPOSE 3000
+# Run nginx in foreground (default)

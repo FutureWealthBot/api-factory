@@ -1,0 +1,19 @@
+
+> api-factory@0.1.0 dev /workspaces/api-factory
+> concurrently -n CLI,WEB -c auto "pnpm --filter api-cli dev" "pnpm --filter admin-web dev"
+
+[CLI] 
+[CLI] > api-cli@0.1.0 dev /workspaces/api-factory/apps/api-cli
+[CLI] > tsx watch src/server.ts
+[CLI] 
+[WEB] 
+[WEB] > admin-web@0.1.0 dev /workspaces/api-factory/apps/admin-web
+[WEB] > vite --port 5173
+[WEB] 
+[WEB] 
+[WEB]   VITE v5.4.19  ready in 929 ms
+[WEB] 
+[WEB]   ➜  Local:   http://localhost:5173/
+[WEB]   ➜  Network: use --host to expose
+[CLI] [api-cli] listening on http://0.0.0.0:8787
+ ELIFECYCLE  Command failed.

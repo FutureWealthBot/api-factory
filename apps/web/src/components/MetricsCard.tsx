@@ -44,7 +44,7 @@ export default function MetricsCard() {
   )
 }
 
-function Stat({label, value, sub}:{label:string; value:any; sub?:string}) {
+function Stat({label, value, sub}:{label:string; value:string|number|null|undefined; sub?:string}) {
   return (
     <div style={{ padding: 12, border: '1px solid #f0f0f0', borderRadius: 10 }}>
       <div style={{ fontSize: 12, color: '#6b7280' }}>{label}</div>

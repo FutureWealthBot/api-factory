@@ -1,24 +1,42 @@
 {
-  "name": "fwb-workspace",
+  "name": "api-factory",
   "private": true,
-  "version": "0.0.1",
+  "packageManager": "pnpm@9.9.0",
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev:cli": "bash -lc \"cd tools/fwb-cli && (pnpm dev || npm run dev || node index.js)\"",
-    "dev:web": "bash -lc \"if [ -d apps/web ]; then cd apps/web; elif [ -d futurewealthbot-web ]; then cd futurewealthbot-web; else echo '❌ No web app folder found (apps/web or futurewealthbot-web)'; exit 1; fi; (pnpm dev || npm run dev || vite)\"",
-    "dev": "concurrently -k -n CLI,WEB -c auto \"pnpm dev:cli\" \"pnpm dev:web\"",
-    "build:web": "bash -lc \"cd apps/web 2>/dev/null || cd futurewealthbot-web && (pnpm build || npm run build)\"",
-    "start:web": "bash -lc \"cd apps/web 2>/dev/null || cd futurewealthbot-web && (pnpm start || npm start || vite preview --port 3000)\"",
-    "test": "echo \"(placeholder) add your test runner here\" && exit 0",
-    "dev:cli-only": "bash -lc \"cd tools/fwb-cli && (pnpm dev || npm run dev || node server.js)\"",
-    "lint": "eslint .",
+    "dev": "concurrently -n CLI,WEB -c auto \"pnpm --filter api-cli dev\" \"pnpm --filter admin-web dev\"",
+    "build": "pnpm -r build",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier -w .",
-    "typecheck": "pnpm -C apps/web run typecheck || true"
+    "format:check": "prettier -c .",
+    "doctor": "node scripts/af-doctor.cjs",
+    "typecheck:web": "tsc -p tsconfig.web.json --noEmit",
+    "typecheck:node": "tsc -p tsconfig.node.json --noEmit"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
-    "@typescript-eslint/parser": "^8.42.0",
-    "concurrently": "^9.2.1",
-    "eslint": "^9.35.0",
-    "prettier": "^3.6.2"
+    "@types/node": "^24.3.1",
+    "concurrently": "^9.1.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@fastify/cookie": "11.0.2",
+    "@fastify/session": "11.1.0",
+    "@fastify/static": "8.2.0",
+    "fastify": "^5.6.0",
+    "siwe": "^3",
+    "uuid": "^12.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "fastify": "5.6.0"
+    }
   }
 }

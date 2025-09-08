@@ -1,0 +1,6 @@
+fastify.register(import('./routes/index.js'));
+fastify.register(import('./routes/siwe.js'));
+fastify.register(import('./routes/tiers.js'));
+fastify.register(import('./routes/marketplace.js'));
+fastify.register(import('./routes/billing.js'));
+fastify.register(import('./routes/sdk-templates.js'));

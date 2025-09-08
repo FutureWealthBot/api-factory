@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json",
+  "build": "tsc -p tsconfig.json",
   "start": "node dist/apps/api-cli/src/server.js"
   },
   "dependencies": {
@@ -23,5 +23,3 @@
   },
   "registerMetrics": "./metrics.js"
 }
-
-app.get("/_api/healthz", async (req, reply) => { ... });

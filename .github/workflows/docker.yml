@@ -1,0 +1,73 @@
+name: build-and-push
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push CLI
+        uses: docker/build-push-action@v6
+        with:
+          context: ./tools/fwb-cli
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/fwb-cli:latest
+            ghcr.io/${{ github.repository_owner }}/fwb-cli:${{ github.sha }}
+
+      - name: Build & Push Web
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/web
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/fwb-web:latest
+            ghcr.io/${{ github.repository_owner }}/fwb-web:${{ github.sha }}
+
+      - name: Retry push for images (if needed)
+        if: always()
+        env:
+          OWNER: ${{ github.repository_owner }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          IMAGES=(
+            "ghcr.io/${OWNER}/fwb-cli:latest"
+            "ghcr.io/${OWNER}/fwb-cli:${SHA}"
+            "ghcr.io/${OWNER}/fwb-web:latest"
+            "ghcr.io/${OWNER}/fwb-web:${SHA}"
+          )
+          for img in "${IMAGES[@]}"; do
+            echo "Ensuring image pushed: $img"
+            n=0
+            until [ $n -ge 3 ]; do
+              docker push "$img" && break || {
+                n=$((n+1))
+                echo "Push failed, retry #$n for $img"
+                sleep 5
+              }
+            done
+            if [ $n -ge 3 ]; then
+              echo "Failed to push $img after 3 attempts" >&2
+              exit 1
+            fi
+          done
