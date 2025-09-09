@@ -6,7 +6,10 @@ import Stripe from 'stripe';
 export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
   const secret = process.env.STRIPE_WEBHOOK_SECRET || '';
   const stripeKey = process.env.STRIPE_API_KEY || '';
-  const stripe = stripeKey ? new Stripe(stripeKey, { apiVersion: '2022-11-15' }) : null;
+  // Stripe's exported type can be unresolved in some environments; cast to any to avoid a blocking compile error
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const StripeCtor: any = Stripe as any;
+  const stripe = stripeKey ? new StripeCtor(stripeKey, { apiVersion: '2022-11-15' }) : null;
 
   fastify.post('/api/stripe/webhook', async (request: FastifyRequest, reply: FastifyReply) => {
     try {

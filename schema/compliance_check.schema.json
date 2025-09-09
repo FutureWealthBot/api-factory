@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Compliance Check Report",
+  "description": "A lightweight report for compliance checks performed against an artifact for a Premium App.",
+  "type": "object",
+  "properties": {
+    "artifact": { "type": "string", "enum": ["openapi", "policy", "release"] },
+    "app_id": { "type": "string", "minLength": 1 },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "law": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["pass", "fail", "warn"] },
+          "note": { "type": "string" }
+        },
+        "required": ["law", "status"],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "overall": { "type": "string", "enum": ["pass", "block"] },
+    "timestamp": { "type": "string", "format": "date-time" }
+  },
+  "required": ["artifact", "app_id", "checks", "overall", "timestamp"],
+  "additionalProperties": false
+}
