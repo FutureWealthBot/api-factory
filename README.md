@@ -854,6 +854,14 @@ config: {
   }
 }
 
+## TRACK file
+
+This repository contains a top-level `TRACK` file (for example: `MVP`) that records the active release track.
+
+- Workflows load `TRACK` into `env.TRACK` so CI can conditionally change behavior.
+- Services read `process.env.TRACK` at runtime or fall back to the `TRACK` file.
+- You can check the active track by calling the API `_meta` endpoint (e.g. `GET http://localhost:8787/_meta`).
+
 // OpenAPI Specification
 openapi: 3.0.3
 info:

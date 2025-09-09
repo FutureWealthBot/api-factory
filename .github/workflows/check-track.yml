@@ -1,0 +1,46 @@
+name: Check TRACK smoke
+
+on:
+  pull_request:
+    paths:
+      - 'TRACK'
+      - 'api-factory/**'
+      - 'apps/api-cli/**'
+      - 'scripts/check-track.sh'
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build api image
+        run: |
+          docker build -f Dockerfile.api -t api-factory-track:latest .
+
+      - name: Run api container
+        run: |
+          docker run -d --name api-factory-track -p 8787:8787 api-factory-track:latest
+
+      - name: Wait for api
+        run: |
+          for i in {1..20}; do
+            if curl -sfS http://127.0.0.1:8787/_meta >/dev/null 2>&1; then
+              echo "api up"; break
+            fi
+            sleep 1
+          done
+
+      - name: Run smoke check script
+        run: |
+          chmod +x ./scripts/check-track.sh
+          ./scripts/check-track.sh http://127.0.0.1:8787/_meta
+
+      - name: Teardown
+        if: always()
+        run: |
+          docker rm -f api-factory-track || true
