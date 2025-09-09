@@ -57,6 +57,7 @@ import mime from 'mime';
 
 // usage batching (dev file-backed)
 import usage from './lib/usage.js';
+import { getTrack } from './lib/track.js';
 
 // Dev fallback switch: set USE_DEV_FALLBACKS=0 to attempt to use the real @fastify/static plugin.
 const useDevFallbacks = process.env.USE_DEV_FALLBACKS !== '0';
@@ -141,6 +142,15 @@ const start = async () => {
 
     await fastify.listen({ port: 3000 });
     fastify.log.info(`Server listening on http://localhost:3000`);
+      // expose a tiny meta endpoint reporting the repository track
+      fastify.get('/_meta', async (_req, reply) => {
+        try {
+          const track = getTrack();
+          return reply.send({ track });
+        } catch {
+          return reply.send({ track: 'unknown' });
+        }
+      });
   } catch {
     fastify.log.error('startup error');
     process.exit(1);

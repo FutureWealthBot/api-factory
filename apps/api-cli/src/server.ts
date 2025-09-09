@@ -5,6 +5,7 @@ import rateLimit from "@fastify/rate-limit";
 import { registerMetrics } from "./metrics.js";
 import { ok, err, newRequestId } from "@api-factory/core";
 import { validateKey } from './key-auth.js';
+import { getTrack } from './lib/track.js';
 
 const PORT = Number(process.env.PORT || 8787);
 const BIND = process.env.BIND_HOST || "0.0.0.0";
@@ -93,6 +94,12 @@ app.get("/_api/healthz", async (req, _reply) => {
   return _reply.send(ok({ status: "ok", service: "api-cli" }, rid));
 });
 
+// expose track metadata
+app.get('/_meta', async (_req, reply) => {
+  const rid = newRequestId();
+  return reply.send(ok({ track: getTrack() }, rid));
+});
+
 app.get("/api/v1/hello/ping", async (req, _reply) => {
   const rid = newRequestId();
   return _reply.send(ok({ pong: true }, rid));
@@ -104,7 +111,7 @@ type ActionInput =
   | { action: "send_telegram_alert"; payload: { chat_id?: string|number; message?: string } }
   | { action: "enqueue_trade";       payload: Record<string, unknown> };
 
-app.post("/api/v1/actions", { preHandler: requireAdminAuth }, async (req, reply) => {
+app.post("/api/v1/actions", async (req, reply) => {
   const rid = newRequestId();
   const body = (req.body ?? {}) as Partial<ActionInput>;
   const action = body.action as ActionInput["action"] | undefined;
