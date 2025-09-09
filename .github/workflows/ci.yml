@@ -1,47 +1,58 @@
-name: CI (pnpm monorepo)
+name: CI
+name: CI
 
 on:
-  pull_request:
-    types: [opened, edited, reopened, synchronize]
   push:
-    # run on pushes to any branch (helps branch builds and CI feedback)
-    branches: ['**']
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   monorepo-checks:
     name: Monorepo lint/typecheck/test/build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      - name: Load TRACK into environment
+        if: always()
+        run: |
+          if [ -f TRACK ]; then
+            echo "TRACK=$(cat TRACK)" >> $GITHUB_ENV
+          fi
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
-      - name: Install pnpm
-        run: npm install -g pnpm@9
+      - name: Enable corepack & prepare pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
 
       - name: Install dependencies (workspace)
         run: pnpm -w install --frozen-lockfile
 
       - name: Run lint across workspace (if present)
-        run: pnpm -w -r lint --if-present
+        run: pnpm -w -r run lint --if-present
 
       - name: Run typecheck across workspace (if present)
-        run: pnpm -w -r typecheck --if-present
+        run: pnpm -w -r run typecheck --if-present
 
       - name: Run tests across workspace (if present)
-        run: pnpm -w -r test --if-present
+        run: pnpm -w -r run test --if-present
 
       - name: Build packages (if present)
-        run: pnpm -w -r build --if-present
-
-      - name: Upload pnpm lockfile as artifact (for debugging CI failures)
+        run: pnpm -w -r run build --if-present
+      - name: Upload pnpm lockfile
         uses: actions/upload-artifact@v4
         with:
           name: pnpm-lock
           path: pnpm-lock.yaml
-

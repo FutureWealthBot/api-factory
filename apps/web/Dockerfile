@@ -9,5 +9,7 @@ FROM node:22-alpine
 WORKDIR /app
 RUN corepack enable
 COPY --from=build /app ./
+ARG TRACK=""
+ENV TRACK=${TRACK}
 EXPOSE 3000
 CMD ["pnpm","preview","--port","3000","--host"]

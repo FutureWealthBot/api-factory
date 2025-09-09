@@ -1,6 +1,8 @@
 # Fastify API (dev-ish)
 FROM node:22-alpine
 WORKDIR /app
+ARG TRACK=""
+ENV TRACK=${TRACK}
 COPY apps/api-cli/package.json ./apps/api-cli/package.json
 COPY apps/api-cli/dist ./apps/api-cli/dist
 # Add core package so pnpm can resolve workspace dependency

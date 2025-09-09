@@ -21,6 +21,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Load TRACK into environment
+        if: always()
+        run: |
+          if [ -f TRACK ]; then
+            echo "TRACK=$(cat TRACK)" >> $GITHUB_ENV
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -44,3 +51,12 @@ jobs:
 
       - name: Build (workspace)
         run: pnpm -w -r --if-present build
+
+      - name: Optional smoke tests
+        if: ${{ secrets.SMOKE_TARGET != '' }}
+        env:
+          SMOKE_TARGET: '${{ secrets.SMOKE_TARGET }}'
+          SMOKE_API_KEY: '${{ secrets.SMOKE_API_KEY }}'
+        run: |
+          chmod +x ./scripts/smoke-test.sh
+          ./scripts/smoke-test.sh "$SMOKE_TARGET" "$SMOKE_API_KEY"
