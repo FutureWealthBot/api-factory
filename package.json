@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently -n CLI,WEB -c auto \"pnpm --filter api-cli dev\" \"pnpm --filter admin-web dev\"",
+  "dev": "PORT=8787 API_PORT=8787 concurrently -n CLI,WEB -c auto \"pnpm --filter api-cli dev\" \"pnpm --filter admin-web dev\"",
     "build": "pnpm -r build",
     "docker:up": "docker compose up --build",
     "docker:down": "docker compose down",

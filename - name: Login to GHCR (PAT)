@@ -1,0 +1,7 @@
+- name: Login to ChatOps (PAT)
+  if: secrets.GHCR_PAT != ''
+  uses: docker/login-action@v3
+  with:
+    registry: ghcr.io
+    username: ${{ github.actor }}
+    password: ${{ secrets.GHCR_PAT }}
