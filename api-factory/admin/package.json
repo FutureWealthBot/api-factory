@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "dev": "pnpm exec vite",
+    "build": "pnpm exec vite build",
+    "serve": "pnpm exec vite preview"
   },
   "dependencies": {
     "@types/react": "^19.1.12",
