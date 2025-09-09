@@ -90,3 +90,40 @@
  - Stripe can issue/suspend keys; Actions route enforces key + rate + quota
  - Admin Web shows health, ping, actions, rate badge, metrics; displays key/plan
  - OpenAPI + SDK generated; Docker images run locally
+
+---
+
+## Next 7 days (prioritized)
+
+Focus: ship a small, testable beta that demonstrates billing + guarded actions + basic observability.
+
+- [ ] DevOps: Provision production secrets in a secret manager and wire a `.env.production` (owner: @devops)
+      - Acceptance: deploy job can read secrets and a deploy to a staging target succeeds (smoke health checks return 200).
+
+- [ ] Backend: Add basic auth and per-key rate-limiting to `admin-api` and the `POST /api/v1/actions` route (owner: @backend)
+      - Acceptance: calls without a valid key return 401; 429 is returned when quota exceeded; unit/integration tests cover both.
+
+- [ ] Billing: Add Stripe webhook verification + small handler to map a plan to quota and persist to key store (owner: @billing)
+      - Acceptance: a test webhook updates plan/quota in the store; no secret left in repo.
+
+- [ ] QA/Fullstack: Run smoke tests against staging (owner: @qa)
+      - Acceptance: basic flows pass (health, ping, actions, billing webhook flow), and failures are triaged into issues.
+
+- [ ] Admin Web: Surface a read-only Keys panel and a Billing status card (owner: @web)
+      - Acceptance: Admin shows current key, plan, and quota; errors are shown when backend returns 401/429.
+
+Notes and small intents
+- Keep changes minimal and behind feature flags where possible so we can roll forward or back.
+- Prefer testing with a shared staging Stripe webhook secret for this sprint; rotate after beta.
+- Add small curl-based smoke-test scripts to `/scripts/` for quick validation during deploys.
+
+Quick verification checklist (smoke)
+- curl /_api/healthz -> 200
+- curl /api/v1/hello/ping -> 200
+- POST /api/v1/actions with invalid key -> 401
+- POST /api/v1/actions with valid key until quota -> expected responses then 429
+- POST mock Stripe webhook -> backend updates key quota
+
+---
+
+If you'd like, I can: open a PR with these edits, create the smoke-test curl scripts under `/scripts/`, or generate the CI workflow to run the smoke checks in staging. Tell me which and I'll proceed.
