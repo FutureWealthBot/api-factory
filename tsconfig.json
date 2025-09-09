@@ -4,6 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["ES2022", "DOM"],
+  "typeRoots": ["./types", "./node_modules/@types"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -12,5 +13,8 @@
     "paths": {
       "@api-factory/core": ["packages/core/src/index.ts"]
     }
+    
   }
+  ,
+  "files": ["types/global-shims.d.ts"]
 }

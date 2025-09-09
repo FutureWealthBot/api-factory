@@ -15,9 +15,11 @@
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": true
     ,
-    "baseUrl": ".",
+  "baseUrl": ".",
     "paths": {
       "@api-factory/core": ["packages/core/dist"]
     }
   }
+  ,
+  "files": ["types/global-shims.d.ts"]
 }

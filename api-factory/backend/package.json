@@ -22,8 +22,8 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^18.19.124",
-    "@types/uuid": "^10.0.0",
+  "@types/node": "^18.19.124",
+  "@types/uuid": "^10.0.0",
     "mime": "^3.0.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.5",

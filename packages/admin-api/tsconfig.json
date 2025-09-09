@@ -3,6 +3,7 @@
   "compilerOptions": {
   "outDir": "dist",
   "declaration": true
+  ,"types": []
   },
   "include": ["index.ts", "types-shim.d.ts"]
 }
