@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Total Account Status Report",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "path": { "type": "string" },
+        "owner": { "type": "string" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name","path"]
+    },
+    "db": {
+      "type": "object",
+      "properties": {
+        "provider": { "type": "string" },
+        "urlMasked": { "type": "string" },
+        "tables": { "type": "array", "items": { "type": "string" } },
+        "rls": { "type": "boolean" },
+        "migrations": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "api": {
+      "type": "object",
+      "properties": {
+        "endpoints": { "type": "array", "items": { "type": "string" } },
+        "auth": { "type": "string" },
+        "rateLimit": { "type": "string" },
+        "monitoring": { "type": "object", "properties": { "enabled": { "type": "boolean" }, "lastAudit": { "type": "string", "format": "date-time" } } }
+      }
+    },
+    "repo": {
+      "type": "object",
+      "properties": {
+        "provider": { "type": "string" },
+        "url": { "type": "string" },
+        "headSha": { "type": "string" },
+        "buildStatus": { "type": "string" },
+        "ciProvider": { "type": "string" }
+      }
+    },
+    "hosting": {
+      "type": "object",
+      "properties": {
+        "platform": { "type": "string" },
+        "latestDeployment": { "type": "string", "format": "date-time" },
+        "uptime": { "type": "number" },
+        "domain": { "type": "string" }
+      }
+    },
+    "automation": {
+      "type": "object",
+      "properties": {
+        "workflows": { "type": "array", "items": { "type": "string" } },
+        "lastRun": { "type": "string", "format": "date-time" },
+        "errorRate": { "type": "number" }
+      }
+    },
+    "monetization": {
+      "type": "object",
+      "properties": {
+        "processor": { "type": "string" },
+        "webhooksHealthy": { "type": "boolean" },
+        "revenue30d": { "type": "number" }
+      }
+    },
+    "alerts": {
+      "type": "object",
+      "properties": {
+        "channels": { "type": "array", "items": { "type": "string" } },
+        "recentErrors": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "apiKeyEncrypted": { "type": "boolean" },
+        "jwtRotation": { "type": "boolean" },
+        "compliance": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "health": { "type": "string" },
+        "risks": { "type": "array", "items": { "type": "string" } },
+        "wins": { "type": "array", "items": { "type": "string" } },
+        "milestones": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "required": ["meta","summary"]
+}

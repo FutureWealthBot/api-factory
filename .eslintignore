@@ -1,0 +1,19 @@
+node_modules/
+**/dist/
+**/public/dist/
+**/build-logs/
+packages/**/dist/
+**/*.min.js
+*.log
+*.zip
+coverage/
+/.turbo
+/.next
+/.vercel
+# Additional ignores added by automated lint autofix
+.vite/
+.cache/
+build/
+pnpm-lock.yaml
+.vscode/
+.DS_Store

@@ -1,0 +1,69 @@
+name: Deploy Supabase schema & functions
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  supabase-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Supabase CLI
+        run: npm install -g supabase
+
+      - name: Supabase auth
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ -n "$SUPABASE_ACCESS_TOKEN" ]; then
+            supabase login --token "$SUPABASE_ACCESS_TOKEN"
+          else
+            echo "No SUPABASE_ACCESS_TOKEN provided; continuing (some ops may require service key)"
+          fi
+
+      - name: Deploy DB schema (push)
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main')
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          if [ -z "$SUPABASE_PROJECT_REF" ]; then
+            echo "Missing SUPABASE_PROJECT_REF secret" >&2
+            exit 1
+          fi
+          # Push schema/migrations from repo (adjust path if your supabase config lives elsewhere)
+          supabase db push --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: PR preview note (no DB changes)
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Pull request detected. This workflow will NOT push DB changes for PRs to avoid modifying production."
+          echo "If you want preview DB behavior, configure a preview Supabase project and adapt this workflow to deploy to it."
+
+      - name: Deploy Edge Functions (if present)
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          # If you store functions under supabase/functions, deploy each folder found there
+          if [ -d "./supabase/functions" ]; then
+            for fn in $(ls -1 supabase/functions); do
+              echo "Deploying function: $fn"
+              supabase functions deploy "$fn" --project-ref "$SUPABASE_PROJECT_REF" || echo "failed to deploy $fn"
+            done
+          else
+            echo "No supabase/functions directory found; skipping functions deploy"
+          fi

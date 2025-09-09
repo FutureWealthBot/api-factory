@@ -1,0 +1,3 @@
+npm i -g supabase
+supabase login --token "$SUPABASE_ACCESS_TOKEN"
+supabase db push --project-ref "$SUPABASE_PROJECT_REF"

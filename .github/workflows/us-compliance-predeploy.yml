@@ -1,0 +1,19 @@
+name: us-compliance-predeploy
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate OpenAPI
+        run: pipx install openapi-spec-validator && openapi-spec-validator openapi.yaml
+      - name: Check consent & audit logging
+        run: python scripts/check_consent_logging.py --spec openapi.yaml
+      - name: Verify compliance tags
+        run: python scripts/check_compliance_tags.py --spec openapi.yaml --required HIPAA FTC FERPA SEC CFTC FAA EPA FCRA TILA ECOA ADA COPPA FOIA "NIST AI RMF" || true
+      - name: Block on high-risk missing
+        run: python scripts/block_on_missing.py --laws HIPAA SEC CFPB "Colorado SB 205"

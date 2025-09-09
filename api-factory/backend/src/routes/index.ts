@@ -1,7 +1,7 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 
 export default async function routes(fastify: FastifyInstance) {
-  fastify.get('/api/example', async (request, reply) => {
+  fastify.get('/api/example', async (_request, _reply) => {
     return { message: 'Hello from the API!' };
   });
 

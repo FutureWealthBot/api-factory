@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Premium App (API-Factory) - U.S. Compliance Edition",
+  "description": "Schema for a Premium App entry including U.S. compliance tags and pricing details.",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "tier": { "type": "string", "enum": ["gold", "platinum", "enterprise"] },
+    "summary": { "type": "string" },
+    "core_apis": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "us_compliance": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "FTC","HIPAA","FERPA","SEC","CFTC","FAA","EPA","FCRA","TILA","ECOA","ADA","COPPA","FOIA","NIST AI RMF","Colorado SB 205","NYC LL144"
+        ]
+      },
+      "default": []
+    },
+    "pricing": {
+      "type": "object",
+      "properties": {
+        "model": { "type": "string", "enum": ["subscription", "usage", "hybrid"] },
+        "list_prices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sku": { "type": "string" },
+              "price_usd": { "type": "number", "minimum": 0 }
+            },
+            "required": ["sku", "price_usd"]
+          },
+          "default": []
+        }
+      },
+      "required": ["model"]
+    },
+    "status": { "type": "string", "enum": ["planned", "beta", "ga", "sunset"] },
+    "last_review": { "type": "string", "format": "date" }
+  },
+  "required": ["id", "name", "tier", "status"],
+  "additionalProperties": false
+}

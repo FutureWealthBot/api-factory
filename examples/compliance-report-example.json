@@ -1,0 +1,10 @@
+{
+  "artifact": "openapi",
+  "app_id": "payments-gateway",
+  "checks": [
+    { "law": "HIPAA", "status": "warn", "note": "Encryption at rest not confirmed for audit logs" },
+    { "law": "FTC", "status": "pass", "note": "Privacy disclosures present" }
+  ],
+  "overall": "block",
+  "timestamp": "2025-09-09T12:00:00Z"
+}

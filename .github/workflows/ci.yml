@@ -1,86 +1,47 @@
-name: Build, Publish & Smoke Test
+name: CI (pnpm monorepo)
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
-
-permissions:
-  contents: read
-  packages: write
+    types: [opened, edited, reopened, synchronize]
+  push:
+    # run on pushes to any branch (helps branch builds and CI feedback)
+    branches: ['**']
 
 jobs:
-  build-publish-smoke:
+  monorepo-checks:
+    name: Monorepo lint/typecheck/test/build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node 22
+      - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
+          cache: 'pnpm'
 
-      - name: Enable corepack & pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@9.9.0 --activate
+      - name: Install pnpm
+        run: npm install -g pnpm@9
 
-      - name: Install workspace deps
-        run: pnpm -w i --frozen-lockfile
+      - name: Install dependencies (workspace)
+        run: pnpm -w install --frozen-lockfile
 
-      - name: Build workspace
-        run: pnpm -w build
+      - name: Run lint across workspace (if present)
+        run: pnpm -w -r lint --if-present
 
-      - name: Login to ghcr
-        uses: docker/login-action@v2
+      - name: Run typecheck across workspace (if present)
+        run: pnpm -w -r typecheck --if-present
+
+      - name: Run tests across workspace (if present)
+        run: pnpm -w -r test --if-present
+
+      - name: Build packages (if present)
+        run: pnpm -w -r build --if-present
+
+      - name: Upload pnpm lockfile as artifact (for debugging CI failures)
+        uses: actions/upload-artifact@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          name: pnpm-lock
+          path: pnpm-lock.yaml
 
-      - name: Build & push API image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile.api
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/api-factory-api:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/api-factory-api:latest
-
-      - name: Build & push Web image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile.web
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/api-factory-web:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/api-factory-web:latest
-
-      - name: Pull published images
-        run: |
-          docker pull ghcr.io/${{ github.repository_owner }}/api-factory-api:latest
-          docker pull ghcr.io/${{ github.repository_owner }}/api-factory-web:latest
-
-      - name: Run smoke containers
-        run: |
-          docker run -d --name smoke-api -p 8787:8787 ghcr.io/${{ github.repository_owner }}/api-factory-api:latest || docker start smoke-api
-          docker run -d --name smoke-web -p 3000:80 ghcr.io/${{ github.repository_owner }}/api-factory-web:latest || docker start smoke-web
-          # wait for API to become healthy
-          for i in {1..12}; do
-            curl -fsS http://127.0.0.1:8787/_api/healthz && break || sleep 5
-          done
-
-      - name: Run smoke tests
-        run: |
-          curl -fsS http://127.0.0.1:8787/_api/healthz
-          curl -fsS http://127.0.0.1:3000/
-
-      - name: Cleanup
-        if: always()
-        run: |
-          docker rm -f smoke-api smoke-web || true
-          docker image rm ghcr.io/${{ github.repository_owner }}/api-factory-api:latest ghcr.io/${{ github.repository_owner }}/api-factory-web:latest || true

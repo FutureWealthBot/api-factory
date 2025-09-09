@@ -37,7 +37,7 @@ export const API_TIERS: ApiTierSpec[] = [
 ];
 
 // Example: Validate API definition against tier
-export function validateApiForTier(apiDef: any, tier: ApiTier): string[] {
+export function validateApiForTier(apiDef: Record<string, unknown>, tier: ApiTier): string[] {
   const spec = API_TIERS.find(t => t.name === tier);
   if (!spec) return ['Unknown tier'];
   const missing = spec.requiredFields.filter(f => !(f in apiDef));

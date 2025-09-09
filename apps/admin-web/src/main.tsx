@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 
-type Resp = any;
+type Resp = unknown;
 
 function Card(props: { title: string; children: React.ReactNode }) {
   return (
@@ -19,9 +19,9 @@ function Card(props: { title: string; children: React.ReactNode }) {
 }
 
 function App() {
-  const [health, setHealth] = React.useState<Resp>(null);
-  const [ping, setPing] = React.useState<Resp>(null);
-  const [lastAction, setLastAction] = React.useState<Resp>(null);
+  const [health, setHealth] = React.useState<Resp | null>(null);
+  const [ping, setPing] = React.useState<Resp | null>(null);
+  const [lastAction, setLastAction] = React.useState<Resp | null>(null);
   const [echoText, setEchoText] = React.useState<string>("hello world");
   const [tgMsg, setTgMsg] = React.useState<string>("hello from Admin");
   const [tgChatId, setTgChatId] = React.useState<string>("123");
@@ -116,6 +116,34 @@ function App() {
           <div>
             <h4>Last Response</h4>
             <pre style={{ margin: 0 }}>{JSON.stringify(lastAction, null, 2)}</pre>
+          </div>
+        </div>
+      </Card>
+
+      <Card title="Billing (Admin)">
+        <div style={{ display: 'grid', gap: 8 }}>
+          <label>
+            API Key:
+            <input id="billing-key" style={{ marginLeft: 8, width: 360 }} />
+          </label>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={async () => {
+              const key = (document.getElementById('billing-key') as HTMLInputElement).value;
+              if (!key) return alert('enter key');
+              const r = await fetch(`/api/admin/billing/key?key=${encodeURIComponent(key)}`);
+              const j = await r.json();
+              alert(JSON.stringify(j, null, 2));
+            }}>Fetch Key</button>
+            <button onClick={async () => {
+              const key = (document.getElementById('billing-key') as HTMLInputElement).value;
+              if (!key) return alert('enter key');
+              const plan = prompt('plan:', 'starter') || 'starter';
+              const quota = prompt('quota (number):', '1000') || '1000';
+              const status = prompt('status (active|suspended|past_due|revoked|unknown):', 'active') || 'active';
+              const r = await fetch('/api/admin/billing/key', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ key, plan, quota: Number(quota), status }) });
+              const j = await r.json();
+              alert(JSON.stringify(j, null, 2));
+            }}>Upsert Key</button>
           </div>
         </div>
       </Card>

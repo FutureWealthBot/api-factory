@@ -44,7 +44,7 @@ const handleCommand = async (chatId, text) => {
       try {
         const payload = JSON.parse(arg || '{}');
         return apiCall('/api/v1/actions', 'POST', { action: 'upsert_opportunities', payload });
-      } catch (e) {
+      } catch {
         return { error: 'invalid-json-payload' };
       }
     case '/echo':
@@ -87,8 +87,8 @@ const poll = async () => {
       const reply = typeof result === 'string' ? result : JSON.stringify(result, null, 2).slice(0, 4000);
       await sendTelegram(chatId, `Result:\n${reply}`);
     }
-  } catch (e) {
-    console.error('poll error', e?.message || e);
+  } catch (_e) {
+    console.error('poll error', _e?.message || _e);
   }
 };
 

@@ -1,5 +1,9 @@
 {
+  "version": 2,
   "builds": [
-    { "src": "package.json", "use": "@vercel/static-build", "config": { "distDir": "dist" } }
+    { "src": "package.json", "use": "@vercel/static-build" }
+  ],
+  "rewrites": [
+    { "source": "/_api/(.*)", "destination": "${VITE_API_BASE_URL}/_api/$1" }
   ]
 }
