@@ -31,12 +31,12 @@ async function ensureFile() {
 
 export async function readKeys(): Promise<Record<string, KeyRecord>> {
   if (supabase) {
-    const { data, error } = await supabase.from('api_keys').select('*');
+    const { data: rows, error } = await supabase.from('api_keys').select('*');
     if (error) throw error;
     const out: Record<string, KeyRecord> = {};
-    const rows = data as unknown[] | null;
+    const rowsArr = rows as unknown[] | null;
     if (rows && Array.isArray(rows)) {
-      for (const r of rows) {
+      for (const r of rowsArr!) {
         const row = r as Record<string, unknown>;
         const key = String(row['key']);
         out[key] = {
@@ -77,8 +77,8 @@ export async function upsertKey(key: string, patch: Partial<KeyRecord>) {
   if (supabase) {
     const now = new Date().toISOString();
     const row = { key, plan: patch.plan ?? null, quota: patch.quota ?? null, status: patch.status ?? 'unknown', updated_at: now };
-    const { data, error } = await supabase.from('api_keys').upsert(row).select();
-    if (error) throw error;
+  const { error } = await supabase.from('api_keys').upsert(row).select();
+  if (error) throw error;
     return { key: row.key, plan: row.plan ?? undefined, quota: row.quota ?? undefined, status: row.status as KeyRecord['status'], updatedAt: now } as KeyRecord;
   }
 

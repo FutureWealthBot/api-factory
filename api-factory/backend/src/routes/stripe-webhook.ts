@@ -31,7 +31,7 @@ export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
         try {
           const constructed = stripe.webhooks.constructEvent(payload, sig, secret);
           event = constructed as unknown as { type?: string; data?: { object?: Record<string, unknown> } };
-        } catch (err) {
+  } catch {
           reply.status(400).send({ error: 'Invalid signature' });
           return;
         }
@@ -84,7 +84,7 @@ export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
       }
 
       reply.send({ ok: true });
-    } catch {
+  } catch {
       reply.status(500).send({ error: 'webhook processing error' });
     }
   });
