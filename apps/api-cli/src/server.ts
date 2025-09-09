@@ -4,6 +4,7 @@ import cors from "@fastify/cors";
 import rateLimit from "@fastify/rate-limit";
 import { registerMetrics } from "./metrics.js";
 import { ok, err, newRequestId } from "@api-factory/core";
+import { validateKey } from './key-auth.js';
 
 const PORT = Number(process.env.PORT || 8787);
 const BIND = process.env.BIND_HOST || "0.0.0.0";
@@ -34,11 +35,38 @@ await app.register(rateLimit, {
     'x-ratelimit-remaining': true,
     'x-ratelimit-reset': true
   },
+  keyGenerator: (req) => {
+    // prefer x-api-key header, fallback to IP
+    const hdr = (req.headers as Record<string, string | undefined>)['x-api-key'] || (req.headers as Record<string, string | undefined>).authorization;
+    if (hdr && hdr.startsWith('Bearer ')) return hdr.substring(7);
+    if (hdr) return hdr;
+    return (req.ip as string) || req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'anon';
+  },
   errorResponseBuilder: (req, context) => {
     return err("RATE_LIMITED", `Rate limit exceeded, retry after ${Math.round(context.ttl / 1000)} seconds`, newRequestId(), {
       limit: context.max,
       ttl: context.ttl
     });
+  }
+});
+
+// PreHandler to validate API key for /api/v1/actions
+app.addHook('preHandler', async (request, reply) => {
+  try {
+  const url = (request.raw.url || '');
+  if (url.startsWith('/api/v1/actions')) {
+      const auth = (request.headers as Record<string, string | undefined>).authorization || (request.headers as Record<string, string | undefined>)['x-api-key'];
+      let apiKey: string | undefined;
+      if (auth && auth.startsWith('Bearer ')) apiKey = auth.substring(7);
+      else apiKey = auth;
+      const rec = await validateKey(apiKey);
+      if (!rec) {
+        reply.status(401).send(err('UNAUTHORIZED', 'Missing or invalid API key', newRequestId()));
+      }
+    }
+  } catch {
+    // fail closed
+    reply.status(401).send(err('UNAUTHORIZED', 'Key validation failed', newRequestId()));
   }
 });
 

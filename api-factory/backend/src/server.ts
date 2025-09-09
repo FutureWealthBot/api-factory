@@ -17,7 +17,9 @@ import siweRoutes from './routes/siwe.js';
 import tiersRoutes from './routes/tiers.js';
 import marketplaceRoutes from './routes/marketplace.js';
 import billingRoutes from './routes/billing.js';
+import stripeWebhookRoutes from './routes/stripe-webhook.js';
 import sdkTemplatesRoutes from './routes/sdk-templates.js';
+import adminUsageRoutes from './routes/admin-usage.js';
 
 // Consent middleware: applied to API routes under /api as a fail-closed guard
 import consentMiddleware from './middleware/consent-middleware.js';
@@ -42,12 +44,17 @@ fastify.register(tiersRoutes);
 fastify.register(marketplaceRoutes);
 fastify.register(billingRoutes);
 fastify.register(sdkTemplatesRoutes);
+fastify.register(stripeWebhookRoutes);
+fastify.register(adminUsageRoutes);
 
 // Serve static files
 // In dev we avoid registering @fastify/static (plugin version mismatches across workspace).
 // Provide a tiny static file handler that streams files from the `public` folder.
 import { createReadStream, promises as fsPromises } from 'fs';
 import mime from 'mime';
+
+// usage batching (dev file-backed)
+import usage from './lib/usage.js';
 
 // Dev fallback switch: set USE_DEV_FALLBACKS=0 to attempt to use the real @fastify/static plugin.
 const useDevFallbacks = process.env.USE_DEV_FALLBACKS !== '0';
@@ -106,6 +113,30 @@ if (useDevFallbacks) {
 // Start the server
 const start = async () => {
   try {
+    // start background usage flusher
+    usage.start();
+
+    // record usage on every response (only for API routes)
+    fastify.addHook('onResponse', async (request, reply) => {
+      try {
+        const url = (request.raw.url || '');
+        if (!url.startsWith('/api/')) return;
+        const apiKey = (request.headers['x-api-key'] as string) || undefined;
+        const event = {
+          apiKey,
+          route: url,
+          method: request.method,
+          status: reply.statusCode,
+          bytes: reply.getHeader ? Number(reply.getHeader('content-length') || 0) : undefined,
+          ts: new Date().toISOString(),
+        } as const;
+        usage.enqueue(event as unknown as { apiKey?: string; route: string; method: string; status: number; bytes?: number; ts: string });
+      } catch (err) {
+        // don't fail responses
+        console.error('onResponse usage hook error', err);
+      }
+    });
+
     await fastify.listen({ port: 3000 });
     fastify.log.info(`Server listening on http://localhost:3000`);
   } catch {
@@ -113,5 +144,14 @@ const start = async () => {
     process.exit(1);
   }
 };
+
+// stop usage flusher on process exit
+process.on('SIGINT', async () => {
+  try {
+    await usage.stop();
+  } finally {
+    process.exit(0);
+  }
+});
 
 start();

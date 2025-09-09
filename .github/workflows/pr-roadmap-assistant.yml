@@ -1,0 +1,82 @@
+name: PR Roadmap Assistant
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check-roadmap-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check PR for roadmap reference and comment if missing
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = '.github/copilot-lock.json';
+            if (!fs.existsSync(path)) {
+              core.setFailed(`${path} not found`);
+              return;
+            }
+            const lock = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const files = lock.primary_roadmap_files || [];
+            const pr = context.payload.pull_request;
+            if (!pr) {
+              core.setFailed('No pull_request context');
+              return;
+            }
+            const text = `${pr.title || ''}\n\n${pr.body || ''}`;
+            const matched = files.some(f => {
+              if (!f) return false;
+              const fileName = f.split('/').filter(Boolean).pop();
+              return text.includes(f) || (fileName && text.includes(fileName)) || text.includes(f.replace(/^\/+/, ''));
+            });
+
+            const marker = '<!-- copilot-roadmap-check -->';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = pr.number;
+
+            // fetch existing comments to avoid duplicates
+            const { data: comments } = await github.issues.listComments({ owner, repo, issue_number });
+            const existing = comments.find(c => c.user && c.user.type === 'Bot' && c.body && c.body.includes(marker));
+
+            if (matched) {
+              if (existing) {
+                await github.issues.deleteComment({ owner, repo, comment_id: existing.id });
+              }
+              // remove label if present
+              try {
+                await github.issues.removeLabel({ owner, repo, issue_number, name: 'needs-roadmap' });
+              } catch (e) {
+                // no-op if label not present
+              }
+              return;
+            }
+
+            const filesList = files.join(', ');
+            const needsLabel = 'needs-roadmap';
+            const body = `${marker}\nHi — this PR does not reference a roadmap file listed in .github/copilot-lock.json.\n\nPlease add a short line in the PR description referencing the roadmap item you are implementing, for example: implements: docs/roadmap/MVP_NEXT_STEPS.md#section\n\nUse this tiny checklist to make the PR reviewable:\n\n- [ ] Add a single-line roadmap reference (e.g. implements: docs/roadmap/MVP_NEXT_STEPS.md#section)\n- [ ] Confirm "definition of done" for the roadmap item in the PR description\n- [ ] Run locally: pnpm -r lint && pnpm -r typecheck && pnpm -r test --if-present && pnpm -r build\n\nPrimary roadmap files: ${filesList}\n\nOnce you add the roadmap reference the comment and label will be removed. Thanks!`;
+
+            if (!existing) {
+              await github.issues.createComment({ owner, repo, issue_number, body });
+            } else {
+              // update existing comment instead of creating duplicates
+              await github.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            }
+
+            // add a temporary label to aid triage; safe-add (label may not exist)
+            try {
+              await github.issues.addLabels({ owner, repo, issue_number, labels: [needsLabel] });
+            } catch (e) {
+              // ignore: label might not exist or call may fail
+            }
+
+            return;

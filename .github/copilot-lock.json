@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "locked": true,
+  "description": "Lock assistants to follow the MVP and API-Factory roadmaps when making changes in this repository.",
+  "primary_roadmap_files": [
+  "roadmap/",
+  "docs/roadmap/",
+  "api-factory/README.md",
+  "docs/LOCAL_DEV.md",
+  "docs/ALIGNMENT.md"
+  ],
+  "rules": {
+    "prioritize_mvp": true,
+    "require_roadmap_reference_in_pr": true,
+    "no_wide_refactors_without_pr": true,
+    "run_typecheck_and_lint": true
+  },
+  "maintainers": [
+    {
+      "name": "FutureWealthBot",
+      "role": "repo-owner",
+      "contact": "https://github.com/FutureWealthBot"
+    }
+  ]
+}
