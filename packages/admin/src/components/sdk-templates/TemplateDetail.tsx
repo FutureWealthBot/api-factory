@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function TemplateDetail({ templateId }: { templateId: string }) {
+export default function TemplateDetail({ templateId: _templateId }: { templateId: string }) {
   // TODO: Fetch and display template details
   return (
     <div>

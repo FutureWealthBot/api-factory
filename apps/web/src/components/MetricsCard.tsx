@@ -18,8 +18,9 @@ export default function MetricsCard() {
     try {
       const res = await apiFetch<Metrics>('/_api/metrics')
       setM(res); setErr('')
-    } catch (e:any) {
-      setErr(String(e.message || e)); setM(null)
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e)
+      setErr(msg); setM(null)
     }
   }
 

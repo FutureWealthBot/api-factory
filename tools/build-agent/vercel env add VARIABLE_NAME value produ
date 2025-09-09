@@ -1,0 +1,1 @@
+vercel env add VARIABLE_NAME value production --scope YOUR_TEAM_OR_USERNAME --project PROJECT_NAME

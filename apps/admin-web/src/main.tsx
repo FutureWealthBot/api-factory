@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 
-type Resp = any;
+type Resp = unknown;
 
 function Card(props: { title: string; children: React.ReactNode }) {
   return (
@@ -19,9 +19,9 @@ function Card(props: { title: string; children: React.ReactNode }) {
 }
 
 function App() {
-  const [health, setHealth] = React.useState<Resp>(null);
-  const [ping, setPing] = React.useState<Resp>(null);
-  const [lastAction, setLastAction] = React.useState<Resp>(null);
+  const [health, setHealth] = React.useState<Resp | null>(null);
+  const [ping, setPing] = React.useState<Resp | null>(null);
+  const [lastAction, setLastAction] = React.useState<Resp | null>(null);
   const [echoText, setEchoText] = React.useState<string>("hello world");
   const [tgMsg, setTgMsg] = React.useState<string>("hello from Admin");
   const [tgChatId, setTgChatId] = React.useState<string>("123");

@@ -2,8 +2,17 @@ import React from 'react';
 
 import TemplateVote from './TemplateVote';
 
+type SdkTemplate = {
+  id: string;
+  name: string;
+  language?: string;
+  author?: string;
+  votes?: number;
+  tags?: string[];
+};
+
 export default function TemplateList() {
-  const [templates, setTemplates] = React.useState<any[]>([]);
+  const [templates, setTemplates] = React.useState<SdkTemplate[]>([]);
   React.useEffect(() => {
     fetch('/sdk-templates').then(r => r.json()).then(data => setTemplates(data.templates || []));
   }, []);
@@ -15,7 +24,7 @@ export default function TemplateList() {
           <li key={t.id}>
             <b>{t.name}</b> ({t.language}) by {t.author} [votes: {t.votes}]<br />
             <span>Tags: {t.tags && t.tags.join(', ')}</span><br />
-            <TemplateVote templateId={t.id} onVoted={() => {
+            <TemplateVote templateId={String(t.id)} onVoted={() => {
               fetch('/sdk-templates').then(r => r.json()).then(data => setTemplates(data.templates || []));
             }} />
           </li>

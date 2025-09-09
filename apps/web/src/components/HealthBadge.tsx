@@ -12,8 +12,9 @@ export default function HealthBadge() {
       const h = await apiFetch<Health>('/_api/healthz')
       setHealth(h)
       setError('')
-    } catch (e: any) {
-      setError(e?.message || 'error')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e)
+      setError(msg || 'error')
       setHealth(null)
     }
   }

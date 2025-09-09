@@ -1,8 +1,8 @@
 import { Tier, TIER_FEATURES } from '@api-factory/core';
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 
 // Example: In a real app, tier would be determined by user/org/account
-function getUserTier(request: FastifyRequest): Tier {
+function getUserTier(_request: FastifyRequest): Tier {
   // Placeholder: always returns Advanced for demo
   // Replace with real logic (e.g., from JWT, DB, etc.)
   return Tier.Advanced;

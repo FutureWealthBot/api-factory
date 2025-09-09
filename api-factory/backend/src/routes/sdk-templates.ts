@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,16 +28,34 @@ function writeMetadata(data: SdkTemplateMeta[]) {
 export default async function sdkTemplatesRoutes(fastify: FastifyInstance) {
   // Upload a new SDK template (JSON body, base64 file for simplicity)
   fastify.post('/sdk-templates/upload', async (request, reply) => {
-    const { name, language, tags, author, fileContent, fileName } = request.body as any;
+    const body = request.body as Record<string, unknown> | undefined;
+    const name = body?.name as string | undefined;
+    const language = body?.language as string | undefined;
+    const tags = body?.tags as string | undefined;
+    const author = body?.author as string | undefined;
+    const fileContent = body?.fileContent as string | undefined;
+    const fileName = body?.fileName as string | undefined;
     if (!name || !language || !fileContent || !fileName) {
       return reply.status(400).send({ error: 'Missing required fields' });
     }
+    const safeName = name as string;
+    const safeLanguage = language as string;
+    const safeFileContent = fileContent as string;
+    const safeFileName = fileName as string;
     const id = uuidv4();
     const createdAt = new Date().toISOString();
-    const filePath = path.join(SDK_TEMPLATES_DIR, `${id}-${fileName}`);
-    fs.writeFileSync(filePath, Buffer.from(fileContent, 'base64'));
+    const filePath = path.join(SDK_TEMPLATES_DIR, `${id}-${safeFileName}`);
+    fs.writeFileSync(filePath, Buffer.from(safeFileContent, 'base64'));
+    const parsedTags = typeof tags === 'string' ? tags.split(',').map((t) => t.trim()) : [];
     const meta: SdkTemplateMeta = {
-      id, name, language, tags: tags ? tags.split(',').map((t: string) => t.trim()) : [], author, votes: 0, createdAt, file: filePath
+      id,
+      name: safeName,
+      language: safeLanguage,
+      tags: parsedTags,
+      author: (author as string) || 'unknown',
+      votes: 0,
+      createdAt,
+      file: filePath,
     };
     const all = readMetadata();
     all.push(meta);
@@ -53,19 +71,25 @@ export default async function sdkTemplatesRoutes(fastify: FastifyInstance) {
 
   // Upvote/downvote a template (with min 0 votes)
   fastify.post('/sdk-templates/:id/vote', async (request, reply) => {
-    const { id } = request.params as any;
-    const { delta } = request.body as any; // +1 or -1
+    const params = request.params as Record<string, string> | undefined;
+    const body = request.body as Record<string, unknown> | undefined;
+    const id = params?.id as string | undefined;
+    const delta = body?.delta as number | undefined; // +1 or -1
     const all = readMetadata();
-    const idx = all.findIndex(t => t.id === id);
-    if (idx === -1) return reply.status(404).send({ error: 'Not found' });
-    all[idx].votes = Math.max(0, all[idx].votes + (delta === -1 ? -1 : 1));
-    writeMetadata(all);
-    reply.send({ status: 'ok', votes: all[idx].votes });
+  const idx = all.findIndex(t => t.id === id);
+  if (idx === -1) return reply.status(404).send({ error: 'Not found' });
+  // Guard against undefined and ensure votes is numeric
+  const template = all[idx];
+  if (!template) return reply.status(500).send({ error: 'Internal error' });
+  template.votes = Math.max(0, (typeof template.votes === 'number' ? template.votes : 0) + (delta === -1 ? -1 : 1));
+  writeMetadata(all);
+  reply.send({ status: 'ok', votes: template.votes });
   });
 
   // Get details for a specific template
   fastify.get('/sdk-templates/:id', async (request, reply) => {
-    const { id } = request.params as any;
+    const params = request.params as Record<string, string> | undefined;
+    const id = params?.id as string | undefined;
     const all = readMetadata();
     const found = all.find(t => t.id === id);
     if (!found) return reply.status(404).send({ error: 'Not found' });

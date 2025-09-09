@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 
 const APIS = [
   { id: '1', name: 'Echo API', tier: 'core', tags: ['utility'], price: 0, docs: '/docs/echo' },

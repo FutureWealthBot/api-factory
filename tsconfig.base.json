@@ -5,7 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
-    "types": [],
+  "types": ["node", "jest"],
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
@@ -14,5 +14,10 @@
     "allowJs": false,
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": true
+    ,
+    "baseUrl": ".",
+    "paths": {
+      "@api-factory/core": ["packages/core/dist"]
+    }
   }
 }

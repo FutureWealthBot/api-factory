@@ -1,0 +1,31 @@
+name: Deploy Supabase schema & functions
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  supabase-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        run: npm install -g supabase
+
+      - name: Supabase login (uses PAT)
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase login --token "$SUPABASE_ACCESS_TOKEN"
+
+      - name: Deploy DB migrations / push schema
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: supabase db push --project-ref "$SUPABASE_PROJECT_REF"
+
+      # Optional: deploy Edge Functions
+      - name: Deploy Edge Functions
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          # adjust function names as needed
+          supabase functions deploy my-function --project-ref "$SUPABASE_PROJECT_REF"

@@ -7,10 +7,11 @@ import { exec } from 'child_process';
 export function activateAutoBuild() {
   console.log('🔄 Auto Build Activated! Watching for changes...');
   const watcher = chokidar.watch(['../agent-templates', '../src', '../public'], {
-    ignored: /(^|[\/\\])\../, // ignore dotfiles
+    // ignore dotfiles (use RegExp constructor to avoid lint false-positive on escaped `/`)
+    ignored: new RegExp('(^|[\\/\\\\])\\.'),
     persistent: true,
   });
-  watcher.on('change', (filePath) => {
+  watcher.on('change', (filePath: string) => {
     console.log(`File changed: ${filePath}`);
     // Example: Run typecheck, lint, or build
     exec('pnpm run typecheck && pnpm run lint && pnpm run build', (err, stdout, stderr) => {

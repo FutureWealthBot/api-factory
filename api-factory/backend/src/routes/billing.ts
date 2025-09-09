@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 
 export default async function billingRoutes(fastify: FastifyInstance) {
   // On-chain payment endpoint (stub)

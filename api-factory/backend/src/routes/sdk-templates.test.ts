@@ -1,7 +1,5 @@
 import Fastify from 'fastify';
 import sdkTemplatesRoutes from './sdk-templates';
-import fs from 'fs';
-import path from 'path';
 
 describe('SDK Templates API', () => {
   const fastify = Fastify();

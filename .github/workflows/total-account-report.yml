@@ -1,0 +1,66 @@
+name: Total Account Status Report
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # daily at 00:00 UTC
+  push:
+    branches:
+      - main
+
+jobs:
+  generate:
+    name: Generate reports
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build report-cli
+        run: pnpm -w --filter ./tools/report-cli... run build
+
+      - name: Generate reports
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          for d in apps/* packages/*; do
+            if [ -d "$d" ]; then
+              name=$(basename "$d")
+              out="reports/$name/$name-report.json"
+              mkdir -p "$(dirname "$out")"
+              node tools/report-cli/dist/index.js "$d" "$out" || true
+            fi
+          done
+
+      - name: Commit reports to branch & open PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH=reports/auto-update-$(date +%s)
+          git checkout -b "$BRANCH"
+          git add reports || true
+          if git diff --staged --quiet; then
+            echo "No changes to reports"
+            exit 0
+          fi
+          git commit -m "chore(reports): update total account status reports [skip ci]" || true
+          git push origin "$BRANCH"
+          # Create or update PR
+          gh auth setup-git || true
+          gh pr create --fill --head "$BRANCH" --base main --title "chore(reports): update total account status reports" || true

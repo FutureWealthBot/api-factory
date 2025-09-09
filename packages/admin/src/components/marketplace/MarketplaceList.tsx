@@ -1,7 +1,16 @@
 import React from 'react';
 
+type MarketplaceApi = {
+  id: string;
+  name: string;
+  tier?: string;
+  price?: number;
+  tags?: string[];
+  docs?: string;
+};
+
 export default function MarketplaceList() {
-  const [apis, setApis] = React.useState<any[]>([]);
+  const [apis, setApis] = React.useState<MarketplaceApi[]>([]);
   React.useEffect(() => {
     fetch('/marketplace').then(r => r.json()).then(data => setApis(data.apis || []));
   }, []);

@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import type { FastifyRequest, FastifyReply } from "fastify";
 import cors from "@fastify/cors";
 import rateLimit from "@fastify/rate-limit";
 import { registerMetrics } from "./metrics.js";
@@ -9,8 +10,8 @@ const BIND = process.env.BIND_HOST || "0.0.0.0";
 const ADMIN_TOKEN = process.env.API_FACTORY_ADMIN_KEY || "dev-admin-key-change-me";
 
 // Simple admin auth middleware
-const requireAdminAuth = async (request: any, reply: any) => {
-  const authHeader = request.headers.authorization;
+const requireAdminAuth = async (request: FastifyRequest, _reply: FastifyReply) => {
+  const authHeader = (request.headers as Record<string, string | undefined>).authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw new Error('Missing or invalid authorization header');
   }
@@ -44,9 +45,9 @@ await app.register(rateLimit, {
 await registerMetrics(app);
 
 // Friendly index
-app.get("/", async (req, reply) => {
+app.get("/", async (req, _reply) => {
   const rid = newRequestId();
-  return reply.send(ok({
+  return _reply.send(ok({
     status: "ok",
     service: "api-cli",
     endpoints: [
@@ -59,14 +60,14 @@ app.get("/", async (req, reply) => {
 });
 
 
-app.get("/_api/healthz", async (req, reply) => {
+app.get("/_api/healthz", async (req, _reply) => {
   const rid = newRequestId();
-  return reply.send(ok({ status: "ok", service: "api-cli" }, rid));
+  return _reply.send(ok({ status: "ok", service: "api-cli" }, rid));
 });
 
-app.get("/api/v1/hello/ping", async (req, reply) => {
+app.get("/api/v1/hello/ping", async (req, _reply) => {
   const rid = newRequestId();
-  return reply.send(ok({ pong: true }, rid));
+  return _reply.send(ok({ pong: true }, rid));
 });
 
 type ActionInput =
@@ -78,17 +79,20 @@ type ActionInput =
 app.post("/api/v1/actions", { preHandler: requireAdminAuth }, async (req, reply) => {
   const rid = newRequestId();
   const body = (req.body ?? {}) as Partial<ActionInput>;
-  const action = (body as any).action as ActionInput["action"] | undefined;
-  const payload = (body as any).payload ?? {};
+  const action = body.action as ActionInput["action"] | undefined;
+  const payloadObj = (body.payload ?? {}) as Record<string, unknown>;
 
   try {
     switch (action) {
-      case "upsert_opportunities":
-        return reply.send(ok({ received: "upsert_opportunities", count: Array.isArray((payload as any).items) ? (payload as any).items.length : 0 }, rid));
+      case "upsert_opportunities": {
+        const items = Array.isArray(payloadObj.items as unknown) ? (payloadObj.items as unknown[]) : [];
+        return reply.send(ok({ received: "upsert_opportunities", count: items.length }, rid));
+      }
       case "trigger_collection":
         return reply.send(ok({ received: "trigger_collection", started: true }, rid));
       case "send_telegram_alert": {
-            const { chat_id, message } = payload as any;
+            const chat_id = payloadObj.chat_id as string | number | undefined;
+            const message = payloadObj.message as string | undefined;
             if (!chat_id || !message) {
               return reply.status(400).send(err("BAD_REQUEST", "chat_id and message are required", rid));
             }
@@ -112,12 +116,13 @@ app.post("/api/v1/actions", { preHandler: requireAdminAuth }, async (req, reply)
                 body: JSON.stringify(body)
               });
 
-              const data = await res.json().catch(() => ({}));
-              const delivered = res.ok && (data?.ok === true);
+              const data = (await res.json().catch(() => ({}))) as Record<string, unknown> | undefined;
+              const delivered = res.ok && data?.ok === true;
 
-              return reply.send(ok({ received: "send_telegram_alert", delivered, telegram: { status: res.status, ok: data?.ok ?? false } }, rid));
-            } catch (e: any) {
-              return reply.send(ok({ received: "send_telegram_alert", delivered: false, error: String(e?.message ?? e) }, rid));
+              return reply.send(ok({ received: "send_telegram_alert", delivered, telegram: { status: res.status, ok: !!(data?.ok) } }, rid));
+            } catch (e: unknown) {
+              const msg = e instanceof Error ? e.message : String(e);
+              return reply.send(ok({ received: "send_telegram_alert", delivered: false, error: msg }, rid));
             }
       }
       case "enqueue_trade":
@@ -125,8 +130,9 @@ app.post("/api/v1/actions", { preHandler: requireAdminAuth }, async (req, reply)
       default:
         return reply.status(400).send(err("UNKNOWN_ACTION", "Unsupported action", rid, { action }));
     }
-  } catch (e: any) {
-    return reply.status(500).send(err("INTERNAL_ERROR", e?.message ?? "Unhandled", rid));
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return reply.status(500).send(err("INTERNAL_ERROR", msg, rid));
   }
 });
 

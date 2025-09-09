@@ -1,0 +1,1 @@
+vercel --prod --confirm --scope YOUR_TEAM_OR_USERNAME --cwd apps/web
