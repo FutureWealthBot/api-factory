@@ -2,6 +2,12 @@ openapi: 3.0.3
 info:
   title: API Factory
   version: 0.1.0
+  x-compliance:
+    - data-protection
+    - consumer-rights
+  x-compliance-controls:
+    CCPA: "Data subject access requests supported; export and delete APIs documented; minimal personal data retained."
+    CPRA: "Sensitive data handling controls and purpose limitation documented; access and deletion workflows defined."
 servers:
   - url: http://localhost:8787
 paths:
@@ -74,3 +80,22 @@ paths:
       responses: 
         "200": 
           description: ok
+  /vault/store:
+    post:
+      summary: Store encrypted document
+      x-us-law-tags: [ "FTC", "State Breach Laws" ]
+      x-consent-scope: "vault.write"
+      x-audit-log: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  format: byte
+      responses:
+        "200":
+          description: stored
