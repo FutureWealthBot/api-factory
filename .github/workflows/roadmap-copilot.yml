@@ -5,16 +5,18 @@ on:
   schedule:
     # Weekly run on Monday at 06:00 UTC
     - cron: '0 6 * * 1'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da
         with:
           node-version: '18'
 
@@ -31,3 +33,21 @@ jobs:
           branch: 'roadmap-copilot/update-proposal'
           base: 'main'
           labels: 'roadmap, automation'
+
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Setup Node
+        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da
+        with:
+          node-version: '18'
+
+      - name: Run generator and tests
+        run: |
+          node tools/roadmap-copilot/generate_roadmap.cjs
+          chmod +x tools/roadmap-copilot/test.sh
+          ./tools/roadmap-copilot/test.sh

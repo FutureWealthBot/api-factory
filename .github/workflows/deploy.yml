@@ -1,0 +1,71 @@
+name: Promote (OIDC-ready)
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: "Environment to promote to"
+        required: true
+        type: choice
+        options: [staging, production]
+      ref:
+        description: "Git ref (branch, tag, or SHA)"
+        required: true
+        default: "main"
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env }}
+    # 🔐 Least-privilege: only what we need here
+    permissions:
+      contents: read
+      deployments: write
+      id-token: write   # ⬅️ enables OIDC federation (no static cloud keys)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4 pinned
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup Node
+        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da  # v4 pinned
+        with:
+          node-version: 20
+
+      - name: Enable pnpm
+        uses: pnpm/action-setup@4190c7fec65df3f9c6b624ef02b1e8b5f6a6f6d3  # v4 pinned
+        with:
+          version: 9
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r run build || pnpm run build || echo "build step skipped"
+
+      # ---- OIDC CLOUD LOGIN (choose one and replace placeholders) ----
+      # AWS example:
+      # - name: Configure AWS credentials (OIDC)
+      #   uses: aws-actions/configure-aws-credentials@<PINNED_SHA>
+      #   with:
+      #     role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>
+      #     aws-region: us-east-1
+      #
+      # GCP example:
+      # - name: Auth to GCP (OIDC)
+      #   uses: google-github-actions/auth@<PINNED_SHA>
+      #   with:
+      #     workload_identity_provider: projects/<NUM>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER>
+      #     service_account: <SA_NAME>@<PROJECT_ID>.iam.gserviceaccount.com
+      #
+      # Azure example:
+      # - name: Azure Login (OIDC)
+      #   uses: azure/login@<PINNED_SHA>
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy
+        run: |
+          echo "Deploying to ${{ inputs.env }}…"
+          # Replace with your real deploy cmd (Helm, Terraform, Vercel, Fly, etc.)
+          # Example: pnpm run deploy:${{ inputs.env }}

@@ -1,5 +1,5 @@
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module 'chokidar' {
 	export interface WatchOptions {
 		ignored?: string | RegExp | (string | RegExp)[];
