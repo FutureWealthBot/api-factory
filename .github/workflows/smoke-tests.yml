@@ -1,0 +1,50 @@
+name: CI — Smoke tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [ main ]
+
+jobs:
+  smoke-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure docker & docker compose plugin available
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
+
+      - name: Build and start MVP stack
+        run: |
+          TRACK=MVP docker compose up -d --build
+
+      - name: Wait for API health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8787/_api/healthz >/dev/null; then
+              echo "API healthy" && break
+            fi
+            echo "waiting for API... ($i)"; sleep 2
+          done
+
+      - name: Run smoke tests
+        run: |
+          chmod +x ./scripts/smoke-tests.sh || true
+          ./scripts/smoke-tests.sh http://localhost:3000
+
+      - name: Run authenticated smoke tests (if secret present)
+        if: secrets.SMOKE_API_KEY != ''
+        run: |
+          chmod +x ./scripts/smoke-tests.sh || true
+          # pass empty API_BASE as 2nd arg and the API key as 3rd arg
+          ./scripts/smoke-tests.sh http://localhost:3000 '' "${{ secrets.SMOKE_API_KEY }}"
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose down -v || true
