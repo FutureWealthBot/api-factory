@@ -42,8 +42,46 @@ Notes:
 - Web static files are served on port 3000; API listens on port 8787.
 - The web image includes an nginx proxy so `/ _api/*` and `/api/*` are forwarded to the API service in the compose network.
 - If you change Dockerfiles or nginx config, rebuild with `TRACK=MVP docker compose up -d --build`.
+  
+## Testing
+
+Quick test commands and notes for running the monorepo test suite locally.
+
+- Run the workspace package/app tests (these run the small per-package smoke tests):
+
+```bash
+pnpm -w -r --filter './packages/**' --filter './apps/**' test
+```
+
+- Run package/app tests plus the backend tests (CD option — reliable across pnpm filter matching quirks):
+
+```bash
+pnpm -w run test:with-backend
+```
+
+This script first runs tests for `./packages/**` and `./apps/**` and then explicitly changes directory into `api-factory/backend` and runs its `pnpm test` command. It's reliable when pnpm workspace filters don't match the backend path or package name in your environment.
+
+- Run only the backend tests directly:
+
+```bash
+cd api-factory/backend
+pnpm test
+```
+
+CI suggestion: Add `pnpm -w run test:with-backend` to your CI job to ensure both package smoke tests and backend tests run in the expected order.
+
+Notes on pnpm filters: pnpm's workspace filters can vary depending on workspace layout and pnpm version; if you prefer a single `pnpm -w -r --filter '...' test` invocation, I can run `pnpm -w list --depth 0` here and craft the exact filter that matches your environment.
+
+---
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL!;
+
+## CI status & autopilot
+
+![CI](https://github.com/FutureWealthBot/api-factory/actions/workflows/test-with-backend.yml/badge.svg)
+![Codecov](https://codecov.io/gh/FutureWealthBot/api-factory/branch/main/graph/badge.svg)
+
+Autopilot: this repository now includes a CI workflow (`.github/workflows/test-with-backend.yml`) that runs workspace smoke tests and backend tests; add the `CODECOV_TOKEN` secret to enable coverage uploads.
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 

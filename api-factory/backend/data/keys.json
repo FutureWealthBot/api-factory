@@ -1,0 +1,14 @@
+{
+  "test-key": {
+    "key": "test-key",
+    "status": "active",
+    "updatedAt": "2025-09-10T16:15:36.644Z",
+    "plan": "starter",
+    "quota": 1000
+  },
+  "signed-key": {
+    "key": "signed-key",
+    "status": "past_due",
+    "updatedAt": "2025-09-10T16:15:36.654Z"
+  }
+}
