@@ -167,5 +167,31 @@
     "votes": 0,
     "createdAt": "2025-09-10T16:15:37.974Z",
     "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/dc6e03a5-c7a3-4d32-a627-3e8dd9137a4e-test.txt"
+  },
+  {
+    "id": "81577389-473d-43ef-8d1e-a62e5870c82f",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T16:45:27.719Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/81577389-473d-43ef-8d1e-a62e5870c82f-test.txt"
+  },
+  {
+    "id": "5f9e7f38-cff1-41a9-ac17-86f43229cd1b",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T16:45:51.879Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/5f9e7f38-cff1-41a9-ac17-86f43229cd1b-test.txt"
   }
 ]

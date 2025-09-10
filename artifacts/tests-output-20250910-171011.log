@@ -1,0 +1,41 @@
+
+> api-factory@0.1.1 test /workspaces/api-factory
+> pnpm -w -r --filter './packages/**' --filter './apps/**' test
+
+Scope: all 10 workspace projects
+packages/admin test$ pnpm exec jest --config ./jest.config.cjs
+packages/admin-api test$ pnpm exec jest --config ./jest.config.cjs
+packages/api-factory-sdk test$ pnpm exec jest --config ./jest.config.cjs
+packages/core test$ pnpm exec jest --config ./jest.config.cjs
+packages/api-factory-sdk test: PASS test/smoke.test.cjs
+packages/api-factory-sdk test:   ✓ package.json has name and version (3 ms)
+packages/api-factory-sdk test: Test Suites: 1 passed, 1 total
+packages/api-factory-sdk test: Tests:       1 passed, 1 total
+packages/api-factory-sdk test: Snapshots:   0 total
+packages/api-factory-sdk test: Time:        0.357 s, estimated 1 s
+packages/api-factory-sdk test: Ran all test suites.
+packages/core test: PASS test/smoke.test.cjs
+packages/core test:   ✓ package.json has name and version (4 ms)
+packages/core test: Test Suites: 1 passed, 1 total
+packages/core test: Tests:       1 passed, 1 total
+packages/core test: Snapshots:   0 total
+packages/core test: Time:        0.345 s, estimated 1 s
+packages/core test: Ran all test suites.
+packages/admin test: PASS test/smoke.test.cjs
+packages/admin test:   ✓ package.json has name and version (4 ms)
+packages/api-factory-sdk test: Done
+packages/admin test: Test Suites: 1 passed, 1 total
+packages/admin test: Tests:       1 passed, 1 total
+packages/admin test: Snapshots:   0 total
+packages/admin test: Time:        0.287 s, estimated 1 s
+packages/admin test: Ran all test suites.
+packages/core test: Done
+packages/admin test: Done
+packages/admin-api test: PASS test/smoke.test.cjs
+packages/admin-api test:   ✓ package.json has name and version (3 ms)
+packages/admin-api test: Test Suites: 1 passed, 1 total
+packages/admin-api test: Tests:       1 passed, 1 total
+packages/admin-api test: Snapshots:   0 total
+packages/admin-api test: Time:        0.297 s, estimated 1 s
+packages/admin-api test: Ran all test suites.
+packages/admin-api test: Done
