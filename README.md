@@ -5,6 +5,44 @@ import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import client from "prom-client";
 
+## Local development & smoke-tests
+
+Quick commands to start the MVP track and run smoke checks locally.
+
+- Start the MVP compose stack (rebuild images):
+
+```bash
+TRACK=MVP docker compose up -d --build
+```
+
+- Confirm containers and health:
+
+```bash
+docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
+```
+
+- Run the repository smoke tests (web + API):
+
+```bash
+# Prefer the web URL (the web image proxies /_api and /api to the api service):
+./scripts/smoke-tests.sh http://localhost:3000
+
+# Direct API checks (port 8787):
+./scripts/smoke-test.sh http://localhost:8787
+```
+
+- Authenticated smoke-tests (provide an API key):
+
+```bash
+./scripts/smoke-test.sh http://localhost:8787 "sk_test_..."
+# or set SMOKE_API_KEY environment variable
+```
+
+Notes:
+- Web static files are served on port 3000; API listens on port 8787.
+- The web image includes an nginx proxy so `/ _api/*` and `/api/*` are forwarded to the API service in the compose network.
+- If you change Dockerfiles or nginx config, rebuild with `TRACK=MVP docker compose up -d --build`.
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
