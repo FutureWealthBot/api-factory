@@ -1,0 +1,33 @@
+name: Roadmap Co-Pilot
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Weekly run on Monday at 06:00 UTC
+    - cron: '0 6 * * 1'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Run roadmap generator
+        run: node tools/roadmap-copilot/generate_roadmap.cjs
+
+      - name: Create pull request with updated proposal
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update ROADMAP_PROPOSAL (roadmap-copilot)'
+          title: 'chore: update ROADMAP_PROPOSAL (roadmap-copilot)'
+          body: 'Auto-generated ROADMAP_PROPOSAL.md — review and merge.'
+          branch: 'roadmap-copilot/update-proposal'
+          base: 'main'
+          labels: 'roadmap, automation'
