@@ -19,8 +19,10 @@ jobs:
           node-version: '18'
       - name: Install deps
         run: |
+          corepack enable
+          corepack prepare pnpm@9.9.0 --activate
           cd api-factory/backend
-          npm ci
+          pnpm i --frozen-lockfile
       - name: Run tests
         run: |
           cd api-factory/backend
