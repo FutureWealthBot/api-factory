@@ -22,8 +22,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Supabase CLI
-        run: npm install -g supabase
+      - name: Install Supabase CLI (one-off)
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.9.0 --activate
+          pnpm dlx supabase --version || true
 
       - name: Supabase auth
         env:
