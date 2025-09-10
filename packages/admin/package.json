@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "main": "main.tsx",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "pnpm exec vite",
-    "build": "pnpm exec vite build"
+    "build": "pnpm exec vite build",
+    "test": "pnpm exec jest --config ./jest.config.cjs"
   },
   "dependencies": {
     "chokidar": "^4.0.3",

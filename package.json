@@ -4,9 +4,13 @@
   "type": "module",
   "packageManager": "pnpm@9.9.0",
   "version": "0.1.1",
+  "engines": {
+    "node": ">=18"
+  },
   "workspaces": [
-    "apps/*",
-    "packages/*"
+  "apps/*",
+  "packages/*",
+  "api-factory/*"
   ],
   "scripts": {
   "dev": "bash ./scripts/dev-start.sh",
@@ -24,7 +28,10 @@
     "doctor": "node scripts/af-doctor.cjs",
     "labels:create": "node ./scripts/create-labels.mjs",
     "typecheck:web": "tsc -p tsconfig.web.json --noEmit",
-    "typecheck:node": "tsc -p tsconfig.node.json --noEmit"
+    "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
+  "test:workspace": "pnpm -w -r test",
+  "test": "pnpm -w -r --filter './packages/**' --filter './apps/**' test",
+  "test:with-backend": "pnpm -w -r --filter './packages/**' --filter './apps/**' test && (cd api-factory/backend && pnpm test)"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",

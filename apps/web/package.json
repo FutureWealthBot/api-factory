@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "pnpm exec vite -- --host",
   "build": "tsc -b && pnpm exec vite build",
