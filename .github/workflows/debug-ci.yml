@@ -1,0 +1,17 @@
+name: CI — Debug runner
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Print hello
+        run: |
+          echo "hello from debug workflow"
+          uname -a
+          date
