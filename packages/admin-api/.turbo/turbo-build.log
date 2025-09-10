@@ -1,5 +1,16 @@
 
-
 > admin-api@0.1.0 build /workspaces/api-factory/packages/admin-api
 > node ./scripts/run-tsc.js
 
+Error: must not have multiple workspaces with the same name
+package 'admin' has conflicts in the following paths:
+    /workspaces/api-factory/packages/admin
+    /workspaces/api-factory/api-factory/admin
+    at getError (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/map-workspaces/lib/index.js:64:24)
+    at mapWorkspaces (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/map-workspaces/lib/index.js:146:11)
+    at async Config.loadLocalPrefix (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/config/lib/index.js:700:28)
+    at async Config.loadProjectConfig (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/config/lib/index.js:631:5)
+    at async Config.load (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/config/lib/index.js:279:5)
+    at async #load (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/lib/npm.js:195:5)
+    at async module.exports (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/lib/cli-entry.js:40:5)
+ ELIFECYCLE  Command failed with exit code 1.
