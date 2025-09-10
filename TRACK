@@ -1,3 +1,5 @@
 MVP
 
 2025-09-10  mvp/nginx-proxy-smoke-tests  v0.1.1  Bumped root package.json version and created tag v0.1.1
+
+2025-09-10  main  ci-trigger  No-op commit to trigger smoke-tests workflow
