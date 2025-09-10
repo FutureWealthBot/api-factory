@@ -29,7 +29,7 @@ jobs:
           ref: ${{ inputs.ref }}
 
       - name: Setup Node
-        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da  # v4 pinned
+        uses: actions/setup-node@v4  # v4 pinned
         with:
           node-version: 20
 

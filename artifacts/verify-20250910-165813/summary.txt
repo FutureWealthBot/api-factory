@@ -1,0 +1,5 @@
+workspace: /workspaces/api-factory
+start: Wed Sep 10 16:58:13 UTC 2025
+Staging health check did not return 200 (got 000000). See /workspaces/api-factory/artifacts/verify-20250910-165813/staging.log
+Artifacts written to: /workspaces/api-factory/artifacts/verify-20250910-165813 and /workspaces/api-factory/artifacts/verify-20250910-165813.tar.gz
+end: Wed Sep 10 16:58:22 UTC 2025

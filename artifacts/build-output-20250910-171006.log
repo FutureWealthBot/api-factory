@@ -1,0 +1,83 @@
+
+> api-factory@0.1.1 build /workspaces/api-factory
+> turbo run build --cache-dir .turbo || pnpm -r build
+
+turbo 2.5.6
+
+• Packages in scope: @api-factory/core, @api-factory/sdk-ts, admin, admin-api, admin-bot, admin-web, api-cli, user-bot, web
+• Running build in 9 packages
+• Remote caching disabled
+admin-api:build: cache miss, executing 15f35e2e25fa956a
+web:build: cache miss, executing a6ac8a9afc86f717
+admin-web:build: cache miss, executing 082272104fd99a78
+@api-factory/core:build: cache miss, executing 08d5a80cb07b325b
+admin:build: cache miss, executing bfe1d684182af848
+@api-factory/sdk-ts:build: cache miss, executing 36cc501d866094da
+@api-factory/sdk-ts:build: 
+@api-factory/sdk-ts:build: > @api-factory/sdk-ts@0.1.0 build /workspaces/api-factory/packages/api-factory-sdk
+@api-factory/sdk-ts:build: > tsc -p tsconfig.json && node ./scripts/bundle.mjs
+@api-factory/sdk-ts:build: 
+admin-api:build: 
+admin-api:build: > admin-api@0.1.0 build /workspaces/api-factory/packages/admin-api
+admin-api:build: > node ./scripts/run-tsc.js
+admin-api:build: 
+@api-factory/core:build: 
+@api-factory/core:build: > @api-factory/core@0.1.0 build /workspaces/api-factory/packages/core
+@api-factory/core:build: > tsc -p tsconfig.json
+@api-factory/core:build: 
+web:build: 
+web:build: > web@0.0.0 build /workspaces/api-factory/apps/web
+web:build: > tsc -b && pnpm exec vite build
+web:build: 
+admin-web:build: 
+admin-web:build: > admin-web@0.1.0 build /workspaces/api-factory/apps/admin-web
+admin-web:build: > tsc -p tsconfig.json && pnpm exec vite build
+admin-web:build: 
+admin:build: 
+admin:build: > admin@0.1.0 build /workspaces/api-factory/packages/admin
+admin:build: > pnpm exec vite build
+admin:build: 
+admin-api:build: Error: must not have multiple workspaces with the same name
+admin-api:build: package 'admin' has conflicts in the following paths:
+admin-api:build:     /workspaces/api-factory/packages/admin
+admin-api:build:     /workspaces/api-factory/api-factory/admin
+admin-api:build:     at getError (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/map-workspaces/lib/index.js:64:24)
+admin-api:build:     at mapWorkspaces (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/map-workspaces/lib/index.js:146:11)
+admin-api:build:     at async Config.loadLocalPrefix (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/config/lib/index.js:700:28)
+admin-api:build:     at async Config.loadProjectConfig (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/config/lib/index.js:631:5)
+admin-api:build:     at async Config.load (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/config/lib/index.js:279:5)
+admin-api:build:     at async #load (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/lib/npm.js:195:5)
+admin-api:build:     at async module.exports (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/lib/cli-entry.js:40:5)
+admin-api:build:  ELIFECYCLE  Command failed with exit code 1.
+admin-api:build: ERROR: command finished with error: command (/workspaces/api-factory/packages/admin-api) /home/codespace/nvm/current/bin/pnpm run build exited (1)
+admin-api#build: command (/workspaces/api-factory/packages/admin-api) /home/codespace/nvm/current/bin/pnpm run build exited (1)
+
+ Tasks:    0 successful, 6 total
+Cached:    0 cached, 6 total
+  Time:    1.685s 
+Failed:    admin-api#build
+
+ ERROR  run failed: command  exited (1)
+Scope: 9 of 10 workspace projects
+apps/admin-web build$ tsc -p tsconfig.json && pnpm exec vite build
+apps/web build$ tsc -b && pnpm exec vite build
+packages/admin build$ pnpm exec vite build
+packages/admin-api build$ node ./scripts/run-tsc.js
+packages/admin-api build: Error: must not have multiple workspaces with the same name
+packages/admin-api build: package 'admin' has conflicts in the following paths:
+packages/admin-api build:     /workspaces/api-factory/packages/admin
+packages/admin-api build:     /workspaces/api-factory/api-factory/admin
+packages/admin-api build:     at getError (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/map-workspaces/lib/index.js:64:24)
+packages/admin-api build:     at mapWorkspaces (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/map-workspaces/lib/index.js:146:11)
+packages/admin-api build:     at async Config.loadLocalPrefix (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/config/lib/index.js:700:28)
+packages/admin-api build:     at async Config.loadProjectConfig (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/config/lib/index.js:631:5)
+packages/admin-api build:     at async Config.load (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/node_modules/@npmcli/config/lib/index.js:279:5)
+packages/admin-api build:     at async #load (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/lib/npm.js:195:5)
+packages/admin-api build:     at async module.exports (/usr/local/share/nvm/versions/node/v22.17.0/lib/node_modules/npm/lib/cli-entry.js:40:5)
+packages/admin-api build: Failed
+/workspaces/api-factory/packages/admin-api:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  admin-api@0.1.0 build: `node ./scripts/run-tsc.js`
+Exit status 1
+packages/api-factory-sdk build$ tsc -p tsconfig.json && node ./scripts/bundle.mjs
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  api-factory@0.1.1 build: `turbo run build --cache-dir .turbo || pnpm -r build`
+Exit status 1

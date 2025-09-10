@@ -1,0 +1,24 @@
+ M .github/workflows/autopilot-auto-push.yml
+ M .github/workflows/backend-tests.yml
+ M .github/workflows/backend-verify.yml
+ M .github/workflows/ci-checks.yml
+ M .github/workflows/ci.yml
+ M .github/workflows/cy.yml
+ M .github/workflows/deploy.yml
+ M .github/workflows/e2e-debug.yml
+ M .github/workflows/e2e-real-unlock.yml
+ M .github/workflows/hardening.yml
+ M .github/workflows/marketing-autogen.yml
+ M .github/workflows/mvp-autopilot.yml
+ M .github/workflows/release.yml
+ M .github/workflows/roadmap-copilot.yml
+ M .github/workflows/supabase-deploy.yml
+ M .github/workflows/total-account-report.yml
+ M RELEASES/HISTORY.md
+ M RELEASES/audit.ndjson
+ M api-factory/backend/data/keys.json
+ M packages/admin/agent-templates/sdk/metadata.json
+?? artifacts/
+?? packages/admin/agent-templates/sdk/5f9e7f38-cff1-41a9-ac17-86f43229cd1b-test.txt
+?? packages/admin/agent-templates/sdk/81577389-473d-43ef-8d1e-a62e5870c82f-test.txt
+?? scripts/verify-mvp.sh
