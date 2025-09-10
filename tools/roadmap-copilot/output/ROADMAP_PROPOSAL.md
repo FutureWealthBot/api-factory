@@ -1,0 +1,281 @@
+# ROADMAP PROPOSAL (auto-generated)
+
+This file aggregates roadmap and release notes to suggest next items. Edit before publishing.
+
+## Existing roadmap documents
+
+### MVP_NEXT_STEPS.md
+
+```
+ # API-Factory — MVP Next Steps (Paste-Ready for GitHub Copilot)
+
+ _Target: ship an end-to-end, billable MVP with health/ping/echo + guarded Actions + Stripe + usage + CI._
+
+ ---
+
+ ## 0) Definition of MVP (Scope Lock)
+ - [ ] Public API: `/_api/healthz`, `/api/v1/hello/ping`, `/api/v1/hello/echo`
+ - [ ] Guarded Actions: `POST /api/v1/actions` (Bearer/x-api-key, rate-limited)
+ - [ ] Monetization (Stripe): plan → key lifecycle (issue/suspend/revoke) via webhooks
+ - [ ] Usage: per-key counters (requests, status), Prometheus scrape + simple Admin charts
+ - [ ] CI/CD: lint + typecheck + test + build on PR
+ - [ ] Admin Web: Health, Ping, Actions console, Rate badge, Metrics (parsed text), Key status
+
+ ---
+
+ ## 1) CI/CD (close the red gap first)
+ - [ ] Add `.github/workflows/ci.yml` with matrix:
+       - workspaces: `apps/api-cli`, `apps/admin-web`, `packages/core`
+       - steps: `pnpm install`, `pnpm -r lint`, `pnpm -r typecheck`, `pnpm -r test --if-present`, `pnpm -r build`
+ - [ ] Require checks on `main` branch (GitHub settings)
+
+ **Copilot prompt tip:** “Create a GitHub Actions workflow `ci.yml` for a pnpm monorepo (apps/*, packages/*) running lint, typecheck, test, build.”
+
+ ---
+
+ ## 2) Stripe Monetization (minimal but real)
+ - [ ] Server: Stripe webhook endpoint `/api/stripe/webhook` (events: `checkout.session.completed`, `customer.subscription.updated`, `invoice.payment_failed`)
+ - [ ] Map plan → quota & rate caps; write key to store (Supabase or KV)
+ - [ ] Admin Web: show billing status + current quota, expose “Test Webhook” button in dev
+```
+
+### README.md
+
+```
+Roadmap guide
+=============
+
+Place roadmap notes, proposals, and long-term plans in this folder. Use the issue template `.github/ISSUE_TEMPLATE/roadmap-suggestion.md` to collect suggestions from contributors.
+
+Recommended files:
+- `90-day.md` — short-term milestones
+- `strategy.md` — long-term vision
+
+Use `tools/roadmap-copilot/generate_roadmap.cjs` to aggregate these documents into a proposal.
+
+CI / Automation
+---------------
+This repository includes a workflow `.github/workflows/roadmap-copilot.yml` that runs the generator on-demand or weekly and opens a pull request with the updated `ROADMAP_PROPOSAL.md` for review.
+
+Review guidance:
+- Inspect the generated `tools/roadmap-copilot/output/ROADMAP_PROPOSAL.md` in the PR.
+- Update or split suggested items into milestone-backed issues before merging.
+- Label and assign owners as appropriate.
+
+```
+
+### beta-launch-checklist.md
+
+```
+# Beta Launch Checklist
+
+## 1. Review Build Artifacts
+- [x] All production assets present in `dist/` folders for each app/package.
+
+## 2. Set Up Environment Variables & Secrets
+- [ ] Prepare `.env.production` or environment variables for:
+  - API keys
+  - Database URLs
+  - Stripe keys
+  - Other secrets
+- [ ] Ensure secrets are not committed to version control.
+
+## 3. Update Deployment Configs
+- [ ] Review and update Dockerfiles, `docker-compose.yml`, and Vercel configs.
+- [ ] Set production ports, domains, and resource limits.
+
+## 4. Deploy to Beta/Staging Environment
+- [ ] Deploy built assets to Docker, Vercel, or cloud provider.
+- [ ] Confirm all services are running and accessible.
+
+## 5. Smoke Test the Beta
+- [ ] Manually test all major flows (login, API publish, billing, marketplace, etc.).
+- [ ] Fix any critical bugs or misconfigurations.
+
+## 6. Tag and Announce Beta Release
+- [ ] Tag the current commit as `v1.0.0-beta` in git.
+- [ ] Update `/docs/roadmap/` with Beta launch snapshot and changelog.
+- [ ] Announce the beta to team or early users.
+
+```
+
+### beta-launch-snapshot.md
+
+```
+# API-Factory Beta Launch Snapshot
+
+**Date:** 2025-09-08
+
+## What’s Live
+- All core modules: SDK Templates, Marketplace, Billing, Tiers, Compliance, Admin UI
+- Production build complete and ready for deployment
+
+## Next Steps
+- Deploy to beta environment
+- Onboard users and collect feedback
+- Monitor, iterate, and prepare for GA
+
+**Congratulations on reaching Beta! 🚀**
+
+```
+
+### marketing-automation-2025-09-07.md
+
+```
+# Marketing Automation & Content Generation — 2025-09-07
+
+Summary
+- Adds Marketing Workspace to Admin for campaign content generation and automation.
+- Uses an LLM (OpenAI by default) to generate email copy, social posts, subject lines, and campaign assets.
+- Generated content is committed to a new branch and a PR is opened (labels: marketing, marketing-autogen) for review — merges remain gated by repo protections (guardrails preserved).
+- Admin UI can dispatch generation (via workflow_dispatch) or call the admin-api which may create PRs directly.
+- A GitHub workflow is included to run marketing generation in CI or by schedule.
+
+Security & Secrets
+- GITHUB_TOKEN (Actions) is available automatically — for the workflow, ensure the default token has write permissions for contents/pulls or use a PAT secret with appropriate scopes.
+- OPENAI_API_KEY (or other LLM provider API key)
+- Optional: SENDGRID_API_KEY, TWITTER_BEARER, LINKEDIN_TOKEN, etc for channel posting (not auto-posting in this initial scaffold — posts should remain manual or gated)
+- Store tokens in environment or GitHub Secrets. Admin API must be deployed behind admin authentication.
+
+Architecture
+- packages/admin: Marketing UI page to create campaigns, view campaign files, generate content, open marketing PRs.
+- packages/admin-api: endpoints:
+  - GET /api/marketing/campaigns — list existing campaign folders from marketing/campaigns/
+  - POST /api/marketing/generate — generate content from LLM (returns result, does not commit)
+  - POST /api/marketing/create-pr — create branch, add generated content file, open PR
+- .github/workflows/marketing-autogen.yml — dispatchable workflow that runs a generation script and opens PR using repo secrets (useful for scheduled campaigns).
+
+Next steps & recommendations
+1. Add admin auth + rate-limiting to admin-api before exposing to the internet.
+2. Keep PR creation gated — do not auto-merge.
+3. Add provider adapters for other LLMs or marketing channels.
+4. Implement analytics & tracking for campaign performance.
+
+```
+
+### progress-sprint-3.md
+
+```
+# Sprint 3 Progress Snapshot
+
+- Web3/Hybrid Billing endpoints and UI scaffolded
+- Marketplace endpoints and UI scaffolded
+- SDK template voting/rating enabled
+- Plugin system and onboarding plugin added
+- Creative Mode and Auto Build plugins ready
+- Onboarding docs and checklist available
+
+Next: Integrate, test, and expand each module
+
+```
+
+### release-plan.md
+
+```
+```markdown
+# Release plan — v1.0.0-beta
+
+**Generated:** 2025-09-08
+
+Summary
+- Beta snapshot shows core modules ready: SDK Templates, Marketplace, Billing, Tiers, Compliance, Admin UI.
+- Several features scaffolded (web3 billing, marketplace, plugins, SDK voting); marketing automation scaffold exists but requires gated PR/workflow permissions.
+
+Top priorities
+- Prepare production secrets & env (DevOps) — High
+  - Provision secrets in a secret manager and reference them from deploy configs.
+- Harden `admin-api` (Backend) — High
+  - Add auth, rate-limiting, and integration tests before public exposure.
+- Update deployment configs & deploy to beta/staging (DevOps/Eng) — High
+  - Review Dockerfiles, `docker-compose.yml`, Vercel configs; set ports, resource limits, domains.
+- Smoke test major flows (QA/Fullstack) — High
+  - Login, API publish, billing flow, marketplace purchase/listing, plugin onboarding.
+
+Quick checklist (for the next 72 hours)
+- [ ] Add production secrets to secret manager and wire `.env.production` (DevOps).
+- [ ] Add basic admin-api auth + rate-limiting and run integration tests (Backend).
+- [ ] Review & update Docker/Vercel deployment configs (DevOps).
+- [ ] Deploy to beta/staging and validate services are reachable (DevOps/Eng).
+- [ ] Run smoke tests and file critical bug tickets (QA).
+- [ ] Tag release `v1.0.0-beta` after smoke test sign-off (Release lead).
+- [ ] Publish beta snapshot and onboarding notes to `/docs/roadmap/` (Docs/PM).
+
+Smoke test checklist (minimal)
+- Auth: create account, sign in, sign out
+```
+
+## Recent release notes
+
+### HISTORY.md
+
+```
+# Release HISTORY
+
+This file records when releases were unlocked and advanced by the release gate scripts.
+
+Example entry format:
+- 2025-09-10: Unlocked v1.0.1 after releasing v1.0.0 — by release script
+- 2025-09-10: Unlocked v1.0.1 after releasing v1.0.0
+- 2025-09-10T01:47:10.314Z: PREPARE by dev-admin for v1.0.1
+- 2025-09-10: Unlocked v1.0.2 after releasing v1.0.1
+- 2025-09-10T01:47:10.347Z: UNLOCK by dev-admin for v1.0.1
+- 2025-09-10T01:47:51.492Z: PREPARE by dev-admin for v1.0.2
+- 2025-09-10: Unlocked v1.0.3 after releasing v1.0.2
+- 2025-09-10T01:47:51.523Z: UNLOCK by dev-admin for v1.0.2
+- 2025-09-10T01:48:43.146Z: PREPARE by dev-admin for v1.0.3
+- 2025-09-10: Unlocked v1.0.4 after releasing v1.0.3
+- 2025-09-10T01:48:43.180Z: UNLOCK by dev-admin for v1.0.3
+- 2025-09-10T01:48:43.186Z: PREPARE by dev-admin for v1.0.4
+- 2025-09-10T01:51:53.616Z: PREPARE by dev-admin for v1.0.4
+- 2025-09-10: Unlocked v1.0.5 after releasing v1.0.4
+- 2025-09-10T01:51:53.650Z: UNLOCK by dev-admin for v1.0.4
+```
+
+### README.md
+
+```
+# Release Gate (RELEASES)
+
+Purpose
+- The `RELEASES/LOCK` file controls which release is next and whether the gate is locked. After a successful release, run the unlock script to advance to the next patch release and unlock the gate.
+
+Workflow
+1. Release branch is cut and release performed for the version listed in `RELEASES/LOCK` under `next`.
+2. After successful production rollout and verification, run `scripts/unlock_next_release.sh <released-version>`.
+3. The script will append an entry to `RELEASES/HISTORY.md` and update `RELEASES/LOCK` to the next patch (e.g., v1.0.1) and set `locked: false`.
+
+See `scripts/unlock_next_release.sh` for details.
+
+```
+
+### v1.0.0-ROADMAP.md
+
+```
+# API-Factory Co-Pilot — Release v1.0.0 Roadmap
+
+Stage: LOCKED (see ../LOCK)
+
+Scope (v1.0.0 - MVP Internal Pilot)
+- Role: Sales or Support pilot (pick one)
+- Core APIs: Task automation, Knowledge search, Draft generation
+- Guardrails: RLS + per-employee logging
+- Feedback loop: feedback ingestion endpoint and offline batching
+
+Acceptance criteria
+- Pilot users (10–25) running for 2 weeks
+- No cross-team data leakage incidents
+- Adoption: >= 50% of pilot users using weekly
+- Satisfaction: median >= 70%
+
+Deliverables
+- OpenAPI spec for MVP endpoints
+- Fastify service scaffold with endpoints and simple in-memory RLS mock
+- Postgres schema with RLS policy examples
+```
+
+## Suggested next items
+
+- Consolidate feature requests from `docs/roadmap` and `RELEASES/` into milestone-backed issues.
+- Prioritize security and compliance tasks from the compliance docs.
+- Publish a 90-day roadmap with measurable milestones and owners.
+- Run a cross-team review of the proposed roadmap.
