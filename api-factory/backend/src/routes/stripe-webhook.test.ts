@@ -10,7 +10,6 @@ jest.mock('stripe', () => {
     constructor() {}
   }
   // attach to prototype for tests that access prototype.webhooks.constructEvent
-  // @ts-ignore
   MockStripe.prototype = { webhooks: { constructEvent } };
   return { default: MockStripe };
 });

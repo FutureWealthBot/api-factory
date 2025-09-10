@@ -12,16 +12,11 @@ export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
       let stripe: StripeLike | null = null;
       if (stripeKey) {
         try {
-          // prefer require to pick up Jest CJS mocks
-          let StripeModule: any;
-          try {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            StripeModule = require('stripe');
-          } catch (reqErr) {
-            StripeModule = (await import('stripe')) as unknown as { default?: unknown } & Record<string, unknown>;
-          }
-          type StripeCtorType = new (...args: unknown[]) => unknown;
-          const StripeCtor = (StripeModule.default || StripeModule) as unknown as StripeCtorType;
+          // dynamically import stripe; cast safely to avoid explicit `any`
+          const StripeModule = (await import('stripe')) as unknown;
+          type StripeCtorType = new (...args: unknown[]) => { webhooks: { constructEvent: (payload: Buffer, sig: string, secret: string) => unknown } };
+          const moduleDefault = (StripeModule as { default?: unknown }).default as unknown | undefined;
+          const StripeCtor = (moduleDefault ?? StripeModule) as unknown as StripeCtorType;
           stripe = new StripeCtor(stripeKey, { apiVersion: '2022-11-15' }) as unknown as StripeLike;
         } catch (e) {
           fastify.log.warn('stripe package not available or failed to load: %s', String(e));
@@ -49,18 +44,42 @@ export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
           return;
         }
         // try to verify via stripe if available; otherwise fall back to parsing payload
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const StripeModule: any = require('stripe');
-          const StripeCtor = (StripeModule.default || StripeModule) as any;
-          const stripeInst = new StripeCtor(stripeKey, { apiVersion: '2022-11-15' }) as StripeLike;
-          if (stripeInst && stripeInst.webhooks && typeof stripeInst.webhooks.constructEvent === 'function') {
-            const constructed = stripeInst.webhooks.constructEvent(payload, sig, secret);
+        // Prefer using previously created stripe instance when available
+        let verificationFailed = false;
+        if (stripe && stripe.webhooks && typeof stripe.webhooks.constructEvent === 'function') {
+          try {
+            const constructed = stripe.webhooks.constructEvent(payload, sig, secret);
             event = constructed as unknown as { type?: string; data?: { object?: Record<string, unknown> } };
-          } else {
-            event = JSON.parse(payload.toString());
+          } catch (err) {
+            fastify.log.warn('stripe verification failed: %s', String(err));
+            verificationFailed = true;
           }
-        } catch (e) {
+        } else {
+          // fallback: try to dynamically import stripe for verification
+          try {
+            const StripeModule = (await import('stripe')) as unknown;
+            type StripeCtorType = new (...args: unknown[]) => { webhooks: { constructEvent: (p: Buffer, s: string, secret: string) => unknown } };
+            const moduleDefault = (StripeModule as { default?: unknown }).default as unknown | undefined;
+            const StripeCtor = (moduleDefault ?? StripeModule) as unknown as StripeCtorType;
+            const stripeInst = new StripeCtor(stripeKey, { apiVersion: '2022-11-15' }) as unknown as StripeLike;
+            if (stripeInst && stripeInst.webhooks && typeof stripeInst.webhooks.constructEvent === 'function') {
+              try {
+                const constructed = stripeInst.webhooks.constructEvent(payload, sig, secret);
+                event = constructed as unknown as { type?: string; data?: { object?: Record<string, unknown> } };
+              } catch (err) {
+                fastify.log.warn('stripe verification failed: %s', String(err));
+                verificationFailed = true;
+              }
+            } else {
+              // couldn't verify, fall back to parse
+              verificationFailed = true;
+            }
+          } catch (err) {
+            fastify.log.warn('stripe package import/construct failed: %s', String(err));
+            verificationFailed = true;
+          }
+        }
+        if (verificationFailed) {
           // fallback to parsing payload for test environments
           try {
             event = JSON.parse(payload.toString());
