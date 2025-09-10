@@ -193,5 +193,18 @@
     "votes": 0,
     "createdAt": "2025-09-10T16:45:51.879Z",
     "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/5f9e7f38-cff1-41a9-ac17-86f43229cd1b-test.txt"
+  },
+  {
+    "id": "e6b97811-971d-46fc-bc62-823733faee0a",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T18:08:24.402Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/e6b97811-971d-46fc-bc62-823733faee0a-test.txt"
   }
 ]
