@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "main": "agent.ts",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "ts-node agent.ts"
   },

@@ -1,6 +1,18 @@
 import Fastify from 'fastify';
 import type { FastifyPluginAsync } from 'fastify';
-import stripeWebhookRoutes from './stripe-webhook.js';
+import stripeWebhookRoutes from './stripe-webhook';
+
+// Mock the stripe package to provide a stable `webhooks.constructEvent` for tests
+jest.mock('stripe', () => {
+  const constructEvent = (_payload: Buffer, _sig: string, _secret: string) => ({ type: 'invoice.payment_failed', data: { object: { metadata: { api_key: 'signed-key' } } } });
+  class MockStripe {
+    // instance proto must contain webhooks.constructEvent
+    constructor() {}
+  }
+  // attach to prototype for tests that access prototype.webhooks.constructEvent
+  MockStripe.prototype = { webhooks: { constructEvent } };
+  return { default: MockStripe };
+});
 
 describe('stripe webhook route', () => {
   it('accepts dev fallback unsigned JSON', async () => {
@@ -18,7 +30,7 @@ describe('stripe webhook route', () => {
     process.env.STRIPE_API_KEY = 'sk_test';
   const fastify = Fastify({ logger: false });
   await fastify.register((stripeWebhookRoutes as unknown) as FastifyPluginAsync);
-    const res = await fastify.inject({ method: 'POST', url: '/api/stripe/webhook', payload: { foo: 'bar' } });
+  const res = await fastify.inject({ method: 'POST', url: '/api/stripe/webhook', payload: { foo: 'bar' }, headers: { 'content-type': 'application/json' } });
     expect(res.statusCode).toBe(400);
     await fastify.close();
     delete process.env.STRIPE_WEBHOOK_SECRET;
@@ -28,27 +40,11 @@ describe('stripe webhook route', () => {
   it('accepts signed event when constructEvent returns valid event', async () => {
     process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test';
     process.env.STRIPE_API_KEY = 'sk_test';
-    // Mock Stripe constructEvent using a minimal local interface
-  const stripeModule = (await import('stripe')) as unknown as { default: unknown };
-  type StripeDefaultShape = { prototype: { webhooks: { constructEvent: (...a: unknown[]) => unknown } } };
-  const orig = ((stripeModule as unknown) as { default: StripeDefaultShape }).default.prototype.webhooks.constructEvent;
-    // runtime monkeypatch for testing - scoped ts-expect-error
-  /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-  // @ts-ignore - runtime monkeypatch for testing
-  ((stripeModule as unknown) as { default: StripeDefaultShape }).default.prototype.webhooks.constructEvent = (_payload: Buffer, _sig: string, _secret: string) => {
-      return { type: 'invoice.payment_failed', data: { object: { metadata: { api_key: 'signed-key' } } } };
-    };
-
-  const fastify = Fastify({ logger: false });
-  await fastify.register((stripeWebhookRoutes as unknown) as FastifyPluginAsync);
+    const fastify = Fastify({ logger: false });
+    await fastify.register((stripeWebhookRoutes as unknown) as FastifyPluginAsync);
     const payload = JSON.stringify({ type: 'invoice.payment_failed', data: { object: { metadata: { api_key: 'signed-key' } } } });
-    const res = await fastify.inject({ method: 'POST', url: '/api/stripe/webhook', payload, headers: { 'stripe-signature': 't=1,v1=signature' } });
+  const res = await fastify.inject({ method: 'POST', url: '/api/stripe/webhook', payload, headers: { 'stripe-signature': 't=1,v1=signature', 'content-type': 'application/json' } });
     expect(res.statusCode).toBe(200);
-
-    // restore original implementation
-  /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-  // @ts-ignore - restore original runtime monkeypatch
-  ((stripeModule as unknown) as { default: StripeDefaultShape }).default.prototype.webhooks.constructEvent = orig;
     await fastify.close();
     delete process.env.STRIPE_WEBHOOK_SECRET;
     delete process.env.STRIPE_API_KEY;

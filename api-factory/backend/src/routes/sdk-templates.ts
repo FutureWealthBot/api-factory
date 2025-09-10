@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import fs from 'fs';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 const SDK_TEMPLATES_DIR = path.resolve(__dirname, '../../../../packages/admin/agent-templates/sdk');
 const METADATA_FILE = path.join(SDK_TEMPLATES_DIR, 'metadata.json');
@@ -42,7 +42,7 @@ export default async function sdkTemplatesRoutes(fastify: FastifyInstance) {
     const safeLanguage = language as string;
     const safeFileContent = fileContent as string;
     const safeFileName = fileName as string;
-    const id = uuidv4();
+  const id = randomUUID();
     const createdAt = new Date().toISOString();
     const filePath = path.join(SDK_TEMPLATES_DIR, `${id}-${safeFileName}`);
     fs.writeFileSync(filePath, Buffer.from(safeFileContent, 'base64'));
