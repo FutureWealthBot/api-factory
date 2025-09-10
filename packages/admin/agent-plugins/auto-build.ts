@@ -81,7 +81,7 @@ export function activateAutoBuild(opts?: {
 
 // Convenience local runner: set AUTO_BUILD_RUN=1 to execute directly with `npx tsx`.
 if (process.env.AUTO_BUILD_RUN === '1') {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+   
   (async () => {
     activateAutoBuild();
   })();

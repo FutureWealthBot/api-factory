@@ -1,0 +1,27 @@
+name: Backend Tests
+
+on:
+  push:
+    paths:
+      - 'api-factory/backend/**'
+  pull_request:
+    paths:
+      - 'api-factory/backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Setup Node
+        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da
+        with:
+          node-version: '18'
+      - name: Install deps
+        run: |
+          cd api-factory/backend
+          npm ci
+      - name: Run tests
+        run: |
+          cd api-factory/backend
+          npm test

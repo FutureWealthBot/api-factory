@@ -1,0 +1,2 @@
+# CI-safe npmrc: disable dangerous postinstall scripts
+ignore-scripts=true

@@ -1,0 +1,27 @@
+name: MVP Autopilot — Sprint Mode
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Daily run at 07:00 UTC (adjustable)
+    - cron: '0 7 * * *'
+
+jobs:
+  run-autopilot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da
+        with:
+          node-version: '18'
+
+      - name: Run MVP Autopilot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTOPILOT_MODE: sprint
+          AUTO_DEBUG: 'true'
+        run: |
+          node tools/autopilot/run_autopilot.cjs

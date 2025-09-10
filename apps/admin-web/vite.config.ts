@@ -18,4 +18,14 @@ export default defineConfig({
       }
     }
   }
+  ,
+  build: {
+    target: 'es2022',
+    modulePreload: { polyfill: false },
+    cssMinify: true,
+    sourcemap: false
+  },
+  esbuild: {
+    legalComments: 'none'
+  }
 });

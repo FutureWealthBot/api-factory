@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type, @typescript-eslint/no-explicit-any, @typescript-eslint/triple-slash-reference */
+/* eslint-disable @typescript-eslint/no-empty-object-type, @typescript-eslint/no-explicit-any */
 declare module 'chokidar' {
   interface WatchOptions {}
   function watch(paths: string | string[], options?: WatchOptions): any;

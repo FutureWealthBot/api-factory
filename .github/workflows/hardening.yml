@@ -1,0 +1,19 @@
+name: Workflow Hardening
+on:
+  pull_request:
+    branches: [main, develop]
+    paths: [".github/workflows/**", "scripts/ci/validate-action-pins.mjs"]
+permissions:
+  contents: read
+jobs:
+  pins:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4
+      - uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da  # v4
+        with:
+          node-version: 20
+      - run: node --version
+      - run: node scripts/ci/validate-action-pins.mjs

@@ -1,0 +1,5 @@
+
+
+> admin-web@0.1.0 build /workspaces/api-factory/apps/admin-web
+> tsc -p tsconfig.json && pnpm exec vite build
+
