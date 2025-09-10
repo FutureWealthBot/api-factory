@@ -9,7 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "PORT=8787 API_PORT=8787 concurrently -n CLI,WEB -c auto \"pnpm --filter api-cli dev\" \"pnpm --filter admin-web dev\"",
+  "dev": "bash ./scripts/dev-start.sh",
     "build": "turbo run build --cache-dir .turbo || pnpm -r build",
     "build:api": "pnpm --filter ./apps/api-cli... tsup",
     "build:web": "pnpm --filter ./apps/admin-web... vite build",

@@ -892,6 +892,42 @@ config: {
   }
 }
 
+
+---
+
+## Local development — pnpm dev (turbo mode)
+
+The repo includes a small helper that starts the monorepo dev servers (API + admin web) using the existing Turborepo-aware scripts.
+
+Basic usage:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+This runs both the API and admin-web dev servers concurrently. By default the API listens on port 8787 and the web on 5173.
+
+Auto-stop containers that block ports
+
+If a docker container is already mapping the configured `PORT`/`API_PORT` (commonly 8787) the API will fail with EADDRINUSE. To make the helper attempt to stop such containers, run:
+
+```bash
+AUTO_STOP_CONTAINERS=1 pnpm dev
+```
+
+This will look for containers mapping the target ports and attempt to stop them before starting the dev servers. This behavior is opt-in and should be used with care (it will stop running containers).
+
+Custom ports
+
+You can override the ports on the command line:
+
+```bash
+PORT=9000 API_PORT=9000 pnpm dev
+```
+
+The helper script is located at `scripts/dev-start.sh` and is invoked by the repository's top-level `dev` script.
+
 ## TRACK file
 
 This repository contains a top-level `TRACK` file (for example: `MVP`) that records the active release track.
