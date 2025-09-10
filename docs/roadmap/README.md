@@ -17,3 +17,18 @@ Review guidance:
 - Inspect the generated `tools/roadmap-copilot/output/ROADMAP_PROPOSAL.md` in the PR.
 - Update or split suggested items into milestone-backed issues before merging.
 - Label and assign owners as appropriate.
+
+Quick test
+----------
+Run the included test to verify the generator produces the expected header:
+
+	./tools/roadmap-copilot/test.sh
+
+Guardrails
+----------
+Auto-generated proposals include an `AUTOPILOT GUARDRAILS` block at the top. Before merging automation PRs:
+
+- Verify the PR does not include secrets or credentials.
+- Require at least one human reviewer before merging.
+- Ensure any external API keys used by downstream automation are stored in approved secret stores and not in the repo.
+
