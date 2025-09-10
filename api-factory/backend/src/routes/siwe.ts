@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 import { SiweMessage } from 'siwe';
 import fastifyCookie from '@fastify/cookie';
 import { randomUUID } from 'crypto';
@@ -10,9 +10,8 @@ const devSessionStore = new Map<string, unknown>();
 
 export default async function siweRoutes(fastify: FastifyInstance) {
   if (useDevFallbacks) {
-  // register cookie plugin (plugin types may vary across workspace)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fastify.register(fastifyCookie as unknown as any);
+  // register cookie plugin with explicit Fastify plugin type
+  fastify.register(fastifyCookie as unknown as FastifyPluginAsync);
 
     const getSession = (request: FastifyRequest): unknown | null => {
       const cookies = request.cookies as Record<string, string> | undefined;
@@ -37,10 +36,11 @@ export default async function siweRoutes(fastify: FastifyInstance) {
     fastify.post('/auth/siwe/verify', async (request: FastifyRequest, reply: FastifyReply) => {
       const { message, signature } = (request.body ?? {}) as { message?: string; signature?: string };
       try {
-        const siwe = new SiweMessage(message || '');
-        const fields = await (siwe as unknown as { validate: (sig?: string) => Promise<Record<string, unknown>> }).validate(signature);
-        setSession(reply, fields as unknown);
-        const address = (fields as { address?: string } | undefined)?.address;
+  const siwe = new SiweMessage(message || '');
+  type SiweFields = Record<string, unknown> & { address?: string };
+  const fields = await (siwe as unknown as { validate: (sig?: string) => Promise<SiweFields> }).validate(signature);
+  setSession(reply, fields as unknown);
+  const address = fields.address;
         reply.send({ ok: true, address });
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : String(e);
@@ -68,19 +68,19 @@ export default async function siweRoutes(fastify: FastifyInstance) {
       try {
         const cookie = (await import('@fastify/cookie')).default;
         const session = (await import('@fastify/session')).default;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fastify.register(cookie as unknown as any);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fastify.register(session as unknown as any, {
+  // register dynamic cookie/session plugins with FastifyPluginAsync typing
+  fastify.register(cookie as unknown as FastifyPluginAsync);
+        fastify.register(session as unknown as FastifyPluginAsync, ({
         secret: 'a-very-secret-key-that-is-at-least-32-characters',
         cookie: { secure: false },
-      });
+      } as unknown) as Record<string, unknown>);
 
       fastify.post('/auth/siwe/verify', async (request: FastifyRequest, reply: FastifyReply) => {
         const { message, signature } = (request.body ?? {}) as { message?: string; signature?: string };
         try {
           const siwe = new SiweMessage(message || '');
-          const fields = await (siwe as unknown as { validate: (sig?: string) => Promise<Record<string, unknown>> }).validate(signature);
+          type SiweFields = Record<string, unknown> & { address?: string };
+          const fields = await (siwe as unknown as { validate: (sig?: string) => Promise<SiweFields> }).validate(signature);
           // attach to session (plugin-typed session may exist at runtime)
           const reqAny = request as unknown as Record<string, unknown> & { session?: Record<string, unknown> };
           reqAny.session = reqAny.session || {};
@@ -120,8 +120,7 @@ export default async function siweRoutes(fastify: FastifyInstance) {
 // extracted dev fallback to reuse
 function siweRoutesDevFallback(fastify: FastifyInstance) {
   // register cookie plugin
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fastify.register(fastifyCookie as unknown as any);
+  fastify.register(fastifyCookie as unknown as FastifyPluginAsync);
 
   const getSession = (request: FastifyRequest) => {
     const cookies = request.cookies as Record<string, string> | undefined;
@@ -146,9 +145,9 @@ function siweRoutesDevFallback(fastify: FastifyInstance) {
   fastify.post('/auth/siwe/verify', async (request: FastifyRequest, reply: FastifyReply) => {
     const { message, signature } = (request.body ?? {}) as { message?: string; signature?: string };
     try {
-      const siwe = new SiweMessage(message || '');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const fields = await (siwe as any).validate(signature);
+    const siwe = new SiweMessage(message || '');
+    type SiweFields = Record<string, unknown> & { address?: string };
+    const fields = await (siwe as unknown as { validate: (sig?: string) => Promise<SiweFields> }).validate(signature);
       setSession(reply, fields as unknown);
       const address = (fields as { address?: string } | undefined)?.address;
       reply.send({ ok: true, address });

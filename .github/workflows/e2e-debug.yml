@@ -1,0 +1,26 @@
+name: E2E Debug (mocked)
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 2 * * *' # daily at 02:00 UTC
+
+jobs:
+  e2e-debug:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@9.9.0 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run E2E debug (mocked)
+        env:
+          RELEASES_E2E_MOCK_EXEC: '1'
+          NODE_ENV: 'ci'
+        run: pnpm --filter ./api-factory/backend run e2e:debug

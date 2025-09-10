@@ -1,0 +1,37 @@
+name: Backend verify (tsc + eslint + jest)
+
+on:
+  push:
+    paths:
+      - 'api-factory/backend/**'
+  pull_request:
+    paths:
+      - 'api-factory/backend/**'
+
+jobs:
+  verify-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm i -g pnpm@latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build backend (tsc)
+        run: pnpm -w -F backend run build
+
+      - name: ESLint backend
+        run: pnpm -w -F backend exec -- eslint "api-factory/backend/src/**/*.ts" --ext .ts --max-warnings=0
+
+      - name: Run backend tests
+        run: pnpm -w -F backend run test:ci

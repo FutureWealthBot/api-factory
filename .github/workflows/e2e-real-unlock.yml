@@ -1,0 +1,96 @@
+name: E2E Real Unlock (manual, guarded)
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  real-unlock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@9.9.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - id: safety-check
+        name: Safety check: allow real unlock
+        env:
+          RELEASES_ALLOW_REAL: ${{ secrets.RELEASES_ALLOW_REAL }}
+        run: |
+          if [ "$RELEASES_ALLOW_REAL" != "1" ]; then
+            echo "RELEASES_ALLOW_REAL is not set to '1'. To run this workflow, set the repository secret RELEASES_ALLOW_REAL=1.";
+            exit 1;
+          fi
+
+      - id: check-protected
+        name: Ensure target base branch is protected
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Configure repo and branch
+          repo="$GITHUB_REPOSITORY"
+          base_branch="main"
+          echo "Checking branch protection for $repo#$base_branch"
+          status=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$repo/branches/$base_branch/protection")
+          if [ "$status" != "200" ]; then
+            echo "Branch $base_branch is not protected (status code: $status). Aborting guarded real unlock."
+            exit 1
+          fi
+          echo "Branch $base_branch is protected — proceeding."
+
+      - name: Run E2E debug (real unlock)
+        env:
+          RELEASES_E2E_MOCK_EXEC: '0'
+          RELEASES_UNLOCK_SECRET: ${{ secrets.RELEASES_UNLOCK_SECRET }}
+          NODE_ENV: 'ci'
+        run: |
+          pnpm --filter ./api-factory/backend run e2e:debug || true
+
+      - id: commit-and-push
+        name: Commit and push changes (if any)
+        env:
+          BRANCH: release-unlock-$(date +%s)
+          GIT_COMMITTER_NAME: "github-actions[bot]"
+          GIT_COMMITTER_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+        run: |
+          git config user.name "$GIT_COMMITTER_NAME"
+          git config user.email "$GIT_COMMITTER_EMAIL"
+          if [ -n "$(git status --porcelain)" ]; then
+            git checkout -b "$BRANCH"
+            git add -A
+            git commit -m "chore(release): unlock next release (via e2e-real-unlock)" || true
+            git push --set-upstream origin "$BRANCH"
+            echo "PUSHED_BRANCH=$BRANCH" >> $GITHUB_OUTPUT
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Create PR if branch pushed
+        if: always()
+        env:
+          PUSHED_BRANCH: ${{ steps.commit-and-push.outputs.PUSHED_BRANCH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$PUSHED_BRANCH" ]; then
+            echo "No branch was pushed; skipping PR creation.";
+            exit 0;
+          fi
+          repo="$GITHUB_REPOSITORY"
+          title="chore(release): automated unlock via e2e-real-unlock"
+          body="This PR contains the release unlock changes produced by the guarded e2e-real-unlock workflow. Review before merging."
+          data=$(jq -n --arg t "$title" --arg h "$PUSHED_BRANCH" --arg b "main" --arg bd "$body" '{title:$t, head:$h, base:$b, body:$bd}')
+          curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$repo/pulls" -d "$data" | jq .html_url

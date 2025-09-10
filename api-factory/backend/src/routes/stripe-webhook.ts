@@ -1,21 +1,36 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { upsertKey } from '../lib/key-store.js';
 import { getPlanInfo } from '../lib/plans.js';
-import Stripe from 'stripe';
-
 export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
+  // Minimal Stripe-like interface for the parts we use (avoid `any`)
+  type StripeLike = { webhooks: { constructEvent: (payload: Buffer, sig: string, secret: string) => unknown } };
+  let stripe: StripeLike | null = null;
   const secret = process.env.STRIPE_WEBHOOK_SECRET || '';
   const stripeKey = process.env.STRIPE_API_KEY || '';
-  // Stripe's exported type can be unresolved in some environments; cast to any to avoid a blocking compile error
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const StripeCtor: any = Stripe as any;
-  const stripe = stripeKey ? new StripeCtor(stripeKey, { apiVersion: '2022-11-15' }) : null;
+
+  // Lazy-load Stripe only when a key is present. This avoids crashing the dev server
+  // when the `stripe` package is not installed or no key is configured.
+  if (stripeKey) {
+    try {
+      // dynamic import to avoid top-level require
+       
+  const StripeModule = (await import('stripe')) as unknown as { default?: unknown } & Record<string, unknown>;
+  // Prefer a typed constructor signature to avoid `any`
+  type StripeCtorType = new (...args: unknown[]) => unknown;
+  const StripeCtor = (StripeModule.default || StripeModule) as unknown as StripeCtorType;
+  // instantiate and narrow to StripeLike
+  stripe = new StripeCtor(stripeKey, { apiVersion: '2022-11-15' }) as unknown as StripeLike;
+    } catch (e) {
+      fastify.log.warn('stripe package not available or failed to load: %s', String(e));
+      stripe = null;
+    }
+  }
 
   fastify.post('/api/stripe/webhook', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      let event: { type?: string; data?: { object?: Record<string, unknown> } } | null = null;
+  let event: { type?: string; data?: { object?: Record<string, unknown> } } | null = null;
 
-      if (secret && stripe) {
+  if (secret && stripe) {
         // Verify signature using raw body
         const sig = (request.headers as Record<string, unknown>)['stripe-signature'] as string | undefined;
         const raw = (request.raw as unknown) as { body?: Buffer };
@@ -32,9 +47,10 @@ export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
           return;
         }
         try {
-          const constructed = stripe.webhooks.constructEvent(payload, sig, secret);
-          event = constructed as unknown as { type?: string; data?: { object?: Record<string, unknown> } };
-  } catch {
+              const constructed = stripe.webhooks.constructEvent(payload, sig, secret);
+              event = constructed as unknown as { type?: string; data?: { object?: Record<string, unknown> } };
+        } catch (e) {
+          fastify.log.warn('stripe signature verification failed: %s', String(e));
           reply.status(400).send({ error: 'Invalid signature' });
           return;
         }

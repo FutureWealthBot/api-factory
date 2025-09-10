@@ -147,6 +147,34 @@ function App() {
           </div>
         </div>
       </Card>
+
+      <Card title="Release Gate">
+        <div style={{ display: 'grid', gap: 8 }}>
+          <button onClick={async () => {
+            const r = await fetch('/api/admin/releases/lock');
+            const j = await r.json();
+            alert(JSON.stringify(j, null, 2));
+          }}>Show RELEASES/LOCK</button>
+
+          <button onClick={async () => {
+            try {
+              // Step 1: prepare
+              const prep = await fetch('/api/admin/releases/prepare', { method: 'POST' });
+              const pj = await prep.json();
+              if (!pj.ok) return alert('prepare failed: ' + JSON.stringify(pj));
+              const doConfirm = window.confirm(`About to unlock next release: ${pj.next}\nProceed?`);
+              if (!doConfirm) return;
+
+              // Step 2: confirm with nonce
+              const r = await fetch('/api/admin/releases/unlock', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ nonce: pj.nonce }) });
+              const j = await r.json();
+              alert(JSON.stringify(j, null, 2));
+            } catch (e) {
+              alert('unlock error: ' + String(e));
+            }
+          }}>Unlock Next Release (2-step)</button>
+        </div>
+      </Card>
     </div>
   );
 }

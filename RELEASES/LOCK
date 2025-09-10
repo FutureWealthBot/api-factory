@@ -1,0 +1,3 @@
+next: v1.0.7
+locked: false
+notes: "Lock file for controlling release gates. Use scripts/unlock_next_release.sh <released-version> to advance and unlock the next patch release."

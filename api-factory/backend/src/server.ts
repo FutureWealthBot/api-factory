@@ -21,6 +21,7 @@ import stripeWebhookRoutes from './routes/stripe-webhook.js';
 import sdkTemplatesRoutes from './routes/sdk-templates.js';
 import adminUsageRoutes from './routes/admin-usage.js';
 import adminBillingRoutes from './routes/admin-billing.js';
+import adminReleasesRoutes from './routes/admin-releases.js';
 
 // Consent middleware: applied to API routes under /api as a fail-closed guard
 import consentMiddleware from './middleware/consent-middleware.js';
@@ -48,6 +49,7 @@ fastify.register(sdkTemplatesRoutes);
 fastify.register(stripeWebhookRoutes);
 fastify.register(adminUsageRoutes);
 fastify.register(adminBillingRoutes);
+fastify.register(adminReleasesRoutes);
 
 // Serve static files
 // In dev we avoid registering @fastify/static (plugin version mismatches across workspace).

@@ -28,14 +28,14 @@ describe('stripe webhook route', () => {
   it('accepts signed event when constructEvent returns valid event', async () => {
     process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test';
     process.env.STRIPE_API_KEY = 'sk_test';
-    // Mock Stripe constructEvent
-  // import stripe at runtime but avoid depending on Stripe types in the test compile step
-  const stripeModule = (await import('stripe')) as unknown as { default: { prototype: { webhooks: { constructEvent: (...args: unknown[]) => unknown } } } };
-    const orig = stripeModule.default.prototype.webhooks.constructEvent;
-    // mock constructEvent and use unused-arg prefix to satisfy lint rules
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - runtime monkeypatch for testing
-    stripeModule.default.prototype.webhooks.constructEvent = (_payload: Buffer, _sig: string, _secret: string) => {
+    // Mock Stripe constructEvent using a minimal local interface
+  const stripeModule = (await import('stripe')) as unknown as { default: unknown };
+  type StripeDefaultShape = { prototype: { webhooks: { constructEvent: (...a: unknown[]) => unknown } } };
+  const orig = ((stripeModule as unknown) as { default: StripeDefaultShape }).default.prototype.webhooks.constructEvent;
+    // runtime monkeypatch for testing - scoped ts-expect-error
+  /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+  // @ts-ignore - runtime monkeypatch for testing
+  ((stripeModule as unknown) as { default: StripeDefaultShape }).default.prototype.webhooks.constructEvent = (_payload: Buffer, _sig: string, _secret: string) => {
       return { type: 'invoice.payment_failed', data: { object: { metadata: { api_key: 'signed-key' } } } };
     };
 
@@ -45,11 +45,10 @@ describe('stripe webhook route', () => {
     const res = await fastify.inject({ method: 'POST', url: '/api/stripe/webhook', payload, headers: { 'stripe-signature': 't=1,v1=signature' } });
     expect(res.statusCode).toBe(200);
 
-    // restore
-  // restore
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  stripeModule.default.prototype.webhooks.constructEvent = orig;
+    // restore original implementation
+  /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+  // @ts-ignore - restore original runtime monkeypatch
+  ((stripeModule as unknown) as { default: StripeDefaultShape }).default.prototype.webhooks.constructEvent = orig;
     await fastify.close();
     delete process.env.STRIPE_WEBHOOK_SECRET;
     delete process.env.STRIPE_API_KEY;
