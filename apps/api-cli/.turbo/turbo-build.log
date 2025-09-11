@@ -1,5 +1,0 @@
-
-
-> api-cli@0.1.0 build /workspaces/api-factory/apps/api-cli
-> tsc -p tsconfig.json
-

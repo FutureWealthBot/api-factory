@@ -1,4 +1,0 @@
-
-> @api-factory/core@0.1.0 build /workspaces/api-factory/packages/core
-> tsc -p tsconfig.json
-

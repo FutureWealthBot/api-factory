@@ -1,5 +1,0 @@
-
-
-> admin-api@0.1.0 build /workspaces/api-factory/packages/admin-api
-> node ./scripts/run-tsc.js
-

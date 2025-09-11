@@ -24,3 +24,7 @@ out/
 /.turbo
 # local backend data (may contain secrets)
 api-factory/backend/data/
+/artifacts/
+/logs/
+**/.turbo/
+**/test-results/
