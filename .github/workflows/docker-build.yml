@@ -1,4 +1,4 @@
-name: Docker CI (cached)
+name: Docker CI (matrix, cached)
 on:
   pull_request:
     branches: [main, develop]
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [api-cli, admin-web]
+        service: [api-cli, admin-web, web]
     name: Build Docker image - ${{ matrix.service }}
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
