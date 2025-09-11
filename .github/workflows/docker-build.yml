@@ -1,4 +1,4 @@
- name: Docker CI (matrix, cached)
+name: Docker CI (matrix, cached)
 
 on:
   pull_request:
