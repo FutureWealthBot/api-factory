@@ -2,7 +2,21 @@
   "name": "user-bot",
   "version": "0.1.0",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "start": "node index.js"
+  "start": "node index.js",
+  "test": "jest --config jest.config.cjs",
+  "test:live": "cross-env RUN_LIVE_TESTS=1 jest --config jest.config.cjs",
+  "test:legacy": "node test.js && node test-api.js && CONSENT_JWT_SECRET=dev-secret node test-api-live.js && node test-api-echo.js && node test-api-negative.js",
+  "test:legacy:single": "node test.js && node test-api.js",
+  "test:legacy:live": "CONSENT_JWT_SECRET=dev-secret node test-api-live.js"
   }
+
+  ,"devDependencies": {
+    "jest": "^29.6.0",
+    "cross-env": "^7.0.3"
+  }
+
 }

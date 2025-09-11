@@ -18,12 +18,15 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Setup Node
-        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install Supabase CLI
-        run: npm install -g supabase
+      - name: Install Supabase CLI (one-off)
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.9.0 --activate
+          pnpm dlx supabase --version || true
 
       - name: Supabase auth
         env:

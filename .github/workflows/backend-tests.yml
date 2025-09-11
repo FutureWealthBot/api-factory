@@ -14,13 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: Setup Node
-        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
       - name: Install deps
         run: |
+          corepack enable
+          corepack prepare pnpm@9.9.0 --activate
           cd api-factory/backend
-          npm ci
+          pnpm i --frozen-lockfile
       - name: Run tests
         run: |
           cd api-factory/backend

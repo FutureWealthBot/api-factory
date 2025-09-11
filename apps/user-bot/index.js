@@ -2,9 +2,13 @@ const TOKEN = process.env.TELEGRAM_USER_BOT_TOKEN;
 const API_BASE = process.env.API_BASE || 'http://localhost:8787';
 const ADMIN_IDS = (process.env.TELEGRAM_ADMIN_CHAT_IDS || '').split(',').map(s => s.trim()).filter(Boolean);
 
+// Note: avoid side-effects at import time so tests can import `handleCommand`.
+// The bot long-poll loop only starts when `start()` is called or when
+// the environment variable RUN_BOT is set to '1'. This keeps the module
+// safe to import inside Jest.
 if (!TOKEN) {
-  console.error('TELEGRAM_USER_BOT_TOKEN not set. Set it in environment to run the user bot.');
-  process.exit(1);
+  // don't exit during import; tests won't set TELEGRAM_USER_BOT_TOKEN
+  console.warn('TELEGRAM_USER_BOT_TOKEN not set. Bot will not start until start() is called with a valid token.');
 }
 
 const apiCall = async (path, method = 'GET', body) => {
@@ -68,8 +72,17 @@ const poll = async () => {
   }
 };
 
-console.log('user-bot starting (long-poll)');
-setInterval(poll, 1000);
+const start = () => {
+  if (!TOKEN) {
+    console.error('TELEGRAM_USER_BOT_TOKEN not set. Cannot start bot.');
+    return;
+  }
+  console.log('user-bot starting (long-poll)');
+  setInterval(poll, 1000);
+};
 
-// export for testing
-export { handleCommand };
+// If the runtime explicitly requests the bot to run, start it.
+if (process.env.RUN_BOT === '1') start();
+
+// export for testing and manual start
+export { handleCommand, start };

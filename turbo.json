@@ -1,10 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
+  "dev": { "outputs": [] },
     "build": { "dependsOn": ["^build"], "outputs": ["dist/**", "build/**"] },
     "lint":  { "outputs": [] },
     "test":  { "dependsOn": ["^build"], "outputs": [".coverage/**"] },
     "typecheck:web":  { "outputs": [] },
     "typecheck:node": { "outputs": [] }
+  ,"mvp": { "dependsOn": ["^build","^test"], "outputs": [] }
   }
 }

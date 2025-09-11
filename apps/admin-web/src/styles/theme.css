@@ -1,0 +1,39 @@
+/* apps/admin-web/src/styles/theme.css */
+
+:root{
+  /* Backgrounds */
+  --bg: #f7fafc;
+  --card-bg: #ffffff;
+
+  /* Sidebar */
+  --sidebar-grad-start: #0f172a;
+  --sidebar-grad-end: #071133;
+  --text-on-dark: rgba(255,255,255,0.92);
+
+  /* Borders / shadows */
+  --card-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  --card-border: 1px solid rgba(0,0,0,0.04);
+
+  /* Accent / muted */
+  --accent: #0366d6;
+  --muted: #68707a;
+
+  /* Spacing / sizing */
+  --sidebar-width: 260px;
+}
+
+/* Dark theme overrides */
+[data-theme="dark"]{
+  --bg: #071029;
+  --card-bg: #071022;
+  --sidebar-grad-start: #061224;
+  --sidebar-grad-end: #051428;
+  --text-on-dark: rgba(255,255,255,0.95);
+  --card-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  --card-border: 1px solid rgba(255,255,255,0.03);
+  --accent: #6ea8ff;
+  --muted: #98a2b3;
+}
+
+/* Smooth theme transition */
+*{transition:background-color 180ms ease,color 180ms ease}
