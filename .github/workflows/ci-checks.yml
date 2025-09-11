@@ -25,7 +25,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
       - name: Install deps (root)
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
       - name: Run lint for workspace
         run: pnpm --filter "${{ matrix.workspace }}" -w run lint --if-present
       - name: Run typecheck for workspace

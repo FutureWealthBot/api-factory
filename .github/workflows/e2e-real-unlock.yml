@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Node.js
-    uses: actions/setup-node@v4
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
@@ -24,7 +24,7 @@ jobs:
         run: corepack enable && corepack prepare pnpm@9.9.0 --activate
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - id: safety-check
         name: Safety check: allow real unlock

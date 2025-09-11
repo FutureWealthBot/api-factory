@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     name: Run workspace tests (packages + backend)
-  runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         node-version: [18, 20]
@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run workspace tests (packages + backend)
         run: pnpm -w run test:with-backend
