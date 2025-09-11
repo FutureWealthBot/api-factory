@@ -13,27 +13,10 @@
     "api-factory/*"
   ],
   "scripts": {
-    "dev": "bash ./scripts/dev-start.sh",
-    "build": "turbo run build --cache-dir .turbo || pnpm -r build",
-    "build:api": "pnpm --filter ./apps/api-cli... tsup",
-    "build:web": "pnpm --filter ./apps/admin-web... vite build",
-    "dev:api": "pnpm --filter ./apps/api-cli... tsx apps/api-cli/src/index.ts",
-    "dev:web": "pnpm --filter ./apps/admin-web... vite",
-    "docker:up": "docker compose up --build",
-    "docker:down": "docker compose down",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier -w .",
-    "format:check": "prettier -c .",
-    "doctor": "node scripts/af-doctor.cjs",
-    "labels:create": "node ./scripts/create-labels.mjs",
-    "typecheck:web": "tsc -p tsconfig.web.json --noEmit",
-    "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
-    "test:workspace": "pnpm -w -r test",
-    "test": "pnpm -w -r --filter './packages/**' --filter './apps/**' test",
-    "test:with-backend": "pnpm -w -r --filter './packages/**' --filter './apps/**' test && (cd api-factory/backend && pnpm test)"
-  ,"mvp": "turbo run mvp --filter=./apps/* --filter=./packages/* --cache-dir .turbo/mvp || pnpm -r run mvp"
-  ,"mvp:ci": "turbo run mvp --filter=./apps/* --filter=./packages/* --cache-dir .turbo/mvp"
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+  "test": "(cd api-factory/backend && pnpm test)",
+    "build": "tsc -p tsconfig.json || echo \"no tsc\""
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",

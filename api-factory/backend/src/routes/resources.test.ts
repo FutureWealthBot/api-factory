@@ -1,12 +1,13 @@
 import Fastify from 'fastify';
-import routes from './index.js';
+import routes from './index';
 
 describe('resources + keys basic flow', () => {
   let fastify: ReturnType<typeof Fastify>;
 
   beforeAll(async () => {
     fastify = Fastify();
-    await fastify.register(routes as any);
+    // register routes plugin
+    await fastify.register(routes as unknown as (instance: unknown) => void);
     await fastify.ready();
   });
 
