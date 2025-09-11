@@ -56,3 +56,61 @@ jobs:
         with:
           name: pnpm-lock
           path: pnpm-lock.yaml
+
+  mvp-tests:
+    name: MVP Unit & Integration Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Enable corepack & prepare pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build MVP components
+        run: |
+          pnpm --filter "./packages/core" run build
+          pnpm --filter "./apps/api-cli" run build
+          pnpm --filter "./apps/admin-web" run build
+
+      - name: Start MVP development servers
+        run: |
+          # Start servers in background
+          pnpm dev &
+          
+          # Wait for servers to be ready
+          echo "Waiting for API server..."
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8787/_api/healthz >/dev/null 2>&1; then
+              echo "API server is ready"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 2
+          done
+
+      - name: Run MVP integration tests
+        run: |
+          # Make smoke test script executable and run it
+          chmod +x ./scripts/smoke-test.sh
+          ./scripts/smoke-test.sh http://localhost:8787
+
+      - name: Run unit tests for MVP components
+        run: |
+          # Run tests for MVP-specific packages  
+          pnpm --filter "./packages/core" --filter "./apps/api-cli" --filter "./apps/admin-web" run test
