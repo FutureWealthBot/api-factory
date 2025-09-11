@@ -1,0 +1,56 @@
+name: user-bot tests
+
+on:
+  push:
+    paths:
+      - 'apps/user-bot/**'
+  pull_request:
+    paths:
+      - 'apps/user-bot/**'
+  workflow_dispatch: {}
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: user-bot-pnpm-${{ matrix.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            user-bot-pnpm-${{ matrix.node-version }}-
+      - name: Install deps (workspace)
+        run: |
+          cd apps/user-bot
+          pnpm install --frozen-lockfile
+      - name: Run jest unit tests
+        run: |
+          cd apps/user-bot
+          npm run test:ci
+
+  live-tests:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install deps (workspace)
+        run: |
+          cd apps/user-bot
+          pnpm install --frozen-lockfile
+      - name: Run live tests
+        run: |
+          cd apps/user-bot
+          RUN_LIVE_TESTS=1 npm run test:live:jest

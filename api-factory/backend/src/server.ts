@@ -178,8 +178,14 @@ const start = async () => {
   const port = Number(process.env.PORT || 3000);
   await fastify.listen({ port });
   fastify.log.info(`Server listening on http://localhost:${port}`);
-  } catch {
-    fastify.log.error('startup error');
+  } catch (err) {
+    // Log the actual error to help debugging (previously swallowed)
+    try {
+      fastify.log.error({ err: err as unknown }, 'startup error');
+    } catch {
+      // fallback
+      console.error('startup error', err);
+    }
     process.exit(1);
   }
 };
