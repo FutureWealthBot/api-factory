@@ -1,17 +1,5 @@
 name: Docker CI (matrix, cached)
 
-name: Docker CI (matrix, cached)
-
-on:
-  pull_request:
-    branches: [main, develop]
-    paths: ["apps/**", "packages/**", "pnpm-lock.yaml", "package.json", ".github/**"]
-  push:
-    branches: [main]
-    paths: ["apps/**", "packages/**", "pnpm-lock.yaml", "package.json", ".github/**"]
-
-name: Docker CI (matrix, cached)
-
 on:
   pull_request:
     branches: [main, develop]
