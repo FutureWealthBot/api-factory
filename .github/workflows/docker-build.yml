@@ -54,6 +54,6 @@ jobs:
           context: .
           file: apps/${{ matrix.service }}/Dockerfile
           push: false
-          tags: ghcr.io/${{ toLower(github.repository_owner) }}/${{ matrix.service }}:pr-${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}/${{ matrix.service }}:pr-${{ github.sha }}
           cache-from: "type=gha,scope=${{ matrix.service }}-cache"
           cache-to: "type=gha,mode=max,scope=${{ matrix.service }}-cache"
