@@ -28,3 +28,5 @@ api-factory/backend/data/
 /logs/
 **/.turbo/
 **/test-results/
+/.logs/
+/build-logs/
