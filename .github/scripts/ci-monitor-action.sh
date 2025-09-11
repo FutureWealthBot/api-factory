@@ -46,10 +46,25 @@ echo "$runs_json" | jq -c '.workflow_runs[] | select(.conclusion == "failure" or
     failed_jobs="(no job-level failures listed)"
   fi
 
-  # attempt to download logs zip and extract a tail
-  echo "Downloading logs for run $run_id (best-effort)..."
+  # attempt to download logs zip and extract a tail with retries
+  echo "Downloading logs for run $run_id (best-effort, with retries)..."
   tmpzip=$(mktemp --suffix=.zip)
-  if curl -s -L -H "Authorization: token $GITHUB_TOKEN" "$API/actions/runs/$run_id/logs" -o "$tmpzip"; then
+
+  download_with_retries() {
+    local url="$1" dest="$2" attempts=5 backoff=2 i=0
+    while [ $i -lt $attempts ]; do
+      if curl --fail -s -L -H "Authorization: token $GITHUB_TOKEN" "$url" -o "$dest"; then
+        return 0
+      fi
+      i=$((i+1))
+      sleep $backoff
+      backoff=$((backoff*2))
+      echo "Retry $i/$attempts for $url"
+    done
+    return 1
+  }
+
+  if download_with_retries "$API/actions/runs/$run_id/logs" "$tmpzip"; then
     tmpdir=$(mktemp -d)
     unzip -qq "$tmpzip" -d "$tmpdir" || true
     # concatenate all files and tail
@@ -57,7 +72,7 @@ echo "$runs_json" | jq -c '.workflow_runs[] | select(.conclusion == "failure" or
     logs_excerpt=$(sed 's/```/`\`\`/g' "$tmpdir/tail.txt" || true)
     rm -rf "$tmpdir" "$tmpzip"
   else
-    logs_excerpt="(failed to download logs)"
+    logs_excerpt="(failed to download logs after retries)"
   fi
 
   issue_title="CI failure: $name (run #$number)"

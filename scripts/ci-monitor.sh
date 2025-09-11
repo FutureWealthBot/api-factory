@@ -55,14 +55,46 @@ while true; do
 
     echo "New failed run: $name (#$number) $url"
 
-    # try to fetch logs for the run (may be large)
+    # try to fetch logs for the run (may be large) with retries
     log_tmp=$(mktemp)
-    if gh run view "$run_id" --repo "$REPO" --log > "$log_tmp" 2>/dev/null; then
+
+    download_with_retries() {
+      local cmd="$1" attempts=5 backoff=2 i=0
+      while [ $i -lt $attempts ]; do
+        if eval "$cmd"; then
+          return 0
+        fi
+        i=$((i+1))
+        sleep $backoff
+        backoff=$((backoff*2))
+        echo "Retry $i/$attempts for command: $cmd"
+      done
+      return 1
+    }
+
+    if download_with_retries "gh run view $run_id --repo $REPO --log > $log_tmp 2>/dev/null"; then
       tail -n "$MAX_LOG_LINES" "$log_tmp" > "$log_tmp.tail"
       log_excerpt=$(sed 's/```/`\`\`/g' "$log_tmp.tail")
       rm -f "$log_tmp" "$log_tmp.tail"
     else
-      log_excerpt="(failed to fetch logs with gh run view)"
+      echo "gh run view failed — trying gh run download (logs zip)"
+      tmpzip=$(mktemp --suffix=.zip)
+      if download_with_retries "gh run download $run_id --repo $REPO -D $(dirname $tmpzip) --logs 2>/dev/null || true"; then
+        # find the downloaded zip in the dir
+        dl_dir=$(dirname $tmpzip)
+        zipfile=$(ls -1 $dl_dir/*.zip 2>/dev/null | head -n1 || true)
+        if [[ -n "$zipfile" ]]; then
+          tmpdir=$(mktemp -d)
+          unzip -qq "$zipfile" -d "$tmpdir" || true
+          find "$tmpdir" -type f -print0 | xargs -0 cat 2>/dev/null | tail -n "$MAX_LOG_LINES" > "$tmpdir/tail.txt" || true
+          logs_excerpt=$(sed 's/```/`\`\`/g' "$tmpdir/tail.txt" || true)
+          rm -rf "$tmpdir" "$zipfile"
+        else
+          logs_excerpt="(failed to find downloaded zip)"
+        fi
+      else
+        logs_excerpt="(failed to fetch logs after retries)"
+      fi
     fi
 
     issue_title="CI failure: $name (run #$number)"
