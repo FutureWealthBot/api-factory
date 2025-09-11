@@ -1,0 +1,26 @@
+
+> api-factory-backend@1.0.0 dev /workspaces/api-factory/api-factory/backend
+> tsx watch src/server.ts
+
+{"level":30,"time":1757611788603,"pid":35530,"hostname":"codespaces-e67035","msg":"Using dev static file handler (USE_DEV_FALLBACKS=1)"}
+{"level":30,"time":1757611788633,"pid":35530,"hostname":"codespaces-e67035","msg":"Server listening at http://[::1]:3000"}
+{"level":30,"time":1757611788634,"pid":35530,"hostname":"codespaces-e67035","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1757611788634,"pid":35530,"hostname":"codespaces-e67035","msg":"Server listening on http://localhost:3000"}
+{"level":30,"time":1757611927676,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-1","req":{"method":"GET","url":"/_api/healthz","host":"localhost:3000","remoteAddress":"::1","remotePort":58898},"msg":"incoming request"}
+{"level":30,"time":1757611927681,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-1","res":{"statusCode":200},"responseTime":3.6571940006688237,"msg":"request completed"}
+{"level":30,"time":1757611933798,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-2","req":{"method":"GET","url":"/api/v1/hello/ping","host":"localhost:3000","remoteAddress":"::1","remotePort":42372},"msg":"incoming request"}
+{"level":30,"time":1757611933799,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-2","res":{"statusCode":401},"responseTime":0.6851870007812977,"msg":"request completed"}
+{"level":30,"time":1757611939710,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-3","req":{"method":"GET","url":"/api/v1/hello/ping","host":"localhost:3000","remoteAddress":"::1","remotePort":36542},"msg":"incoming request"}
+{"level":30,"time":1757611939711,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-3","res":{"statusCode":401},"responseTime":0.36741500068455935,"msg":"request completed"}
+{"level":30,"time":1757612028868,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-4","req":{"method":"GET","url":"/api/v1/hello/ping","host":"localhost:3000","remoteAddress":"::1","remotePort":58668},"msg":"incoming request"}
+{"level":30,"time":1757612028874,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-4","res":{"statusCode":200},"responseTime":5.868585000745952,"msg":"request completed"}
+{"level":30,"time":1757612204836,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-5","req":{"method":"GET","url":"/_api/healthz","host":"localhost:3000","remoteAddress":"::1","remotePort":33564},"msg":"incoming request"}
+{"level":30,"time":1757612204837,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-5","res":{"statusCode":200},"responseTime":0.6337000001221895,"msg":"request completed"}
+{"level":30,"time":1757612211000,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-6","req":{"method":"GET","url":"/api/v1/hello/ping","host":"localhost:3000","remoteAddress":"::1","remotePort":48876},"msg":"incoming request"}
+{"level":30,"time":1757612211004,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-6","res":{"statusCode":200},"responseTime":3.622649999335408,"msg":"request completed"}
+{"level":30,"time":1757612363017,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-7","req":{"method":"GET","url":"/api/v1/hello/ping","host":"localhost:3000","remoteAddress":"::1","remotePort":39128},"msg":"incoming request"}
+{"level":30,"time":1757612363021,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-7","res":{"statusCode":200},"responseTime":3.2628290001302958,"msg":"request completed"}
+{"level":30,"time":1757612363133,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-8","req":{"method":"POST","url":"/api/v1/hello/echo","host":"localhost:3000","remoteAddress":"::1","remotePort":39130},"msg":"incoming request"}
+{"level":30,"time":1757612363145,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-8","res":{"statusCode":200},"responseTime":11.455420999787748,"msg":"request completed"}
+{"level":30,"time":1757612363218,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-9","req":{"method":"GET","url":"/api/v1/hello/ping","host":"localhost:3000","remoteAddress":"::1","remotePort":39138},"msg":"incoming request"}
+{"level":30,"time":1757612363220,"pid":35530,"hostname":"codespaces-e67035","reqId":"req-9","res":{"statusCode":401},"responseTime":1.2210750002413988,"msg":"request completed"}

@@ -1,3 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services: {}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Start backend
+        run: |
+          nohup bash -lc "cd api-factory/backend && pnpm dev > /tmp/backend.log 2>&1 & echo $!" > /tmp/pid && sleep 1
+
+      - name: Wait for backend health
+        run: |
+          for i in {1..30}; do
+            if curl -sS http://localhost:3000/_api/healthz >/dev/null 2>&1; then
+              echo ready && break
+            fi
+            sleep 1
+          done
+
+      - name: Run unit + mocked API tests
+        run: |
+          node apps/user-bot/test.js
+          node apps/user-bot/test-api.js
+
+      - name: Run live integration tests
+        run: |
+          node apps/user-bot/test-api-live.js
+          node apps/user-bot/test-api-echo.js
+          node apps/user-bot/test-api-negative.js
+
+      - name: Teardown backend
+        run: |
+          if [ -f /tmp/pid ]; then kill $(cat /tmp/pid) || true; fi
 name: ci
 
 on:

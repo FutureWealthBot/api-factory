@@ -5,7 +5,15 @@
   "engines": {
     "node": ">=18"
   },
+  "devDependencies": {
+    "jest": "^29.6.0"
+  },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules\" jest --config ./jest.config.cjs",
+    "test:ci": "NODE_OPTIONS=\"--experimental-vm-modules\" jest --config ./jest.config.cjs --runInBand",
+    "test:live": "node test-api-live.js",
+    "test:live:jest": "RUN_LIVE_TESTS=1 NODE_OPTIONS=\"--experimental-vm-modules\" jest --config ./jest.config.cjs --runInBand",
+    "test:all": "NODE_OPTIONS=\"--experimental-vm-modules\" jest --config ./jest.config.cjs && node test-api-live.js"
   }
 }
