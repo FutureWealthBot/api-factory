@@ -895,6 +895,86 @@ config: {
 
 ---
 
+## MVP - Running Locally
+
+The MVP (Minimum Viable Product) consists of:
+- **API Server** (`apps/api-cli`): Provides health checks, ping, and actions endpoints
+- **Admin Web** (`apps/admin-web`): React-based admin dashboard  
+- **Core Package** (`packages/core`): Shared functionality
+
+### Quick Start (Recommended)
+
+1. **Prerequisites**: Node.js 20+ and pnpm
+
+   ```bash
+   # Enable pnpm if not already available
+   corepack enable && corepack prepare pnpm@latest --activate
+   ```
+
+2. **Install dependencies**:
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Start development servers**:
+
+   ```bash
+   pnpm dev
+   ```
+
+   This starts:
+   - API server: http://localhost:8787
+   - Admin web: http://localhost:5173
+
+4. **Verify the setup**:
+
+   ```bash
+   # Run smoke tests to verify all endpoints work
+   ./scripts/smoke-test.sh http://localhost:8787
+   ```
+
+### Docker Alternative
+
+For containerized development:
+
+```bash
+# Start MVP with Docker Compose
+TRACK=MVP docker compose up -d --build
+
+# Check container status
+docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
+
+# Run smoke tests against Docker setup  
+./scripts/smoke-tests.sh http://localhost:3000
+```
+
+### Available Endpoints
+
+Once running, the MVP provides:
+
+- **Health**: `GET /_api/healthz` - Service health check
+- **Ping**: `GET /api/v1/hello/ping` - Simple connectivity test
+- **Actions**: `POST /api/v1/actions` - Authenticated action endpoints (requires API key)
+- **Admin Web**: http://localhost:5173 - Dashboard interface
+
+### Testing
+
+```bash
+# Build all MVP components
+pnpm --filter "./apps/api-cli" run build
+pnpm --filter "./apps/admin-web" run build  
+pnpm --filter "./packages/core" run build
+
+# Run smoke tests
+./scripts/smoke-test.sh http://localhost:8787
+
+# Test with API key (if available)
+./scripts/smoke-test.sh http://localhost:8787 "sk_test_your_key_here"
+```
+
+---
+
 ## Local development — pnpm dev (turbo mode)
 
 The repo includes a small helper that starts the monorepo dev servers (API + admin web) using the existing Turborepo-aware scripts.

@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm exec vite -- --port 5173",
-  "build": "tsc -p tsconfig.json && pnpm exec vite build",
-  "preview": "pnpm exec vite preview -- --port 5173"
+    "build": "tsc -p tsconfig.json && pnpm exec vite build",
+    "preview": "pnpm exec vite preview -- --port 5173",
+    "test": "node --import tsx/esm --test src/*.test.ts"
   },
   "dependencies": {
     "react": "^18.3.1",
