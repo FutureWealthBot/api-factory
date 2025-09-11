@@ -28,10 +28,12 @@ jobs:
           key: user-bot-pnpm-${{ matrix.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             user-bot-pnpm-${{ matrix.node-version }}-
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install deps (workspace)
         run: |
           cd apps/user-bot
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
       - name: Run jest unit tests
         run: |
           cd apps/user-bot
@@ -46,10 +48,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install deps (workspace)
         run: |
           cd apps/user-bot
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
       - name: Run live tests
         run: |
           cd apps/user-bot
