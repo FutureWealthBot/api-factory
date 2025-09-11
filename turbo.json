@@ -6,5 +6,6 @@
     "test":  { "dependsOn": ["^build"], "outputs": [".coverage/**"] },
     "typecheck:web":  { "outputs": [] },
     "typecheck:node": { "outputs": [] }
+  ,"mvp": { "dependsOn": ["^build","^test"], "outputs": [] }
   }
 }
