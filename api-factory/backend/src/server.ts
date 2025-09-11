@@ -26,15 +26,37 @@ import helloRoutes from './routes/hello.js';
 
 // Consent middleware: applied to API routes under /api as a fail-closed guard
 import consentMiddleware from './middleware/consent-middleware.js';
+import { getKey } from './lib/key-store.js';
 
 // global preHandler for paths starting with /api
 fastify.addHook('preHandler', async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const url = (request.raw.url || '');
-    if (url.startsWith('/api/')) {
-      // call middleware; it will send reply on failure
-      await consentMiddleware(request, reply);
-    }
+      if (url.startsWith('/api/')) {
+        // Allow unauthenticated API key creation: POST /api/v1/keys must be public
+        try {
+          const method = (request.method || '').toUpperCase();
+          if (method === 'POST' && url === '/api/v1/keys') return;
+        } catch {
+          // ignore and proceed to middleware
+        }
+
+        // If a valid API key is provided, skip consent middleware (API-key auth is sufficient)
+        try {
+          const headerKey = request.headers['x-api-key'];
+          if (typeof headerKey === 'string' && headerKey.length > 0) {
+            const rec = await getKey(headerKey);
+            if (rec && rec.status === 'active') {
+              return;
+            }
+          }
+        } catch {
+          // if key lookup fails, continue to consent middleware (fail-closed)
+        }
+
+        // call middleware; it will send reply on failure
+        await consentMiddleware(request, reply);
+      }
   } catch {
     // ensure fail-closed
     reply.status(500).send({ error: 'Consent middleware failure' });
@@ -116,6 +138,15 @@ if (useDevFallbacks) {
       });
     });
 }
+// expose a tiny meta endpoint reporting the repository track
+fastify.get('/_meta', async (_req, reply) => {
+  try {
+    const track = getTrack();
+    return reply.send({ track });
+  } catch {
+    return reply.send({ track: 'unknown' });
+  }
+});
 
 // Start the server
 const start = async () => {
@@ -144,17 +175,9 @@ const start = async () => {
       }
     });
 
-    await fastify.listen({ port: 3000 });
-    fastify.log.info(`Server listening on http://localhost:3000`);
-      // expose a tiny meta endpoint reporting the repository track
-      fastify.get('/_meta', async (_req, reply) => {
-        try {
-          const track = getTrack();
-          return reply.send({ track });
-        } catch {
-          return reply.send({ track: 'unknown' });
-        }
-      });
+  const port = Number(process.env.PORT || 3000);
+  await fastify.listen({ port });
+  fastify.log.info(`Server listening on http://localhost:${port}`);
   } catch {
     fastify.log.error('startup error');
     process.exit(1);

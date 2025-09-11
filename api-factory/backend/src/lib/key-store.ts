@@ -20,6 +20,18 @@ if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
   supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, { auth: { persistSession: false } });
 }
 
+const USE_IN_MEMORY = process.env.USE_IN_MEMORY_STORE === 'true';
+
+class InMemoryStore<T extends Record<string, unknown>> {
+  private map: Record<string, T> = {} as Record<string, T>;
+  async get(k: string) { return (this.map as Record<string, T>)[k] ?? null; }
+  async put(k: string, v: T) { (this.map as Record<string, T>)[k] = v; }
+  async delete(k: string) { delete (this.map as Record<string, T>)[k]; }
+  async list() { return { ...this.map } as Record<string, T>; }
+}
+
+const inMemoryStore = USE_IN_MEMORY ? new InMemoryStore<KeyRecord>() : null;
+
 async function ensureFile() {
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
@@ -30,6 +42,9 @@ async function ensureFile() {
 }
 
 export async function readKeys(): Promise<Record<string, KeyRecord>> {
+  if (inMemoryStore) {
+    return await inMemoryStore.list();
+  }
   if (supabase) {
     const { data: rows, error } = await supabase.from('api_keys').select('*');
     if (error) throw error;
@@ -60,6 +75,14 @@ export async function readKeys(): Promise<Record<string, KeyRecord>> {
 }
 
 export async function writeKeys(map: Record<string, KeyRecord>) {
+  if (inMemoryStore) {
+    // replace contents
+    const list = map as Record<string, KeyRecord>;
+    for (const k of Object.keys(list)) {
+      await inMemoryStore.put(k, list[k]);
+    }
+    return;
+  }
   if (supabase) {
     // upsert each key row into supabase table `api_keys`
     for (const k of Object.keys(map)) {
@@ -74,6 +97,12 @@ export async function writeKeys(map: Record<string, KeyRecord>) {
 }
 
 export async function upsertKey(key: string, patch: Partial<KeyRecord>) {
+  if (inMemoryStore) {
+    const cur = (await inMemoryStore.get(key)) || { key, status: 'unknown', updatedAt: new Date().toISOString() };
+  const next: KeyRecord = { ...(cur as KeyRecord), ...patch, key, updatedAt: new Date().toISOString() };
+  await inMemoryStore.put(key, next);
+    return next;
+  }
   if (supabase) {
     const now = new Date().toISOString();
     const row = { key, plan: patch.plan ?? null, quota: patch.quota ?? null, status: patch.status ?? 'unknown', updated_at: now };
@@ -91,6 +120,9 @@ export async function upsertKey(key: string, patch: Partial<KeyRecord>) {
 }
 
 export async function getKey(key: string) {
+  if (inMemoryStore) {
+    return await inMemoryStore.get(key) as KeyRecord | null;
+  }
   if (supabase) {
     const { data, error } = await supabase.from('api_keys').select('*').eq('key', key).limit(1).single();
     if (error) return null;

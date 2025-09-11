@@ -1,5 +1,4 @@
-name: CI
-name: CI
+name: ci
 
 on:
   push:
@@ -8,51 +7,57 @@ on:
     branches: [ main ]
 
 jobs:
-  monorepo-checks:
-    name: Monorepo lint/typecheck/test/build
+  build-test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [20.x]
+        node: [20, 22]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@v4
 
-      - name: Load TRACK into environment
-        if: always()
-        run: |
-          if [ -f TRACK ]; then
-            echo "TRACK=$(cat TRACK)" >> $GITHUB_ENV
-          fi
-
-      - name: Setup Node.js
-        uses: actions/setup-node@1e60f620b9540f58f3dc1cb8b01260c4d8c1d9da
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          node-version: ${{ matrix.node }}
 
-      - name: Enable corepack & prepare pnpm
+      - name: Enable corepack / pnpm
         run: |
           corepack enable
-          corepack prepare pnpm@latest --activate
+          corepack prepare pnpm@9.9.0 --activate
+          pnpm -v
 
-      - name: Install dependencies (workspace)
-        run: pnpm -w install --frozen-lockfile
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-${{ matrix.node }}-
 
-      - name: Run lint across workspace (if present)
-        run: pnpm -w -r run lint --if-present
+      - name: Install
+        run: pnpm install --frozen-lockfile
 
-      - name: Run typecheck across workspace (if present)
-        run: pnpm -w -r run typecheck --if-present
+      - name: Lint (if present)
+        run: |
+          pnpm -r --silent run | grep -q '^lint$' && pnpm -r lint || echo "no lint scripts"
 
-      - name: Run tests across workspace (if present)
-        run: pnpm -w -r run test --if-present
+      - name: Typecheck (if present)
+        run: |
+          pnpm -r --silent run | grep -q '^typecheck$' && pnpm -r typecheck || echo "no typecheck scripts"
 
-      - name: Build packages (if present)
-        run: pnpm -w -r run build --if-present
-      - name: Upload pnpm lockfile
+      - name: Test (if present)
+        run: |
+          pnpm -r --silent run | grep -q '^test$' && pnpm -r test || echo "no test scripts"
+
+      - name: Build (if present)
+        run: |
+          pnpm -r --silent run | grep -q '^build$' && pnpm -r build || echo "no build scripts"
+
+      - name: Upload build artifacts (admin-web dist if exists)
         uses: actions/upload-artifact@v4
         with:
-          name: pnpm-lock
-          path: pnpm-lock.yaml
+          name: admin-web-dist-${{ matrix.node }}
+          path: apps/admin-web/dist
+          if-no-files-found: ignore

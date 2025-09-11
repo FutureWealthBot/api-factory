@@ -1,0 +1,127 @@
+@import './theme.css';
+
+/* apps/admin-web/src/styles/fortress.css */
+.tiers-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:16px;
+  margin:16px 0;
+}
+
+.tier-card{
+  background:var(--card-bg);
+  border-radius:8px;
+  box-shadow:0 1px 6px rgba(0,0,0,0.06);
+  padding:16px;
+  border:var(--card-border);
+}
+
+.tier-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.tier-badge{
+  font-size:0.9rem;
+  margin-left:8px;
+}
+
+.tier-price{
+  font-weight:700;
+  color:var(--accent);
+}
+
+.tier-audience{font-size:0.95rem;color:var(--muted)}
+
+.tier-card h4{margin-top:12px;margin-bottom:6px}
+.tier-card ul{padding-left:18px;margin:6px 0}
+
+/* Roadmap widget tweaks */
+.roadmap{background:transparent;padding:8px}
+.roadmap ul{padding-left:18px}
+
+/* App shell and layout */
+.app-shell{
+  display:flex;
+  min-height:100vh;
+  background:var(--bg);
+}
+.left-col{
+  width:var(--sidebar-width);
+  background:linear-gradient(180deg,var(--sidebar-grad-start),var(--sidebar-grad-end));
+  color:var(--text-on-dark);
+  padding:20px 12px;
+  box-shadow:2px 0 12px rgba(2,6,23,0.12);
+}
+.brand{font-size:1.1rem;margin:0 0 12px 0}
+.main-col{
+  flex:1;
+  padding:24px;
+  max-width:1200px;
+  margin:0 auto;
+}
+
+/* Sidebar links */
+.sidebar-list{list-style:none;padding:0;margin:8px 0}
+.sidebar-list li{margin:6px 0}
+.sidebar-link{display:block;padding:8px 10px;border-radius:8px;color:var(--text-on-dark);text-decoration:none}
+.sidebar-link:hover{background:rgba(255,255,255,0.04)}
+.sidebar-link.active{background:rgba(255,255,255,0.08);font-weight:600}
+
+/* Responsive: collapse sidebar on small screens */
+@media (max-width: 800px){
+  .app-shell{flex-direction:column}
+  .left-col{width:100%;display:flex;align-items:center;gap:12px}
+  .main-col{padding:12px}
+}
+
+/* Tidy cards and spacing */
+.card{background:var(--card-bg);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:var(--card-shadow)}
+.card h3{margin-top:0}
+
+/* SecurityScan widget */
+.widget{padding:12px;background:var(--card-bg);border-radius:8px}
+.widget.error{color:var(--danger)}
+.scan-summary{margin:8px 0;color:var(--muted)}
+.findings{list-style:none;padding:0;margin:8px 0}
+.finding{padding:8px;border-radius:6px;margin:6px 0;background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));}
+.finding .sev{font-size:0.85rem;color:var(--muted);margin-left:8px}
+.finding.critical{border-left:4px solid var(--danger)}
+.finding.high{border-left:4px solid #e67e22}
+.finding.medium{border-left:4px solid #f1c40f}
+.finding.low{border-left:4px solid #3498db}
+.finding.info{border-left:4px solid #95a5a6}
+
+/* Mobile topbar (appears when sidebar collapses) */
+.topbar{
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 14px;
+  background:linear-gradient(180deg,var(--sidebar-grad-end),#0b1a3a);
+  color:var(--text-on-dark);
+}
+.topbar .brand{margin:0;font-size:1rem}
+.topbar .toggle{
+  background:transparent;border:0;color:var(--text-on-dark);font-size:1.2rem;padding:6px 8px;border-radius:8px}
+.topbar .toggle:focus{outline:2px solid rgba(255,255,255,0.08)}
+
+/* Smooth transitions */
+.left-col, .main-col{transition:all 220ms ease}
+
+@media (max-width: 800px){
+  /* show topbar and keep sidebar compact */
+  .topbar{display:flex}
+  .left-col{display:none}
+  .main-col{padding:14px}
+}
+
+/* Fine-tune typography and spacing for content */
+h1{font-size:1.5rem;margin-bottom:8px}
+h2{font-size:1.25rem}
+p{line-height:1.45;color:var(--muted)}
+
+/* Container utility */
+.container{max-width:1100px;margin:0 auto}
