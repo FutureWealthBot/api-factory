@@ -110,9 +110,7 @@ jobs:
           chmod +x ./scripts/smoke-test.sh
           ./scripts/smoke-test.sh http://localhost:8787
 
-      - name: Run unit tests for MVP components (if present)
+      - name: Run unit tests for MVP components
         run: |
-          # Run tests only for MVP-specific packages
-          pnpm --filter "./packages/core" run test --if-present
-          pnpm --filter "./apps/api-cli" run test --if-present
-          pnpm --filter "./apps/admin-web" run test --if-present
+          # Run tests for MVP-specific packages  
+          pnpm --filter "./packages/core" --filter "./apps/api-cli" --filter "./apps/admin-web" run test
