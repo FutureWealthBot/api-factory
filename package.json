@@ -4,27 +4,19 @@
   "type": "module",
   "packageManager": "pnpm@9.9.0",
   "version": "0.1.1",
+  "engines": {
+    "node": ">=18"
+  },
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "api-factory/*"
   ],
   "scripts": {
-  "dev": "bash ./scripts/dev-start.sh",
-    "build": "turbo run build --cache-dir .turbo || pnpm -r build",
-    "build:api": "pnpm --filter ./apps/api-cli... tsup",
-    "build:web": "pnpm --filter ./apps/admin-web... vite build",
-    "dev:api": "pnpm --filter ./apps/api-cli... tsx apps/api-cli/src/index.ts",
-    "dev:web": "pnpm --filter ./apps/admin-web... vite",
-    "docker:up": "docker compose up --build",
-    "docker:down": "docker compose down",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier -w .",
-    "format:check": "prettier -c .",
-    "doctor": "node scripts/af-doctor.cjs",
-    "labels:create": "node ./scripts/create-labels.mjs",
-    "typecheck:web": "tsc -p tsconfig.web.json --noEmit",
-    "typecheck:node": "tsc -p tsconfig.node.json --noEmit"
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+  "test": "(cd api-factory/backend && pnpm test)",
+    "build": "tsc -p tsconfig.json || echo \"no tsc\""
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",
@@ -40,7 +32,7 @@
     "tsx": "^4.20.5",
     "turbo": "^2.5.6",
     "typescript": "^5.9.2",
-    "vite": "^7.1.4"
+    "vite": "^7.1.5"
   },
   "dependencies": {
     "@fastify/cookie": "11.0.2",

@@ -2,10 +2,14 @@
   "name": "@api-factory/core",
   "version": "0.1.0",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-  "build": "tsc -p tsconfig.json"
+  "build": "tsc -p tsconfig.json",
+  "test": "pnpm exec jest --config ./jest.config.cjs"
   },
   "devDependencies": {
     "typescript": "^5.9.2"

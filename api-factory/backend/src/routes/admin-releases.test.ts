@@ -52,13 +52,13 @@ describe('Admin Releases API', () => {
 
   it('unlock fails for expired nonce', async () => {
     // stub session auth only for the /auth/siwe/me call, forward other inject calls
+    const originalInject2 = fastify.inject.bind(fastify);
     (fastify as unknown as { inject: (o: InjectOptions) => Promise<InjectResponse> }).inject = (opts: InjectOptions) : Promise<InjectResponse> => {
       const url = (typeof opts === 'string' ? opts : (opts as { url?: string } | undefined)?.url);
       if (url === '/auth/siwe/me') {
         const resp: InjectResponse = { statusCode: 200, body: JSON.stringify({ authenticated: true, address: 'dev-admin' }), json: () => ({ authenticated: true, address: 'dev-admin' }) };
         return Promise.resolve(resp);
       }
-      const originalInject2 = fastify.inject.bind(fastify);
       return originalInject2(opts as unknown as object) as Promise<InjectResponse>;
     };
 
@@ -74,13 +74,13 @@ describe('Admin Releases API', () => {
 
   it('prepare is forbidden when not admin', async () => {
     // stub session as unauthenticated for /auth/siwe/me only
+    const originalInject3 = fastify.inject.bind(fastify);
     (fastify as unknown as { inject: (o: InjectOptions) => Promise<InjectResponse> }).inject = (opts: InjectOptions) : Promise<InjectResponse> => {
       const url = (typeof opts === 'string' ? opts : (opts as { url?: string } | undefined)?.url);
       if (url === '/auth/siwe/me') {
         const resp: InjectResponse = { statusCode: 200, body: JSON.stringify({ authenticated: false }), json: () => ({ authenticated: false }) };
         return Promise.resolve(resp);
       }
-      const originalInject3 = fastify.inject.bind(fastify);
       return originalInject3(opts as unknown as object) as Promise<InjectResponse>;
     };
     const prep = await fastify.inject({ method: 'POST', url: '/api/admin/releases/prepare' });

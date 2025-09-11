@@ -22,3 +22,5 @@ out/
 .vercel
 
 /.turbo
+# local backend data (may contain secrets)
+api-factory/backend/data/
