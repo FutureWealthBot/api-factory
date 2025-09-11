@@ -1,182 +1,81 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import Fortification from './screens/Fortification';
+import Sidebar from './components/Sidebar';
+import './styles/fortress.css';
 
-type Resp = unknown;
-
-function Card(props: { title: string; children: React.ReactNode }) {
-  return (
-    <div style={{
-      border: "1px solid #e5e7eb",
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 16,
-      boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
-    }}>
-      <h3 style={{ marginTop: 0 }}>{props.title}</h3>
-      {props.children}
-    </div>
-  );
-}
-
-function App() {
-  const [health, setHealth] = React.useState<Resp | null>(null);
-  const [ping, setPing] = React.useState<Resp | null>(null);
-  const [lastAction, setLastAction] = React.useState<Resp | null>(null);
-  const [echoText, setEchoText] = React.useState<string>("hello world");
-  const [tgMsg, setTgMsg] = React.useState<string>("hello from Admin");
-  const [tgChatId, setTgChatId] = React.useState<string>("123");
-
-  async function fetchHealth() {
-    const r = await fetch("/_api/healthz");
-    setHealth(await r.json());
-  }
-  async function fetchPing() {
-    const r = await fetch("/api/v1/hello/ping");
-    setPing(await r.json());
-  }
-
-  async function callAction(body: object) {
-    const r = await fetch("/api/v1/actions", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body)
-    });
-    const json = await r.json();
-    setLastAction(json);
-  }
-
-  // Actions
-  const triggerCollection = () => callAction({ action: "trigger_collection" });
-  const sendTelegram = () =>
-    callAction({ action: "send_telegram_alert", payload: { chat_id: tgChatId, message: tgMsg } });
-  const upsertSample = () =>
-    callAction({ action: "upsert_opportunities", payload: { items: [{ id: "x1", pair: "BTC/USDT" }] } });
-
-  // Simple echo to show POST works
-  const echo = async () => {
-    const r = await fetch("/api/v1/hello/echo", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ from: "admin-web", text: echoText })
-    });
-    const json = await r.json();
-    setLastAction(json);
-  };
+function Shell({ children }: { children: React.ReactNode }) {
+  const [showSidebar, setShowSidebar] = useState(false);
+  const location = useLocation();
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+    } catch (e) {
+      return 'light';
+    }
+  });
 
   React.useEffect(() => {
-    fetchHealth().catch(console.error);
-    fetchPing().catch(console.error);
+    try {
+      localStorage.setItem('theme', theme);
+    } catch (e) {}
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
+  // close sidebar on Escape for accessibility
+  React.useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setShowSidebar(false);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
+  // close sidebar when the location changes (useful for mobile navigation)
+  React.useEffect(() => {
+    if (showSidebar) setShowSidebar(false);
+  }, [location]);
+
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto" }}>
-      <h1 style={{ marginTop: 0 }}>API Factory – Admin</h1>
-      <p>Vite dev server → proxy → Fastify API</p>
-
-      <Card title="Service Health">
-        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-          <button onClick={fetchHealth}>Refresh Health</button>
-          <button onClick={fetchPing}>Ping</button>
-          <a href="/_api/metrics" target="_blank" rel="noreferrer">Open Metrics</a>
-          <a href="/" target="_blank" rel="noreferrer">API Index</a>
+    <div className="app-shell">
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <header className="topbar">
+        <h2 className="brand">API Factory</h2>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <button className="toggle" aria-expanded={showSidebar} onClick={() => setShowSidebar(s => !s)} aria-label="Toggle menu">☰</button>
+          <button className="toggle" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')} aria-label="Toggle theme">
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
-          <pre style={{ margin: 0 }}>{JSON.stringify(health, null, 2)}</pre>
-          <pre style={{ margin: 0 }}>{JSON.stringify(ping, null, 2)}</pre>
-        </div>
-      </Card>
+      </header>
 
-      <Card title="Actions">
-        <div style={{ display: "grid", gap: 12 }}>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button onClick={triggerCollection}>Trigger Collection</button>
-            <button onClick={upsertSample}>Upsert Sample Opportunity</button>
-          </div>
+      <aside className="left-col" style={{ display: showSidebar ? 'block' : undefined }}>
+        <h2 className="brand">API Factory</h2>
+        <Sidebar onNavigate={() => setShowSidebar(false)} />
+      </aside>
 
-          <div style={{ display: "grid", gap: 8 }}>
-            <label>
-              Echo Text:
-              <input value={echoText} onChange={e => setEchoText(e.target.value)} style={{ marginLeft: 8, width: 300 }} />
-            </label>
-            <button onClick={echo}>POST /hello/echo</button>
-          </div>
-
-          <div style={{ display: "grid", gap: 8 }}>
-            <label>
-              Telegram Chat ID:
-              <input value={tgChatId} onChange={e => setTgChatId(e.target.value)} style={{ marginLeft: 8, width: 220 }} />
-            </label>
-            <label>
-              Telegram Message:
-              <input value={tgMsg} onChange={e => setTgMsg(e.target.value)} style={{ marginLeft: 8, width: 300 }} />
-            </label>
-            <button onClick={sendTelegram}>Send Test Telegram Alert</button>
-          </div>
-
-          <div>
-            <h4>Last Response</h4>
-            <pre style={{ margin: 0 }}>{JSON.stringify(lastAction, null, 2)}</pre>
-          </div>
-        </div>
-      </Card>
-
-      <Card title="Billing (Admin)">
-        <div style={{ display: 'grid', gap: 8 }}>
-          <label>
-            API Key:
-            <input id="billing-key" style={{ marginLeft: 8, width: 360 }} />
-          </label>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={async () => {
-              const key = (document.getElementById('billing-key') as HTMLInputElement).value;
-              if (!key) return alert('enter key');
-              const r = await fetch(`/api/admin/billing/key?key=${encodeURIComponent(key)}`);
-              const j = await r.json();
-              alert(JSON.stringify(j, null, 2));
-            }}>Fetch Key</button>
-            <button onClick={async () => {
-              const key = (document.getElementById('billing-key') as HTMLInputElement).value;
-              if (!key) return alert('enter key');
-              const plan = prompt('plan:', 'starter') || 'starter';
-              const quota = prompt('quota (number):', '1000') || '1000';
-              const status = prompt('status (active|suspended|past_due|revoked|unknown):', 'active') || 'active';
-              const r = await fetch('/api/admin/billing/key', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ key, plan, quota: Number(quota), status }) });
-              const j = await r.json();
-              alert(JSON.stringify(j, null, 2));
-            }}>Upsert Key</button>
-          </div>
-        </div>
-      </Card>
-
-      <Card title="Release Gate">
-        <div style={{ display: 'grid', gap: 8 }}>
-          <button onClick={async () => {
-            const r = await fetch('/api/admin/releases/lock');
-            const j = await r.json();
-            alert(JSON.stringify(j, null, 2));
-          }}>Show RELEASES/LOCK</button>
-
-          <button onClick={async () => {
-            try {
-              // Step 1: prepare
-              const prep = await fetch('/api/admin/releases/prepare', { method: 'POST' });
-              const pj = await prep.json();
-              if (!pj.ok) return alert('prepare failed: ' + JSON.stringify(pj));
-              const doConfirm = window.confirm(`About to unlock next release: ${pj.next}\nProceed?`);
-              if (!doConfirm) return;
-
-              // Step 2: confirm with nonce
-              const r = await fetch('/api/admin/releases/unlock', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ nonce: pj.nonce }) });
-              const j = await r.json();
-              alert(JSON.stringify(j, null, 2));
-            } catch (e) {
-              alert('unlock error: ' + String(e));
-            }
-          }}>Unlock Next Release (2-step)</button>
-        </div>
-      </Card>
+  <main id="main-content" className="main-col" role="main">{children}</main>
     </div>
   );
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+function Home() {
+  return (
+    <div style={{ padding: 18 }}>
+      <h1>Welcome to Admin</h1>
+      <p>Use the sidebar to navigate. Try <Link to="/fortress">Cyber Fortress</Link>.</p>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')!).render(
+  <BrowserRouter>
+    <Shell>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/fortress" element={<Fortification />} />
+      </Routes>
+    </Shell>
+  </BrowserRouter>
+);

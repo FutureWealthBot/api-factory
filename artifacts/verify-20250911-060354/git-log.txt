@@ -1,0 +1,20 @@
+bbb4f43 chore: ignore local backend data directory
+222af49 chore: remove debug logs from backend e2e fixes and register routes before listen
+3477369 ci: replace CI workflow with standardized pnpm matrix job
+3475a8d chore(mvp): add one-click verify script scripts/verify-mvp.sh
+c9d8d9a feat(mvp): scaffold resources, keys, api-key middleware + tests
+f9a09df ci(mvp): add MVP CI workflow to run pnpm run mvp:ci
+cd8bc63 chore(mvp): add turbo 'mvp' pipeline and npm scripts
+3c512f2 chore(mvp): add MVP tracking doc
+bde2965 ci(docker): build monorepo artifacts before docker build so dist/ exists in context
+6ed9bb4 ci: guard openapi validation and skip compliance steps when openapi.yaml is missing
+13f3b5d ci: guard openapi validation; add stripe jest mock
+aa72dca ci: fix workflows (docker tag casing, use pnpm, supabase dlx, gitleaks token, setup-node indent)
+7fc5b84 ci: avoid setup-node pnpm cache to ensure pnpm is installed explicitly in job
+28216f2 chore: rename duplicate workspace package to api-factory-admin to avoid name conflict
+0cb3ea8 chore(deps): upgrade vite to ^7.1.5 (patch security advisories)
+7d49e81 fix(backend): tighten stripe webhook imports/types and remove unused ts directive
+9d80135 ci(workflows): use explicit ubuntu-24.04 runner and stable action tags
+9bdf0a7 chore(ci): commit remaining workspace changes
+dc72bcd fix(admin): repair malformed package.json and add node engine >=18
+f1f4fc2 Merge PR #59: chore(ci): turbo build, docker CI, and workflow hardening

@@ -13,10 +13,14 @@
     "api-factory/*"
   ],
   "scripts": {
-    "lint": "eslint .",
+  "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
   "test": "(cd api-factory/backend && pnpm test)",
-    "build": "tsc -p tsconfig.json || echo \"no tsc\""
+  "build": "tsc -p tsconfig.json || echo \"no tsc\"",
+  "dev": "turbo run dev",
+  "dev:fortress": "node ./scripts/dev-supervisor.js",
+  "dev:admin": "pnpm --filter admin-web dev",
+  "start:admin": "pnpm --filter admin-web dev -- --host"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",
@@ -32,7 +36,8 @@
     "tsx": "^4.20.5",
     "turbo": "^2.5.6",
     "typescript": "^5.9.2",
-    "vite": "^7.1.5"
+    "vite": "^7.1.5",
+  "node-fetch": "^3.3.2"
   },
   "dependencies": {
     "@fastify/cookie": "11.0.2",

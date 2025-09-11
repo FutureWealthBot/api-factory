@@ -7,7 +7,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "dev": "pnpm exec vite -- --host",
+  "dev": "pnpm exec vite -- --host --port 5174",
   "build": "tsc -b && pnpm exec vite build",
   "lint": "eslint .",
     "preview": "pnpm exec vite preview"
@@ -30,4 +30,5 @@
     "typescript-eslint": "^8.39.1",
   "vite": "^7.1.5"
   }
+  ,"turbo": { "pipeline": { "dev": { "dependsOn": [] } } }
 }

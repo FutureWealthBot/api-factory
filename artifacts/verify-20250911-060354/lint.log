@@ -1,0 +1,50 @@
+(node:40611) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+/workspaces/api-factory/api-factory/backend/src/e2e/resources.e2e.test.ts
+  22:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/apps/api-cli/src/server.ts
+  15:7  warning  'requireAdminAuth' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/MarketingWorkspace.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/agent-plugins/auto-build.js
+  25:20  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/agent-plugins/auto-build.ts
+  34:16  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/main.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/src/App.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/src/components/billing/BillingManager.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/src/components/sdk-templates/TemplateDetail.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/src/components/sdk-templates/TemplateList.test.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/src/components/sdk-templates/TemplateVote.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/src/components/tiers/ApiPublish.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/src/components/tiers/ComplianceLink.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/src/components/tiers/TierManager.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspaces/api-factory/packages/admin/src/components/tiers/TierManager.test.js
+  2:8  warning  'React' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 15 problems (0 errors, 15 warnings)
+
