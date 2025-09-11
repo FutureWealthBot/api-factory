@@ -10,6 +10,16 @@ on:
     branches: [main]
     paths: ["apps/**", "packages/**", "pnpm-lock.yaml", "package.json", ".github/**"]
 
+name: Docker CI (matrix, cached)
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths: ["apps/**", "packages/**", "pnpm-lock.yaml", "package.json", ".github/**"]
+  push:
+    branches: [main]
+    paths: ["apps/**", "packages/**", "pnpm-lock.yaml", "package.json", ".github/**"]
+
 permissions:
   contents: read
   packages: write
@@ -59,4 +69,3 @@ jobs:
           tags: ghcr.io/${{ toLower(github.repository_owner) }}/${{ matrix.service }}:pr-${{ github.sha }}
           cache-from: "type=gha,scope=${{ matrix.service }}-cache"
           cache-to: "type=gha,mode=max,scope=${{ matrix.service }}-cache"
-        uses: docker/build-push-action@v4
