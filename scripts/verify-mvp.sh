@@ -1,4 +1,84 @@
 #!/usr/bin/env bash
+# One-click MVP verification for API-Factory
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUTDIR="$ROOT/artifacts/verify-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$OUTDIR"
+cd "$ROOT"
+
+echo "workspace: $ROOT" > "$OUTDIR/summary.txt"
+echo "start: $(date -u)" >> "$OUTDIR/summary.txt"
+
+# 0) Basic git snapshot
+git status --porcelain > "$OUTDIR/git-status.txt" || true
+git log --oneline -n 20 > "$OUTDIR/git-log.txt" || true
+
+# 1) Ensure pnpm
+if ! command -v pnpm >/dev/null 2>&1; then
+  corepack enable || true
+  corepack prepare pnpm@9.9.0 --activate || true
+fi
+
+# 2) Install once at root
+pnpm install | tee "$OUTDIR/pnpm-install.log"
+
+# Helpers: run if script exists anywhere (-r) else noop
+run_if_exists () {
+  local script="$1" log="$2"
+  if pnpm -r --silent run | grep -q "^$script\$" 2>/dev/null; then
+    echo "Running: pnpm -r $script" | tee "$log"
+    pnpm -r "$script" 2>&1 | tee -a "$log"
+  else
+    echo "No workspace script: $script (skipped)" | tee "$log"
+  fi
+}
+
+# 3) Lint, typecheck, test, build
+run_if_exists lint        "$OUTDIR/lint.log"
+run_if_exists typecheck   "$OUTDIR/typecheck.log"
+run_if_exists test        "$OUTDIR/tests.log"
+run_if_exists build       "$OUTDIR/build.log"
+
+# 4) OpenAPI (optional)
+if [ -f openapi.yaml ] || [ -f openapi.yml ]; then
+  echo "Found OpenAPI file, basic syntax check" | tee "$OUTDIR/openapi.log"
+  npx -y @redocly/cli@latest lint openapi.yaml 2>&1 | tee -a "$OUTDIR/openapi.log" || true
+else
+  echo "No openapi.yaml found (skipped)" | tee "$OUTDIR/openapi.log"
+fi
+
+# 5) Migrations / contract tests (if your scripts exist)
+if [ -x ./scripts/migrate.sh ]; then
+  ./scripts/migrate.sh 2>&1 | tee "$OUTDIR/migrate.log"
+else
+  echo "No ./scripts/migrate.sh (skipped)" | tee "$OUTDIR/migrate.log"
+fi
+
+if [ -x ./scripts/contract-test.sh ]; then
+  ./scripts/contract-test.sh 2>&1 | tee "$OUTDIR/contract.log"
+else
+  echo "No ./scripts/contract-test.sh (skipped)" | tee "$OUTDIR/contract.log"
+fi
+
+# 6) Security scan (Node)
+npm audit --audit-level=high 2>&1 | tee "$OUTDIR/security.log" || true
+
+# 7) Staging smoke (optional)
+STAGING_URL="${STAGING_URL:-https://staging.example.com/health}"
+if command -v curl >/dev/null 2>&1; then
+  CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "$STAGING_URL" || echo 000)"
+  echo "curl $STAGING_URL -> $CODE" | tee "$OUTDIR/staging.log"
+  [ "$CODE" = "200" ] && echo "Staging health OK" >> "$OUTDIR/summary.txt" || echo "Staging health != 200" >> "$OUTDIR/summary.txt"
+else
+  echo "curl not found; staging check skipped" | tee "$OUTDIR/staging.log"
+fi
+
+# 8) Pack artifacts
+tar -C "$OUTDIR/.." -czf "$OUTDIR".tar.gz "$(basename "$OUTDIR")"
+echo "end: $(date -u)" >> "$OUTDIR/summary.txt"
+echo "Artifacts: $OUTDIR  and  $OUTDIR.tar.gz"
+#!/usr/bin/env bash
 # One-click MVP verification for /workspaces/api-factory
 # Exit on first failure, collect outputs into artifacts/
 set -euo pipefail
