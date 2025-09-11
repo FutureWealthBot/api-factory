@@ -26,7 +26,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+<<<<<<< HEAD
+          pnpm install --no-frozen-lockfile
+=======
           pnpm install --frozen-lockfile
+>>>>>>> origin/main
 
       - name: Build backend (tsc)
         run: |
