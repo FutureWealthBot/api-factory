@@ -6,6 +6,9 @@
     "node": ">=18"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test:legacy": "node test.js && node test-api.js && CONSENT_JWT_SECRET=dev-secret node test-api-live.js && node test-api-echo.js && node test-api-negative.js",
+    "test:legacy:single": "node test.js && node test-api.js",
+    "test:legacy:live": "CONSENT_JWT_SECRET=dev-secret node test-api-live.js"
   }
 }
