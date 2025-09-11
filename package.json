@@ -32,6 +32,8 @@
     "test:workspace": "pnpm -w -r test",
     "test": "pnpm -w -r --filter './packages/**' --filter './apps/**' test",
     "test:with-backend": "pnpm -w -r --filter './packages/**' --filter './apps/**' test && (cd api-factory/backend && pnpm test)"
+  ,"mvp": "turbo run mvp --filter=./apps/* --filter=./packages/* --cache-dir .turbo/mvp || pnpm -r run mvp"
+  ,"mvp:ci": "turbo run mvp --filter=./apps/* --filter=./packages/* --cache-dir .turbo/mvp"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",
