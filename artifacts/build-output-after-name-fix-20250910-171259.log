@@ -1,0 +1,74 @@
+
+> api-factory@0.1.1 build /workspaces/api-factory
+> turbo run build --cache-dir .turbo || pnpm -r build
+
+turbo 2.5.6
+
+• Packages in scope: @api-factory/core, @api-factory/sdk-ts, admin, admin-api, admin-bot, admin-web, api-cli, user-bot, web
+• Running build in 9 packages
+• Remote caching disabled
+web:build: cache miss, executing a6ac8a9afc86f717
+@api-factory/core:build: cache miss, executing f03ac778098b1e87
+admin-api:build: cache miss, executing 317bd40e8a6aa4d5
+admin:build: cache miss, executing dd2c2bcc2671234e
+admin-web:build: cache miss, executing efa521d6db133301
+@api-factory/sdk-ts:build: cache miss, executing 14a1b0ba3161b7f2
+admin:build: 
+admin:build: > admin@0.1.0 build /workspaces/api-factory/packages/admin
+admin:build: > pnpm exec vite build
+admin:build: 
+admin-web:build: 
+admin-web:build: > admin-web@0.1.0 build /workspaces/api-factory/apps/admin-web
+admin-web:build: > tsc -p tsconfig.json && pnpm exec vite build
+admin-web:build: 
+admin-api:build: 
+admin-api:build: > admin-api@0.1.0 build /workspaces/api-factory/packages/admin-api
+admin-api:build: > node ./scripts/run-tsc.js
+admin-api:build: 
+@api-factory/sdk-ts:build: 
+@api-factory/sdk-ts:build: > @api-factory/sdk-ts@0.1.0 build /workspaces/api-factory/packages/api-factory-sdk
+@api-factory/sdk-ts:build: > tsc -p tsconfig.json && node ./scripts/bundle.mjs
+@api-factory/sdk-ts:build: 
+web:build: 
+web:build: > web@0.0.0 build /workspaces/api-factory/apps/web
+web:build: > tsc -b && pnpm exec vite build
+web:build: 
+@api-factory/core:build: 
+@api-factory/core:build: > @api-factory/core@0.1.0 build /workspaces/api-factory/packages/core
+@api-factory/core:build: > tsc -p tsconfig.json
+@api-factory/core:build: 
+admin:build: vite v7.1.4 building for production...
+admin:build: transforming...
+api-cli:build: cache miss, executing 046f6f8ac59218f9
+admin:build: ✓ 26 modules transformed.
+admin:build: rendering chunks...
+admin:build: computing gzip size...
+admin:build: dist/index.html                  0.34 kB │ gzip:  0.25 kB
+admin:build: dist/assets/index-olvAzSCG.js  145.04 kB │ gzip: 46.66 kB
+admin:build: ✓ built in 3.66s
+api-cli:build: 
+api-cli:build: > api-cli@0.1.0 build /workspaces/api-factory/apps/api-cli
+api-cli:build: > tsc -p tsconfig.json
+api-cli:build: 
+admin-web:build: vite v7.1.4 building for production...
+admin-web:build: transforming...
+web:build: vite v7.1.4 building for production...
+web:build: transforming...
+admin-web:build: ✓ 24 modules transformed.
+admin-web:build: rendering chunks...
+admin-web:build: computing gzip size...
+admin-web:build: dist/index.html                  0.33 kB │ gzip:  0.25 kB
+admin-web:build: dist/assets/index-BVLrAvW9.js  147.02 kB │ gzip: 47.28 kB
+admin-web:build: ✓ built in 1.51s
+web:build: ✓ 32 modules transformed.
+web:build: rendering chunks...
+web:build: computing gzip size...
+web:build: dist/index.html                   0.46 kB │ gzip:  0.30 kB
+web:build: dist/assets/index-Dtn62Xmo.css    0.91 kB │ gzip:  0.49 kB
+web:build: dist/assets/index-jqNyNult.js   190.86 kB │ gzip: 60.38 kB
+web:build: ✓ built in 1.93s
+
+ Tasks:    7 successful, 7 total
+Cached:    0 cached, 7 total
+  Time:    10.144s 
+

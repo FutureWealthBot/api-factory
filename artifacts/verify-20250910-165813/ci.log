@@ -1,0 +1,7 @@
+Checking recent CI runs (gh)... 
+repo: FutureWealthBot/api-factory
+completed	failure	fix(backend): tighten stripe webhook imports/types and remove unused …	Backend verify (tsc + eslint + jest)	ci/turbo-hardening	push	17620733805	6s	2025-09-10T16:46:20Z
+completed	failure	fix(backend): tighten stripe webhook imports/types and remove unused …	Backend Tests	ci/turbo-hardening	push	17620733789	7s	2025-09-10T16:46:20Z
+completed	failure	fix(backend): tighten stripe webhook imports/types and remove unused …	.github/workflows/test-with-backend.yml	ci/turbo-hardening	push	17620733444	0s	2025-09-10T16:46:19Z
+completed	failure	chore(ci): add workspace tests + backend integration, enforce Node engines	Backend Tests	ci/turbo-hardening	pull_request	17620733297	7s	2025-09-10T16:46:19Z
+completed	failure	fix(backend): tighten stripe webhook imports/types and remove unused …	.github/workflows/release.yml	ci/turbo-hardening	push	17620733278	0s	2025-09-10T16:46:19Z

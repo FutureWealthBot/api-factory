@@ -1,0 +1,210 @@
+[
+  {
+    "id": "818ec664-b1ec-4b8d-8cbb-bfcd30c79c41",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T07:25:37.992Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/818ec664-b1ec-4b8d-8cbb-bfcd30c79c41-test.txt"
+  },
+  {
+    "id": "f217681e-fc25-44bf-97f9-dae13db370a4",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T07:27:10.642Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/f217681e-fc25-44bf-97f9-dae13db370a4-test.txt"
+  },
+  {
+    "id": "7671c45c-fd38-4945-a364-a8d14ad4cce7",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T08:08:23.784Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/7671c45c-fd38-4945-a364-a8d14ad4cce7-test.txt"
+  },
+  {
+    "id": "b6f8aebb-30fc-4b72-bf51-a44ef349c796",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T08:09:48.714Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/b6f8aebb-30fc-4b72-bf51-a44ef349c796-test.txt"
+  },
+  {
+    "id": "7e057773-447c-4b0d-8381-773d71f6e194",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T08:20:40.585Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/7e057773-447c-4b0d-8381-773d71f6e194-test.txt"
+  },
+  {
+    "id": "7fad8483-a9ad-458b-9d1f-c6158e0eae3b",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T08:24:47.792Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/7fad8483-a9ad-458b-9d1f-c6158e0eae3b-test.txt"
+  },
+  {
+    "id": "bf134b77-70c8-419c-9f3e-4a571f62c87a",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T08:52:41.031Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/bf134b77-70c8-419c-9f3e-4a571f62c87a-test.txt"
+  },
+  {
+    "id": "611ac148-c033-4d7b-8ae1-e2fe6d3b6f18",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T09:00:09.155Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/611ac148-c033-4d7b-8ae1-e2fe6d3b6f18-test.txt"
+  },
+  {
+    "id": "27ca3a61-a0dd-4dac-87a3-27feda663007",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T09:09:54.159Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/27ca3a61-a0dd-4dac-87a3-27feda663007-test.txt"
+  },
+  {
+    "id": "fafb867b-c347-4f43-8d3c-fa20624c2088",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T09:12:12.556Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/fafb867b-c347-4f43-8d3c-fa20624c2088-test.txt"
+  },
+  {
+    "id": "b84792fe-d473-432b-89bc-c09a2017b8d3",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T09:14:00.019Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/b84792fe-d473-432b-89bc-c09a2017b8d3-test.txt"
+  },
+  {
+    "id": "c9a12f8c-d914-4391-aeb6-5fa25cf0ce59",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T09:16:22.600Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/c9a12f8c-d914-4391-aeb6-5fa25cf0ce59-test.txt"
+  },
+  {
+    "id": "dc6e03a5-c7a3-4d32-a627-3e8dd9137a4e",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T16:15:37.974Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/dc6e03a5-c7a3-4d32-a627-3e8dd9137a4e-test.txt"
+  },
+  {
+    "id": "81577389-473d-43ef-8d1e-a62e5870c82f",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T16:45:27.719Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/81577389-473d-43ef-8d1e-a62e5870c82f-test.txt"
+  },
+  {
+    "id": "5f9e7f38-cff1-41a9-ac17-86f43229cd1b",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T16:45:51.879Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/5f9e7f38-cff1-41a9-ac17-86f43229cd1b-test.txt"
+  },
+  {
+    "id": "e6b97811-971d-46fc-bc62-823733faee0a",
+    "name": "Test Template",
+    "language": "js",
+    "tags": [
+      "test",
+      "example"
+    ],
+    "author": "tester",
+    "votes": 0,
+    "createdAt": "2025-09-10T18:08:24.402Z",
+    "file": "/workspaces/api-factory/packages/admin/agent-templates/sdk/e6b97811-971d-46fc-bc62-823733faee0a-test.txt"
+  }
+]

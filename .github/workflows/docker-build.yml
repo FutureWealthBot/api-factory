@@ -16,6 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install deps & build artifacts
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.9.0 --activate
+          pnpm i --frozen-lockfile
+          pnpm -w -r build
       - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435
       - uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1
         with:
@@ -27,7 +36,7 @@ jobs:
           context: .
           file: apps/api-cli/Dockerfile
           push: false
-          tags: ghcr.io/${{ github.repository }}/api-cli:pr-${{ github.sha }}
+          tags: ghcr.io/${{ toLower(github.repository_owner) }}/api-cli:pr-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -35,6 +44,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install deps & build artifacts
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.9.0 --activate
+          pnpm i --frozen-lockfile
+          pnpm -w -r build
       - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435
       - uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1
         with:
@@ -46,6 +64,6 @@ jobs:
           context: .
           file: apps/admin-web/Dockerfile
           push: false
-          tags: ghcr.io/${{ github.repository }}/admin-web:pr-${{ github.sha }}
+          tags: ghcr.io/${{ toLower(github.repository_owner) }}/admin-web:pr-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
