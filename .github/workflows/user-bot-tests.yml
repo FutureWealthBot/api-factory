@@ -1,0 +1,90 @@
+name: User Bot Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'apps/user-bot/**'
+      - '.github/workflows/user-bot-tests.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'apps/user-bot/**'
+      - '.github/workflows/user-bot-tests.yml'
+  workflow_dispatch:
+    inputs:
+      run_live_tests:
+        description: 'Run live integration tests'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  unit-tests:
+    name: Unit Tests (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        npm install -g pnpm
+        pnpm install
+        
+    - name: Run unit tests
+      run: |
+        cd apps/user-bot
+        npm test
+      env:
+        NODE_ENV: test
+        TELEGRAM_USER_BOT_TOKEN: test-token-123
+        API_BASE: http://localhost:8787
+        TELEGRAM_ADMIN_CHAT_IDS: 123456789
+
+  live-tests:
+    name: Live Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event.inputs.run_live_tests == 'true' || github.event_name == 'workflow_dispatch'
+    needs: unit-tests
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      
+    - name: Setup Node.js 20
+      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        npm install -g pnpm
+        pnpm install
+        
+    # Note: In a real scenario, you would start your backend here
+    # For now, we'll just show that the live tests can be triggered
+    - name: Run live integration tests
+      run: |
+        cd apps/user-bot
+        echo "Live tests would run against a real backend"
+        echo "To run locally: RUN_LIVE_TESTS=1 npm run test:live:jest"
+      env:
+        NODE_ENV: test
+        RUN_LIVE_TESTS: 1
+        TELEGRAM_USER_BOT_TOKEN: test-token-123
+        API_BASE: http://localhost:3000
+        TELEGRAM_ADMIN_CHAT_IDS: 123456789

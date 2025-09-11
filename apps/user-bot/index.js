@@ -68,8 +68,11 @@ const poll = async () => {
   }
 };
 
-console.log('user-bot starting (long-poll)');
-setInterval(poll, 1000);
+// Only start polling if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  console.log('user-bot starting (long-poll)');
+  setInterval(poll, 1000);
+}
 
 // export for testing
 export { handleCommand };

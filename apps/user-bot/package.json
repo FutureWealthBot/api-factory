@@ -7,8 +7,14 @@
   },
   "scripts": {
     "start": "node index.js",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' npx jest",
+    "test:watch": "NODE_OPTIONS='--experimental-vm-modules' npx jest --watch",
+    "test:live:jest": "NODE_OPTIONS='--experimental-vm-modules' npx jest --testPathPattern=live",
     "test:legacy": "node test.js && node test-api.js && CONSENT_JWT_SECRET=dev-secret node test-api-live.js && node test-api-echo.js && node test-api-negative.js",
     "test:legacy:single": "node test.js && node test-api.js",
     "test:legacy:live": "CONSENT_JWT_SECRET=dev-secret node test-api-live.js"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
   }
 }
