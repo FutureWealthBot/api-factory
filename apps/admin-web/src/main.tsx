@@ -2,6 +2,43 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Fortification from './screens/Fortification';
+
+function RetirementPlanner() {
+  return (
+    <div style={{ padding: 18 }}>
+      <h1>Retirement Planner</h1>
+      <form>
+        <label>
+          Age: <input name="age" type="number" />
+        </label><br />
+        <label>
+          Income: <input name="income" type="number" />
+        </label><br />
+        <label>
+          Savings: <input name="savings" type="number" />
+        </label><br />
+        <label>
+          Retirement Age: <input name="retirementAge" type="number" />
+        </label><br />
+        <button type="submit">Calculate</button>
+      </form>
+      <div className="result" data-testid="results">Estimated Retirement: (placeholder)</div>
+    </div>
+  );
+}
+
+function Pricing() {
+  return (
+    <div style={{ padding: 18 }}>
+      <h1>Pricing</h1>
+      <ul>
+        <li>Starter: Free</li>
+        <li>Advisors: $49/mo</li>
+        <li>Enterprise: Contact us</li>
+      </ul>
+    </div>
+  );
+}
 import Sidebar from './components/Sidebar';
 import './styles/fortress.css';
 
@@ -75,6 +112,8 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/fortress" element={<Fortification />} />
+        <Route path="/retirement-planner" element={<RetirementPlanner />} />
+        <Route path="/pricing" element={<Pricing />} />
       </Routes>
     </Shell>
   </BrowserRouter>
