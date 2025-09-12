@@ -3,37 +3,39 @@
   "tasks": [
     {
       "label": "pnpm: build",
-      {
-        "version": "2.0.0",
-        "tasks": [
-          {
-            "label": "pnpm: build",
-            "type": "shell",
-            "command": "pnpm build",
-            "group": "build",
-            "problemMatcher": []
-          },
-          {
-            "label": "pnpm: dev",
-            "type": "shell",
-            "command": "PORT=8787 API_PORT=8787 pnpm dev",
-            "isBackground": true,
-            "problemMatcher": []
-          },
-          {
-            "label": "pnpm: start api-cli",
-            "type": "shell",
-            "command": "pnpm --filter api-cli dev",
-            "isBackground": true,
-            "problemMatcher": []
-          },
-          {
-            "label": "Dev: CLI + Web",
-            "type": "shell",
-            "command": "pnpm dev || npm run dev",
-            "isBackground": true,
-            "problemMatcher": []
-          }
-        ]
-      }
+      "type": "shell",
+      "command": "pnpm build",
+      "group": "build",
       "problemMatcher": []
+    },
+    {
+      "label": "pnpm: dev",
+      "type": "shell",
+      "command": "PORT=8787 API_PORT=8787 pnpm dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "pnpm: start api-cli",
+      "type": "shell",
+      "command": "pnpm --filter api-cli dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: CLI + Web",
+      "type": "shell",
+      "command": "pnpm dev || npm run dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Start admin-web dev server for E2E",
+      "type": "shell",
+      "command": "pnpm --filter admin-web dev",
+      "isBackground": true,
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
+}
