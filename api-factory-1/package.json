@@ -1,0 +1,36 @@
+{
+  "name": "api-factory",
+  "version": "1.0.0",
+  "description": "A factory for creating APIs with TypeScript.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/api-factory.git"
+  },
+  "keywords": [
+    "api",
+    "typescript",
+    "nodejs"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4",
+    "jest": "^27.0.6",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^16.11.7",
+    "@types/express": "^4.17.13"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

@@ -1,6 +1,6 @@
 module.exports = {
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.js'],
   testMatch: ['**/__tests__/**/*.test.js'],
+  setupFilesAfterEnv: ['./jest.setup.cjs'],
   verbose: true,
 };
