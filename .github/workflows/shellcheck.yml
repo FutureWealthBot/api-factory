@@ -1,6 +1,30 @@
 name: ShellCheck
 
 on:
+  pull_request:
+  push:
+    branches: [ main, chore/** ]
+
+jobs:
+  shellcheck:
+    name: ShellCheck scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck on monitor scripts
+        run: |
+          set -euo pipefail
+          /usr/bin/shellcheck -x scripts/ci-monitor.sh .github/scripts/ci-monitor-action.sh
+name: ShellCheck
+
+on:
   push:
     branches: [ main ]
   pull_request:
