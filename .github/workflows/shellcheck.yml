@@ -1,38 +1,14 @@
-name: ShellCheck
-
-on:
-  pull_request:
-  push:
-    branches: [ main, chore/** ]
-
-jobs:
-  shellcheck:
-    name: ShellCheck scripts
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install ShellCheck
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y shellcheck
-
-      - name: Run ShellCheck on monitor scripts
-        run: |
-          set -euo pipefail
-          /usr/bin/shellcheck -x scripts/ci-monitor.sh .github/scripts/ci-monitor-action.sh
-name: ShellCheck
+name: ShellCheck and Smoke Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'chore/**' ]
   pull_request:
     branches: [ main ]
 
 jobs:
   shellcheck:
-    name: Run ShellCheck on repository scripts
+    name: ShellCheck + smoke test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,14 +16,13 @@ jobs:
 
       - name: Install shellcheck
         run: |
-          sudo apt-get update
+          sudo apt-get update -y
           sudo apt-get install -y shellcheck
 
       - name: Discover shell scripts
         run: |
-          # collect shell scripts to lint (exclude node_modules and generated assets)
           find . -type f -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './build-*' > /tmp/shellscripts.txt || true
-          echo "Found scripts:" && cat /tmp/shellscripts.txt || true
+          echo "Found scripts:" && sed -n '1,200p' /tmp/shellscripts.txt || true
 
       - name: Run ShellCheck
         run: |
@@ -57,3 +32,7 @@ jobs:
           else
             echo "No shell scripts to lint"
           fi
+
+      - name: Run smoke test (syntax/dry-run)
+        run: |
+          bash scripts/ci-monitor-smoke.sh
