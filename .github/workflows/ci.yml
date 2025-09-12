@@ -40,7 +40,7 @@ jobs:
             pnpm-${{ runner.os }}-${{ matrix.node }}-
 
       - name: Install
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Lint (if present)
         run: |

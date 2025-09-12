@@ -24,7 +24,7 @@ jobs:
         run: corepack enable && corepack prepare pnpm@9.9.0 --activate
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - id: safety-check
         name: Safety check: allow real unlock
