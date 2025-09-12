@@ -1,0 +1,76 @@
+name: ShellCheck and Smoke Test
+
+on:
+  push:
+    branches: [ main, 'chore/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  shellcheck:
+    name: ShellCheck + smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y shellcheck
+
+      - name: Discover shell scripts
+        run: |
+          find . -type f -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './build-*' > /tmp/shellscripts.txt || true
+          echo "Found scripts:" && sed -n '1,200p' /tmp/shellscripts.txt || true
+
+      - name: Run ShellCheck
+        run: |
+          if [ -s /tmp/shellscripts.txt ]; then
+            set -o pipefail
+            xargs -a /tmp/shellscripts.txt -r shellcheck -x || (echo 'ShellCheck found issues' && exit 1)
+          else
+            echo "No shell scripts to lint"
+          fi
+
+      - name: Run smoke test (syntax/dry-run)
+        run: |
+          bash scripts/ci-monitor-smoke.sh
+name: ShellCheck and Smoke Test
+
+on:
+  push:
+    branches: [ main, 'chore/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  shellcheck:
+    name: ShellCheck + smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y shellcheck
+
+      - name: Discover shell scripts
+        run: |
+          find . -type f -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' -not -path './build-*' > /tmp/shellscripts.txt || true
+          echo "Found scripts:" && sed -n '1,200p' /tmp/shellscripts.txt || true
+
+      - name: Run ShellCheck
+        run: |
+          if [ -s /tmp/shellscripts.txt ]; then
+            set -o pipefail
+            xargs -a /tmp/shellscripts.txt -r shellcheck -x || (echo 'ShellCheck found issues' && exit 1)
+          else
+            echo "No shell scripts to lint"
+          fi
+
+      - name: Run smoke test (syntax/dry-run)
+        run: |
+          bash scripts/ci-monitor-smoke.sh

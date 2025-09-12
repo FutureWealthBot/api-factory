@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "api-factory-python"
+version = "0.1.0"
+description = "API Factory Python SDK"
+authors = [{name = "FutureWealthBot"}]
+dependencies = ["requests>=2.28"]

@@ -8,7 +8,8 @@
     "test": "jest --config ./jest.config.js --runInBand",
     "test:ci": "jest --config ./jest.config.js --runInBand",
     "e2e:debug": "tsx scripts/e2e-debug.ts",
-    "build": "tsc",
+  "build": "tsc",
+  "postbuild": "node ../../scripts/cleanup-dist-mocks.js",
     "start": "node dist/server.js"
   },
   "dependencies": {

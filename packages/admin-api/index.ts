@@ -1,15 +1,27 @@
 import express from 'express';
-import marketingRoutes from './marketingRoutes';
-import fortressRoutes from './fortressRoutes';
+import marketingRoutes from './src/marketingRoutes';
+import analyticsRoutes from './src/analytics/analyticsRoutes';
+import { simpleRateLimiter } from './src/middleware/rateLimiter';
+
+let fortressRoutes: express.Router | null = null;
+try {
+  // optional feature
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  fortressRoutes = require('./fortressRoutes').default;
+} catch (e) {
+  fortressRoutes = null;
+}
 
 const app = express();
 app.use(express.json());
+// Apply simple in-memory rate limiter globally
+app.use(simpleRateLimiter);
 app.use('/api/marketing', marketingRoutes);
-app.use('/api/fortress', fortressRoutes);
+app.use('/api/analytics', analyticsRoutes);
+if (fortressRoutes) app.use('/api/fortress', fortressRoutes);
 
 const DEFAULT_PORT = 5178;
 const desiredPort = process.env.PORT ? Number(process.env.PORT) : DEFAULT_PORT;
-// If desiredPort is 0 or unset, let the OS pick a free port; otherwise try the desired port.
 const server = app.listen(desiredPort, () => {
   const addr = server.address();
   const actualPort = typeof addr === 'string' ? addr : addr && addr.port ? addr.port : desiredPort;
@@ -22,5 +34,5 @@ server.on('error', (err: any) => {
   } else {
     console.error('Server error', err);
   }
-  process.exit(1);
+  // don't exit the process to allow host to handle restarts
 });

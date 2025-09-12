@@ -8,6 +8,12 @@ const KEYS_FILE = join(DATA_DIR, 'keys.json');
 
 app.get('/_meta', async () => ({ track: process.env.TRACK || 'unknown' }));
 
+// Lightweight health endpoint used by smoke-tests
+app.get('/_api/healthz', async () => ({ ok: true, uptime: process.uptime() }));
+
+// Simple ping used by web smoke-tests
+app.get('/api/v1/hello/ping', async () => ({ pong: true, time: Date.now() }));
+
 app.get('/api/admin/billing/key', async (req, reply) => {
   const key = req.query.key;
   try {
@@ -36,6 +42,16 @@ app.post('/api/admin/billing/key', async (req, reply) => {
     console.error(err);
     reply.status(500).send({ error: 'io_error' });
   }
+});
+
+// Minimal actions endpoint to emulate backend auth behavior for smoke-tests
+app.post('/api/v1/actions', async (req, reply) => {
+  const auth = req.headers.authorization || '';
+  if (!auth.startsWith('Bearer ') || auth.trim() === 'Bearer') {
+    return reply.status(401).send({ success: false, error: { code: 'UNAUTHORIZED' } });
+  }
+  // For local smoke-tests we accept any bearer token and return a mock response
+  return reply.send({ success: true, action: req.body ?? {} });
 });
 
 app.listen({ host: '0.0.0.0', port: 8787 }).then(() => console.log('admin-shim listening'));
