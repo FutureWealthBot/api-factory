@@ -1,9 +1,10 @@
-
 #!/usr/bin/env bash
 set -euo pipefail
 
 # Enhanced GitHub Actions scheduled CI monitor script.
 # - lists failing jobs for a run
+# - downloads run logs (zip), extracts a tail excerpt
+# - deduplicates more reliably by checking for the run URL and title
 # - downloads run logs (zip), extracts a tail excerpt
 # - deduplicates more reliably by checking for the run URL and title
 
@@ -69,6 +70,7 @@ echo "$runs_json" | jq -c '.workflow_runs[] | select(.conclusion == "failure" or
     unzip -qq "$tmpzip" -d "$tmpdir" || true
     # concatenate all files and tail
     find "$tmpdir" -type f -print0 | xargs -0 cat 2>/dev/null | tail -n "$MAX_LOG_LINES" > "$tmpdir/tail.txt" || true
+    # shellcheck disable=SC2016
     logs_excerpt=$(sed 's/```/`\`\`/g' "$tmpdir/tail.txt" || true)
     rm -rf "$tmpdir" "$tmpzip"
   else

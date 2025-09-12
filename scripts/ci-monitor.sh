@@ -24,7 +24,7 @@ STATE_FILE=".ci-monitor-state.json"
 POLL_INTERVAL=${POLL_INTERVAL:-60}
 MAX_LOG_LINES=800
 
-mkdir -p $(dirname "$STATE_FILE") 2>/dev/null || true
+mkdir -p "$(dirname "$STATE_FILE")" 2>/dev/null || true
 if [[ ! -f "$STATE_FILE" ]]; then
   echo '{}' > "$STATE_FILE"
 fi
@@ -73,20 +73,22 @@ while true; do
     }
 
     if download_with_retries "gh run view $run_id --repo $REPO --log > $log_tmp 2>/dev/null"; then
-      tail -n "$MAX_LOG_LINES" "$log_tmp" > "$log_tmp.tail"
-      log_excerpt=$(sed 's/```/`\`\`/g' "$log_tmp.tail")
-      rm -f "$log_tmp" "$log_tmp.tail"
+  tail -n "$MAX_LOG_LINES" "$log_tmp" > "$log_tmp.tail"
+  # shellcheck disable=SC2016
+  logs_excerpt=$(sed 's/```/`\`\`/g' "$log_tmp.tail")
+  rm -f "$log_tmp" "$log_tmp.tail"
     else
       echo "gh run view failed — trying gh run download (logs zip)"
       tmpzip=$(mktemp --suffix=.zip)
-      if download_with_retries "gh run download $run_id --repo $REPO -D $(dirname $tmpzip) --logs 2>/dev/null || true"; then
+      if download_with_retries "gh run download $run_id --repo $REPO -D \"$(dirname "$tmpzip")\" --logs 2>/dev/null || true"; then
         # find the downloaded zip in the dir
-        dl_dir=$(dirname $tmpzip)
-        zipfile=$(ls -1 $dl_dir/*.zip 2>/dev/null | head -n1 || true)
+        dl_dir=$(dirname "$tmpzip")
+        zipfile=$(find "$dl_dir" -maxdepth 1 -type f -name '*.zip' -print -quit 2>/dev/null || true)
         if [[ -n "$zipfile" ]]; then
           tmpdir=$(mktemp -d)
           unzip -qq "$zipfile" -d "$tmpdir" || true
           find "$tmpdir" -type f -print0 | xargs -0 cat 2>/dev/null | tail -n "$MAX_LOG_LINES" > "$tmpdir/tail.txt" || true
+          # shellcheck disable=SC2016
           logs_excerpt=$(sed 's/```/`\`\`/g' "$tmpdir/tail.txt" || true)
           rm -rf "$tmpdir" "$zipfile"
         else
@@ -98,7 +100,7 @@ while true; do
     fi
 
     issue_title="CI failure: $name (run #$number)"
-    issue_body="Detected a failed workflow run on main:\n\n- Workflow: $name\n- Run #: $number\n- Conclusion: failed\n- Updated: $updated_at\n- URL: $url\n\nLogs (tail, last ${MAX_LOG_LINES} lines):\n\n\`\`\`\n$log_excerpt\n\`\`\`\n\nThis issue was created automatically by scripts/ci-monitor.sh."
+  issue_body="Detected a failed workflow run on main:\n\n- Workflow: $name\n- Run #: $number\n- Conclusion: failed\n- Updated: $updated_at\n- URL: $url\n\nLogs (tail, last ${MAX_LOG_LINES} lines):\n\n\`\`\`\n$logs_excerpt\n\`\`\`\n\nThis issue was created automatically by scripts/ci-monitor.sh."
 
     # create issue and capture number
     echo "Creating issue for run $run_id..."
