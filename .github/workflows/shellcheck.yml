@@ -35,4 +35,5 @@ jobs:
 
       - name: Run smoke test (syntax/dry-run)
         run: |
+          chmod +x scripts/ci-monitor-smoke.sh
           bash scripts/ci-monitor-smoke.sh
