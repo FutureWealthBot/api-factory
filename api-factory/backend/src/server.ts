@@ -7,6 +7,49 @@ import { dirname } from 'path';
 // Create a Fastify instance
 const fastify = Fastify({ logger: true });
 
+// Optionally register OpenAPI/Swagger if requested (set USE_OPENAPI=1)
+if (process.env.USE_OPENAPI === '1') {
+  try {
+    // dynamic imports so missing plugins don't crash startup in stripped environments
+    import('@fastify/swagger').then((mod) => {
+      const swagger = (mod as any).default ?? mod;
+      fastify.register(swagger, {
+        routePrefix: '/openapi.json',
+        swagger: {
+          info: {
+            title: 'API Factory',
+            description: 'Auto-generated OpenAPI spec',
+            version: '1.0.0',
+          },
+        },
+      });
+    }).catch(() => {
+      fastify.log.warn('Swagger plugin not available');
+    });
+
+    import('@fastify/swagger-ui').then((mod) => {
+      const swaggerUi = (mod as any).default ?? mod;
+      fastify.register(swaggerUi, {
+        routePrefix: '/docs',
+        uiConfig: {
+          docExpansion: 'list',
+        },
+        uiHooks: {
+          onRequest: function (request: any, reply: any, next: any) { next(); },
+          preHandler: function (request: any, reply: any, next: any) { next(); }
+        },
+        staticCSP: true,
+        transformSpec: (spec: any, req: any, reply: any) => spec,
+      });
+    }).catch(() => {
+      fastify.log.warn('Swagger UI plugin not available');
+    });
+  } catch (err) {
+    // `err` is unknown, stringify for logging
+    fastify.log.warn('Failed to initialize OpenAPI plugins: ' + String(err));
+  }
+}
+
 // Get the current directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,6 +66,7 @@ import adminUsageRoutes from './routes/admin-usage.js';
 import adminBillingRoutes from './routes/admin-billing.js';
 import adminReleasesRoutes from './routes/admin-releases.js';
 import helloRoutes from './routes/hello.js';
+import retirementRoutes from './routes/retirement.js';
 
 // Consent middleware: applied to API routes under /api as a fail-closed guard
 import consentMiddleware from './middleware/consent-middleware.js';
@@ -74,6 +118,7 @@ fastify.register(adminUsageRoutes);
 fastify.register(adminBillingRoutes);
 fastify.register(adminReleasesRoutes);
 fastify.register(helloRoutes);
+fastify.register(retirementRoutes);
 
 // Serve static files
 // In dev we avoid registering @fastify/static (plugin version mismatches across workspace).

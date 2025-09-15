@@ -8,9 +8,11 @@
     "node": ">=18"
   },
   "scripts": {
-  "build": "tsc -p tsconfig.json",
-  "postbuild": "node ../../scripts/cleanup-dist-mocks.js",
-  "test": "pnpm exec jest --config ./jest.config.cjs"
+    "build": "tsc -p tsconfig.json",
+    "postbuild": "node ../../scripts/cleanup-dist-mocks.js",
+    "test": "pnpm exec jest --config ./jest.config.cjs",
+    "lint": "eslint ./src --ext .ts,.js",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
     "typescript": "^5.9.2"

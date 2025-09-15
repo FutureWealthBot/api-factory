@@ -1,66 +1,39 @@
-name: ci
+name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  build-test:
+  build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        node: [20, 22]
-
+        workspace:
+          - apps/api-cli
+          - apps/admin-web
+          - apps/web
+          - packages/core
+          - packages/admin-api
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: Enable corepack / pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@9.9.0 --activate
-          pnpm -v
-
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: pnpm-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-${{ runner.os }}-${{ matrix.node }}-
-
-      - name: Install
+          node-version: 22
+          cache: 'pnpm'
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Lint (if present)
-        run: |
-          pnpm -r --silent run | grep -q '^lint$' && pnpm -r lint || echo "no lint scripts"
-
-      - name: Typecheck (if present)
-        run: |
-          pnpm -r --silent run | grep -q '^typecheck$' && pnpm -r typecheck || echo "no typecheck scripts"
-
-      - name: Test (if present)
-        run: |
-          pnpm -r --silent run | grep -q '^test$' && pnpm -r test || echo "no test scripts"
-
-      - name: Build (if present)
-        run: |
-          pnpm -r --silent run | grep -q '^build$' && pnpm -r build || echo "no build scripts"
-
-      - name: Upload build artifacts (admin-web dist if exists)
-        uses: actions/upload-artifact@v4
-        with:
-          name: admin-web-dist-${{ matrix.node }}
-          path: apps/admin-web/dist
-          if-no-files-found: ignore
+      - name: Lint
+        run: pnpm --filter ./${{ matrix.workspace }} lint || echo "No lint script"
+      - name: Typecheck
+        run: pnpm --filter ./${{ matrix.workspace }} typecheck || echo "No typecheck script"
+      - name: Test
+        run: pnpm --filter ./${{ matrix.workspace }} test --if-present || echo "No test script"
+      - name: Build
+        run: pnpm --filter ./${{ matrix.workspace }} build

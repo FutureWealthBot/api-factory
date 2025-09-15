@@ -7,14 +7,16 @@
     "node": ">=18"
   },
   "scripts": {
-  "dev": "node ./scripts/wait-for-api.js && ADMIN_BASE_URL=http://localhost:5173 pnpm exec vite -- --port 5173",
-  "start": "node ./scripts/wait-for-api.js && ADMIN_BASE_URL=http://localhost:5173 pnpm exec vite -- --port 5173",
-  "dev:supervised": "pnpm --filter ./apps/admin-web dev",
-  "test": "vitest",
-  "test:ci": "vitest run",
-  "test:playwright": "playwright test --project=chromium",
+    "dev": "node ./scripts/wait-for-api.js && ADMIN_BASE_URL=http://localhost:5173 pnpm exec vite -- --port 5173",
+    "start": "node ./scripts/wait-for-api.js && ADMIN_BASE_URL=http://localhost:5173 pnpm exec vite -- --port 5173",
+    "dev:supervised": "pnpm --filter ./apps/admin-web dev",
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "test:playwright": "playwright test --project=chromium",
     "build": "tsc -p tsconfig.json && pnpm exec vite build",
-    "preview": "pnpm exec vite preview -- --port 5173"
+    "preview": "pnpm exec vite preview -- --port 5173",
+    "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
   "react": "^19.1.1",

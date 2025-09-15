@@ -2,6 +2,7 @@
 import Roadmap from '../widgets/fortress/Roadmap';
 import Tiers from '../widgets/fortress/Tiers';
 import SecurityScan from '../widgets/fortress/SecurityScan';
+import AIPlayground from '../widgets/ai/AIPlayground';
 
 export default function Fortification() {
   return (
@@ -24,6 +25,11 @@ export default function Fortification() {
       <section className="card">
         <h2>Latest Security Scan</h2>
         <SecurityScan />
+      </section>
+
+      <section className="card">
+        <h2>AI Playground</h2>
+        <AIPlayground />
       </section>
     </div>
   );

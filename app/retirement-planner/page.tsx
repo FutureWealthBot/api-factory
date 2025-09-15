@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 
 export default function RetirementPlannerPage() {
@@ -6,7 +8,8 @@ export default function RetirementPlannerPage() {
   const [ira, setIra] = useState('');
   const [socialSecurity, setSocialSecurity] = useState('');
   const [years, setYears] = useState('20');
-  const [result, setResult] = useState<any>(null);
+  type Result = { total: number; annual: number; years: number; breakdown: Record<string, number> } | null;
+  const [result, setResult] = useState<Result>(null);
   const [error, setError] = useState<string | null>(null);
 
   if (!enabled) return (
@@ -33,11 +36,28 @@ export default function RetirementPlannerPage() {
           years: Number(years)
         })
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'API error');
+      const raw = await res.text();
+      if (!res.ok) {
+        // try to parse an error message
+        try {
+          const errJson = JSON.parse(raw) as { error?: string };
+          throw new Error(errJson.error || 'API error');
+        } catch {
+          throw new Error(raw || 'API error');
+        }
+      }
+      const data = JSON.parse(raw) as Exclude<Result, null>;
       setResult(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      // normalize unknown error to string message
+      const safeStringify = (v: unknown) => {
+        try { return JSON.stringify(v); } catch { return String(v); }
+      };
+      const message =
+        typeof err === 'string' ? err :
+        err instanceof Error ? err.message :
+        safeStringify(err);
+      setError(message ?? 'Unknown error');
     }
   }
 

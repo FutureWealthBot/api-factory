@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import HealthBadge from './components/HealthBadge'
 import MetricsCard from './components/MetricsCard'
+import EmailCheck from './components/EmailCheck'
 import { apiFetch } from './lib/api'
 
 type HealthResponse = { status: string; service?: string; [key: string]: unknown }
@@ -38,6 +39,7 @@ export default function App() {
       {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
 
       <MetricsCard />
+      <EmailCheck />
     </div>
   )
 }

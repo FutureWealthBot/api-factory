@@ -11,6 +11,7 @@ export type KeyRecord = {
   quota?: number;
   status?: 'active' | 'suspended' | 'past_due' | 'revoked' | 'unknown';
   updatedAt?: string;
+  expiresAt?: string; // ISO date string for expiration
 };
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
