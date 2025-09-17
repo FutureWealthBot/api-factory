@@ -40,7 +40,7 @@ function Pricing() {
   );
 }
 import Sidebar from './components/Sidebar';
-import './styles/fortress.css';
+
 
 function Shell({ children }: { children: React.ReactNode }) {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -113,8 +113,8 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<Home />} />
   <Route path="/subscriptions" element={<Subscriptions />} />
-        <Route path="/retirement-planner" element={<RetirementPlanner />} />
-        <Route path="/pricing" element={<Pricing />} />
+  <Route path="/retirement-planner" element={<RetirementPlanner />} />
+  <Route path="/pricing" element={<Pricing />} />
       </Routes>
     </Shell>
   </BrowserRouter>

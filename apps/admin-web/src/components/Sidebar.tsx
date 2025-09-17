@@ -52,16 +52,6 @@ export default function Sidebar({ onNavigate }: Props) {
               Subscriptions
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/retirement-planner" onClick={navigateAndClose} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-              Retirement Planner
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/pricing" onClick={navigateAndClose} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-              Pricing
-            </NavLink>
-          </li>
         </ul>
       </nav>
     </aside>
