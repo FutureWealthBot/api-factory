@@ -18,7 +18,7 @@ jobs:
           persist-credentials: true
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+  uses: actions/setup-node@v4
         with:
           node-version: '18'
 
@@ -31,7 +31,7 @@ jobs:
         run: pnpm install
 
       - name: Build report-cli
-        run: pnpm --filter @api-factory/report-cli run build
+        run: pnpm -w --filter ./tools/report-cli... run build
 
       - name: Generate reports
         run: |
