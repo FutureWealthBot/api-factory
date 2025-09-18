@@ -9,6 +9,14 @@ module.exports = {
     // This avoids rewriting relative imports coming from node_modules (e.g. react-is internal cjs files).
     '^(.*\\/src\\/.*)\\.js$': '$1.ts'
   },
-  // allow transforming ESM packages (whitelist uuid)
-  transformIgnorePatterns: ['node_modules/(?!(uuid)/)']
+  // allow transforming ESM packages (whitelist uuid, node-fetch)
+  transformIgnorePatterns: ['node_modules/(?!(uuid|node-fetch)/)'],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    }
+  }
 };

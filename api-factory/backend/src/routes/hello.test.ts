@@ -23,7 +23,7 @@ describe('hello routes', () => {
   });
 
   test('/api/v1/hello/ping returns pong', async () => {
-    const res = await fastify.inject({ method: 'GET', url: '/api/v1/hello/ping' });
+    const res = await fastify.inject({ method: 'GET', url: '/api/v1/hello/ping', headers: { 'x-api-key': 'test-key' } });
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload);
     expect(body.pong).toBe(true);
@@ -32,7 +32,7 @@ describe('hello routes', () => {
 
   test('/api/v1/hello/echo echoes payload', async () => {
     const payload = { msg: 'test' };
-    const res = await fastify.inject({ method: 'POST', url: '/api/v1/hello/echo', payload });
+    const res = await fastify.inject({ method: 'POST', url: '/api/v1/hello/echo', payload, headers: { 'x-api-key': 'test-key' } });
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload);
     expect(body.echoed).toEqual(payload);

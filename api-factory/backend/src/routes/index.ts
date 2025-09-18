@@ -4,8 +4,11 @@ import resourcesRoutes from './resources';
 import keysRoutes from './keys';
 import apiKeyMiddleware from '../middleware/api-key';
 import blockGovDomains from '../middleware/block-gov-domains';
+import usageRoutes from './usage.js';
 
 export default async function routes(fastify: FastifyInstance) {
+  // Register usage analytics endpoints
+  await usageRoutes(fastify);
   // Example signup endpoint with gov domain blocking middleware
   fastify.post('/auth/signup', {
     preHandler: async (request: FastifyRequest, reply: FastifyReply) => {

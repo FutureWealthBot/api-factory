@@ -16,8 +16,22 @@ describe('Marketplace API', () => {
   });
 
   it('should publish a new API (stub)', async () => {
-    const res = await fastify.inject({ method: 'POST', url: '/marketplace/publish' });
+    // Mock global fetch to return a minimal OpenAPI spec
+    const originalFetch = global.fetch;
+    global.fetch = async () => ({
+      text: async () => JSON.stringify({ openapi: '3.0.0', info: { title: 'Test', version: '1.0.0' } }),
+      ok: true
+    }) as any;
+    const payload = {
+      name: 'Test API',
+      tier: 'free',
+      docs: 'https://example.com/openapi.json',
+      tags: [],
+      price: 0
+    };
+    const res = await fastify.inject({ method: 'POST', url: '/marketplace/publish', headers: { 'x-api-key': 'test-key' }, payload });
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.body).message).toMatch(/published/i);
+    global.fetch = originalFetch;
   });
 });

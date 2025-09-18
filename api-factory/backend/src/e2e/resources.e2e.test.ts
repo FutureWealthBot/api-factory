@@ -6,7 +6,13 @@ const HEALTH_URL = (port: number) => `http://localhost:${port}/_api/healthz`;
 
 function startServer(port = 3010): { proc: ChildProcess; port: number } {
   // Use pnpm exec to run tsx so we can execute TypeScript entrypoint
-  const env = { ...process.env, PORT: String(port), NODE_ENV: 'test' } as NodeJS.ProcessEnv;
+  const env = {
+    ...process.env,
+    PORT: String(port),
+    NODE_ENV: 'test',
+    JWT_SECRET: 'test-secret',
+    DATABASE_URL: 'postgres://test:test@localhost:5432/testdb'
+  } as NodeJS.ProcessEnv;
   const proc = spawn('pnpm', ['exec', 'tsx', 'src/server.ts'], { env, stdio: ['ignore', 'pipe', 'pipe'], cwd: __dirname + '/..' });
   proc.stdout?.on('data', (d) => console.log('[server]', d.toString().trim()));
   proc.stderr?.on('data', (d) => console.error('[server-err]', d.toString().trim()));

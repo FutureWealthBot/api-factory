@@ -85,6 +85,7 @@ import adminBillingRoutes from './routes/admin-billing.js';
 import adminReleasesRoutes from './routes/admin-releases.js';
 import helloRoutes from './routes/hello.js';
 import retirementRoutes from './routes/retirement.js';
+import actionsRoutes from './routes/actions.js';
 
 // Global policy enforcement: runs before all API requests
 import { policyEnforcer } from './middleware/policyEnforcer.js';
@@ -145,6 +146,7 @@ fastify.register(adminBillingRoutes);
 fastify.register(adminReleasesRoutes);
 fastify.register(helloRoutes);
 fastify.register(retirementRoutes);
+fastify.register(actionsRoutes);
 
 // Serve static files
 // In dev we avoid registering @fastify/static (plugin version mismatches across workspace).

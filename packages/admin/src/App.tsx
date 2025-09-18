@@ -1,4 +1,5 @@
 import React from 'react';
+import AnalyticsDashboard from './analytics/AnalyticsDashboard';
 import TemplateUpload from './components/sdk-templates/TemplateUpload';
 import TemplateList from './components/sdk-templates/TemplateList';
 import BillingManager from './components/billing/BillingManager';
@@ -12,6 +13,10 @@ export default function App() {
   return (
     <div style={{ padding: 24 }}>
       <h1>Admin Dashboard</h1>
+      <section>
+        <h2>Usage Analytics</h2>
+        <AnalyticsDashboard />
+      </section>
       <section>
         <h2>SDK Templates</h2>
         <TemplateUpload />
