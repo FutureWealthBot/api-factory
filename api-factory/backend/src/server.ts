@@ -1,11 +1,29 @@
 import Fastify from 'fastify';
 import type { FastifyRequest, FastifyReply } from 'fastify';
+import { registerSLOAlerting } from './sloAlerting.js';
+import { registerAuditTrail } from './auditTrail.js';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { randomUUID } from 'crypto';
 
-// Create a Fastify instance
-const fastify = Fastify({ logger: true });
+// Create a Fastify instance with structured JSON logger
+const fastify = Fastify({
+  logger: {
+    level: 'info',
+    formatters: {
+      bindings (bindings) { return { pid: bindings.pid, hostname: bindings.hostname }; },
+      level (label) { return { level: label }; },
+      log (obj) { return { ...obj, correlationId: obj.correlationId }; }
+    }
+  }
+});
+
+// Inject correlation ID for every request
+fastify.addHook('onRequest', async (request) => {
+  request.headers['x-correlation-id'] = request.headers['x-correlation-id'] || randomUUID();
+  request.log = request.log.child({ correlationId: request.headers['x-correlation-id'] });
+});
 
 // Optionally register OpenAPI/Swagger if requested (set USE_OPENAPI=1)
 if (process.env.USE_OPENAPI === '1') {
@@ -67,6 +85,14 @@ import adminBillingRoutes from './routes/admin-billing.js';
 import adminReleasesRoutes from './routes/admin-releases.js';
 import helloRoutes from './routes/hello.js';
 import retirementRoutes from './routes/retirement.js';
+
+// Global policy enforcement: runs before all API requests
+import { policyEnforcer } from './middleware/policyEnforcer.js';
+
+// global preHandler for paths starting with /api
+fastify.addHook('preHandler', async (request: FastifyRequest, reply: FastifyReply) => {
+  await policyEnforcer(request, reply);
+});
 
 // Consent middleware: applied to API routes under /api as a fail-closed guard
 import consentMiddleware from './middleware/consent-middleware.js';
@@ -193,6 +219,19 @@ fastify.get('/_meta', async (_req, reply) => {
   }
 });
 
+// Zero-trust config: block startup if required secrets/env vars are missing or default
+const requiredEnv = ['JWT_SECRET', 'DATABASE_URL'];
+for (const key of requiredEnv) {
+  if (!process.env[key] || process.env[key] === 'changeme' || process.env[key] === 'default') {
+    throw new Error(`FATAL: Required env var ${key} is missing or set to a default value.`);
+  }
+}
+
+
+// Register SLO alerting and audit trail logging
+registerSLOAlerting(fastify);
+registerAuditTrail(fastify);
+
 // Start the server
 const start = async () => {
   try {
@@ -220,9 +259,9 @@ const start = async () => {
       }
     });
 
-  const port = Number(process.env.PORT || 3000);
-  await fastify.listen({ port });
-  fastify.log.info(`Server listening on http://localhost:${port}`);
+    const port = Number(process.env.PORT || 3000);
+    await fastify.listen({ port });
+    fastify.log.info(`Server listening on http://localhost:${port}`);
   } catch {
     fastify.log.error('startup error');
     process.exit(1);
