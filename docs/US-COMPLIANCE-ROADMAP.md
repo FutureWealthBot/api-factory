@@ -2,9 +2,10 @@
 
 ## 📌 Overview
 
-API-Factory is a U.S.-law aligned API marketplace. Every API module, service, and integration must map to specific U.S. regulations. This roadmap ensures developers and Copilot generate code with compliance built-in.
 
-> Tagline: "API-Factory — America's Compliant API Infrastructure."
+API-Factory is a U.S.-law aligned API marketplace. Every API module, service, and integration is secure by design and maps to specific U.S. regulations. Compliance and safety are built-in, with no setup needed.
+
+> Tagline: "API-Factory — As safe as a home lock, for your APIs. Built-in protection, no setup needed."
 
 ---
 
@@ -14,7 +15,7 @@ API-Factory is a U.S.-law aligned API marketplace. Every API module, service, an
 
 - Implement FTC Privacy & Security requirements.
 - Add State Data Breach Notifications (CA, NY, IL).
-- Adopt NIST Cybersecurity Framework for logging, MFA, audit trails.
+- Adopt NIST Security Framework for logging and MFA. All safety features are invisible and built-in for peace of mind.
 - Enforce Consent-first APIs via SafeNow layer.
 
 ### Phase 2 — Vertical Integrations

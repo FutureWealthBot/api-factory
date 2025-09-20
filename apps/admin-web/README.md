@@ -23,7 +23,7 @@ pnpm start
 ```
 
 What's included
-- `src/screens/Fortification.tsx` — Cyber Fortress screen
+// Subscriptions page replaces Cyber Fortress
 - `src/components/Sidebar.tsx` — Sidebar (uses react-router-dom)
 - `src/styles/fortress.css` — styles and responsive helpers
 

@@ -23,6 +23,8 @@ type SdkTemplate = {
   content?: string;             // optional single-file template
   created_at: string;
   updated_at: string;
+  approved?: boolean;
+  downloadCount?: number;
 };
 
 const TEMPLATES = new Map<string, SdkTemplate>();
@@ -68,14 +70,46 @@ export default async function sdkTemplatesRoutes(app: FastifyInstance) {
   return reply.send({ status: 'ok', templates: items });
   });
 
+
   // Get by id (public)
-  app.get<{ Params: { id: string } }>("/sdk-templates/:id", async (req, reply) => {
+  app.get<{ Params: { id: string } }>('/sdk-templates/:id', async (req, reply) => {
     const id = req.params?.id;
     const item = id ? TEMPLATES.get(id) : undefined;
     if (!item) {
       return reply.status(404).send({ error: 'Template not found', id });
     }
     return reply.send({ status: 'ok', template: item });
+  });
+
+  // Download template content as file (public)
+  app.get<{ Params: { id: string } }>('/sdk-templates/:id/download', async (req, reply) => {
+    const id = req.params?.id;
+    const item = id ? TEMPLATES.get(id) : undefined;
+    if (!item || !item.content) {
+      return reply.status(404).send({ error: 'Template not found or has no content', id });
+    }
+    // Increment download count
+    item.downloadCount = (item.downloadCount || 0) + 1;
+    TEMPLATES.set(id, item);
+    const filename = `${item.name || 'template'}-${item.version || 'v1'}.${item.language || 'txt'}`;
+    reply.header('Content-Disposition', `attachment; filename="${filename}"`);
+    reply.header('Content-Type', 'text/plain');
+    return reply.send(item.content);
+  });
+
+  // Approve template (admin only, requires API key)
+  app.post<{ Params: { id: string } }>('/sdk-templates/:id/approve', async (req, reply) => {
+    if (!hasApiKey(req)) {
+      return reply.status(401).send({ error: 'API key required' });
+    }
+    const id = req.params?.id;
+    const item = id ? TEMPLATES.get(id) : undefined;
+    if (!item) {
+      return reply.status(404).send({ error: 'Template not found', id });
+    }
+    item.approved = true;
+    TEMPLATES.set(id, item);
+    return reply.send({ status: 'ok', id });
   });
 
   // Create (requires API key) - test expects POST /sdk-templates/upload with 200 and {status:'ok', id}
@@ -97,6 +131,8 @@ export default async function sdkTemplatesRoutes(app: FastifyInstance) {
       content,
       created_at: now,
       updated_at: now,
+      approved: false,
+      downloadCount: 0,
     };
     TEMPLATES.set(id, rec);
     return reply.send({ status: 'ok', id });

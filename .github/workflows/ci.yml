@@ -22,9 +22,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-
       - name: Enable corepack / pnpm
         run: |
           corepack enable

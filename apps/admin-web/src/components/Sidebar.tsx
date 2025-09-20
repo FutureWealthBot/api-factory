@@ -48,8 +48,8 @@ export default function Sidebar({ onNavigate }: Props) {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/fortress" onClick={navigateAndClose} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-              Cyber Fortress
+            <NavLink to="/subscriptions" onClick={navigateAndClose} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}> 
+              Subscriptions
             </NavLink>
           </li>
           <li>

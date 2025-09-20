@@ -22,45 +22,6 @@ const stages: Stage[] = [
     goal: 'All current APIs secured with standard best practices.',
     status: 'ontrack',
   },
-  {
-    id: 's2',
-    title: 'Stage 2 — AI-Shield Layer',
-    percent: 30,
-    bullets: [
-      'AI-adaptive WAF (detects AI attack patterns)',
-      'ML-based DDoS protection',
-      'Decoy APIs (honeypots)',
-      'API key rotation automation',
-    ],
-    goal: 'Resistant to automated AI scans & brute-force patterns.',
-    status: 'ontrack',
-  },
-  {
-    id: 's3',
-    title: 'Stage 3 — Enterprise Fortress',
-    percent: 10,
-    bullets: [
-      'Zero-Trust between microservices',
-      'Real-time anomaly detection (AI vs AI)',
-      'Automated quarantine & circuit breakers',
-      'Immutable compliance audit logs',
-    ],
-    goal: 'Enterprise-grade fortress with full auth/monitoring/logging.',
-    status: 'risk',
-  },
-  {
-    id: 's4',
-    title: 'Stage 4 — Government & Defense',
-    percent: 0,
-    bullets: [
-      'Multi-region sovereign deploys',
-      'SLA with 24/7 war-room ops',
-      'Master key escrow & multi-sig admin actions',
-      'Dedicated AI Cyber Shield agents',
-    ],
-    goal: 'Critical-infra resilience (FedRAMP / ITAR / CJIS ready).',
-    status: 'blocked',
-  },
 ];
 
 function ProgressBar({ value }: { value: number }) {

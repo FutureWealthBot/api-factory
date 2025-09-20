@@ -7,7 +7,9 @@ ARG TRACK=""
 ENV TRACK=${TRACK}
 
 # Copy workspace manifests and source required for the build
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml tsconfig.json tsconfig.base.json ./
+COPY types ./types
+COPY scripts ./scripts
 COPY api-factory/backend ./api-factory/backend
 COPY packages/core ./packages/core
 
@@ -15,8 +17,8 @@ COPY packages/core ./packages/core
 RUN apk add --no-cache curl build-base python3 git && \
 	corepack enable && corepack prepare pnpm@9.9.0 --activate && \
 	pnpm install --frozen-lockfile --reporter=silent && \
-	pnpm --filter ./packages/core build --reporter=silent && \
-	pnpm --filter ./api-factory/backend build --reporter=silent || true
+	pnpm --filter ./packages/core run build && \
+	pnpm --filter ./api-factory/backend run build
 
 ## Stage 2: runtime - small image with only production deps + built artifacts
 FROM node:22-alpine AS runtime
@@ -24,19 +26,18 @@ WORKDIR /app
 ARG TRACK=""
 ENV TRACK=${TRACK}
 ENV PORT=8787 BIND_HOST=0.0.0.0 NODE_ENV=production
-
-# Copy built artifacts from host (we build them in CI/local before docker build)
-# NOTE: ensure `dist` exists on host before building the image
-COPY api-factory/backend/dist ./api-factory/backend/dist
-COPY packages/core/dist ./packages/core/dist
+# Copy built artifacts from the builder stage so the image is self-contained
+COPY --from=builder /build/api-factory/backend/dist ./api-factory/backend/dist
+COPY --from=builder /build/packages/core/dist ./packages/core/dist
+COPY --from=builder /build/packages/core ./packages/core
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 
-# Install only production dependencies for the backend package and ensure fastify is present
+# Install only production dependencies for the backend package and ensure fastify and other runtime deps are present
 RUN apk add --no-cache curl && \
 	corepack enable && corepack prepare pnpm@9.9.0 --activate && \
-	pnpm i --prod --filter ./api-factory/backend --workspace-root=false --reporter=silent || true && \
-	# Install fastify explicitly via npm to avoid workspace resolution quirks
-	npm install --no-audit --no-fund fastify@^5.6.0
+	pnpm i --prod --filter ./api-factory/backend --workspace-root=false --reporter=silent && \
+	# Some runtime packages may not be symlinked as expected; install critical runtime deps via npm to guarantee availability
+	npm install --no-audit --no-fund fastify@^5.6.0 @fastify/cookie@^6.0.0 @fastify/session@^11.1.0 @fastify/static@^8.2.0 commander@^14.0.0 postgres@^3.4.7 siwe@^3.0.0 stripe@^11.0.0 uuid@^12.0.0
 
 # Make core package available for bare imports (@api-factory/core)
 RUN mkdir -p /app/node_modules/@api-factory && cp -r packages/core /app/node_modules/@api-factory/core || true
@@ -45,6 +46,8 @@ RUN mkdir -p /app/node_modules/@api-factory && cp -r packages/core /app/node_mod
 RUN if [ -f /app/packages/core/dist/index.js ]; then \
 	sed -i "s|export \* from './tiers';|export * from './tiers.js';|g" /app/packages/core/dist/index.js || true; \
 	fi
+# Fix ESM relative imports in backend dist to include .js extensions for relative imports
+RUN find /app/api-factory/backend/dist -type f -name "*.js" -print0 | xargs -0 sed -i "s|\('./\)\([a-zA-Z0-9_\-/]*\)\'|\1\2.js'|g" || true
 
 EXPOSE 8787
 # Copy startup wrapper and admin shim for runtime
@@ -52,4 +55,4 @@ COPY start-server.mjs ./start-server.mjs
 COPY admin-shim ./admin-shim
 
 # Lightweight admin shim provides minimal API surface for smoke-tests in local/dev
-CMD ["node", "admin-shim/server.js"]
+CMD ["node", "start-server.mjs"]

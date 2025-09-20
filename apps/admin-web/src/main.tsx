@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import Fortification from './screens/Fortification';
+import Subscriptions from './screens/Subscriptions';
 
 function RetirementPlanner() {
   return (
@@ -40,7 +40,7 @@ function Pricing() {
   );
 }
 import Sidebar from './components/Sidebar';
-import './styles/fortress.css';
+
 
 function Shell({ children }: { children: React.ReactNode }) {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -78,7 +78,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div className="app-shell">
       <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="topbar">
-        <h2 className="brand">API Factory</h2>
+  <h2 className="brand">API-Factory: Safe by Design</h2>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button className="toggle" aria-expanded={showSidebar} onClick={() => setShowSidebar(s => !s)} aria-label="Toggle menu">☰</button>
           <button className="toggle" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')} aria-label="Toggle theme">
@@ -88,7 +88,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       </header>
 
       <aside className="left-col" style={{ display: showSidebar ? 'block' : undefined }}>
-        <h2 className="brand">API Factory</h2>
+  <h2 className="brand">API-Factory: Safe by Design</h2>
         <Sidebar onNavigate={() => setShowSidebar(false)} />
       </aside>
 
@@ -100,8 +100,9 @@ function Shell({ children }: { children: React.ReactNode }) {
 function Home() {
   return (
     <div style={{ padding: 18 }}>
-      <h1>Welcome to Admin</h1>
-      <p>Use the sidebar to navigate. Try <Link to="/fortress">Cyber Fortress</Link>.</p>
+      <h1>Welcome to API-Factory</h1>
+  <p>Use the sidebar to navigate. Try <Link to="/subscriptions">Subscriptions</Link>.</p>
+      <p style={{ fontStyle: 'italic', color: '#888' }}>Built-in protection. No setup needed. As safe as a home lock — but for your APIs.</p>
     </div>
   );
 }
@@ -111,9 +112,9 @@ createRoot(document.getElementById('root')!).render(
     <Shell>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/fortress" element={<Fortification />} />
-        <Route path="/retirement-planner" element={<RetirementPlanner />} />
-        <Route path="/pricing" element={<Pricing />} />
+  <Route path="/subscriptions" element={<Subscriptions />} />
+  <Route path="/retirement-planner" element={<RetirementPlanner />} />
+  <Route path="/pricing" element={<Pricing />} />
       </Routes>
     </Shell>
   </BrowserRouter>

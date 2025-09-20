@@ -4,7 +4,7 @@
       │   Tier 4 – Enterprise 🏦     │
       │  • All Advanced features     │
       │  • Multi-region deploy       │
-      │  • Compliance & audit logs   │
+      │  • Compliance & built-in protection   │
       │  • Dedicated gateway         │
       │  • SLA & white-label         │
       └──────────────▲───────────────┘
@@ -35,9 +35,10 @@
       │  • Fast prototyping          │
       └──────────────────────────────┘
 
-- **Tier 1 (Core ⚡):** foundation, schema, endpoints, basic docs  
-- **Tier 2 (Standard 🚀):** auth, rate limits, CI/CD, versioning  
-- **Tier 3 (Advanced 💰):** monetization-ready, billing, metrics, SDKs  
+**Tier 1 (Core ⚡):** foundation, schema, endpoints, basic docs  
+**Tier 2 (Standard 🚀):** auth, rate limits, CI/CD, versioning  
+**Tier 3 (Advanced 💰):** monetization-ready, billing, metrics, SDKs  
+**Tier 4 (Enterprise 🏦):** compliance, built-in protection, safe usage tracking, family-friendly defaults
 - **Tier 4 (Enterprise 🏦):** compliance, dedicated infra, SLA, white-label  
 
 ---

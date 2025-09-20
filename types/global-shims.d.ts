@@ -11,3 +11,8 @@ declare module 'mime' {
   const types: { getType: typeof getType; getExtension: typeof getExtension };
   export default types;
 }
+
+// Minimal global shims for optional Fastify plugins imported dynamically.
+declare module '@fastify/swagger';
+declare module '@fastify/swagger-ui';
+declare module '@fastify/static';
