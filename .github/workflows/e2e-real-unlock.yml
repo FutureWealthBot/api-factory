@@ -1,11 +1,9 @@
-name: E2E Real Unlock (manual, guarded)
 
+name: E2E Real Unlock (manual, guarded)
 on:
   workflow_dispatch: {}
-
 permissions:
   contents: write
-
 jobs:
   real-unlock:
     runs-on: ubuntu-latest
@@ -14,34 +12,23 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           fetch-depth: 0
-
       - name: Set up Node.js
-    uses: actions/setup-node@v4
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Install pnpm
         run: corepack enable && corepack prepare pnpm@9.9.0 --activate
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - id: safety-check
-        name: Safety check: allow real unlock
-        env:
-          RELEASES_ALLOW_REAL: ${{ secrets.RELEASES_ALLOW_REAL }}
+      - name: Safety check: allow real unlock
         run: |
-          if [ "$RELEASES_ALLOW_REAL" != "1" ]; then
+          if [ "${{ secrets.RELEASES_ALLOW_REAL }}" != "1" ]; then
             echo "RELEASES_ALLOW_REAL is not set to '1'. To run this workflow, set the repository secret RELEASES_ALLOW_REAL=1.";
             exit 1;
           fi
-
-      - id: check-protected
-        name: Ensure target base branch is protected
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Ensure target base branch is protected
         run: |
-          # Configure repo and branch
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
           repo="$GITHUB_REPOSITORY"
           base_branch="main"
           echo "Checking branch protection for $repo#$base_branch"
@@ -51,7 +38,6 @@ jobs:
             exit 1
           fi
           echo "Branch $base_branch is protected — proceeding."
-
       - name: Run E2E debug (real unlock)
         env:
           RELEASES_E2E_MOCK_EXEC: '0'

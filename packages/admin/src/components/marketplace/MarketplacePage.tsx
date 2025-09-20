@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function MarketplacePage() {
   const [apis, setApis] = useState([]);
-  const [form, setForm] = useState({ name: '', tier: '', tags: '', price: '', docs: '', description: '', owner: '', contact: '', logo: '', version: '' });
+  const [form, setForm] = useState({ name: '', tier: '', tags: '', price: '', docs: '', description: '', owner: '', contact: '', logo: '', version: '', templatePack: '' });
   const [message, setMessage] = useState('');
+  const [templates, setTemplates] = useState<any[]>([]);
 
   const fetchApis = async () => {
     const res = await fetch('/marketplace');
@@ -11,7 +11,14 @@ export default function MarketplacePage() {
     setApis(data.apis || []);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  useEffect(() => {
+    fetchApis();
+    fetch('/sdk-templates').then(r => r.json()).then(data => {
+      setTemplates((data.templates || []).filter((t: any) => t.approved));
+    });
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -24,20 +31,19 @@ export default function MarketplacePage() {
       body: JSON.stringify({
         ...form,
         tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
-        price: Number(form.price)
+        price: Number(form.price),
+        templatePack: form.templatePack
       })
     });
     const data = await res.json();
     if (res.ok) {
       setMessage('API published!');
-      setForm({ name: '', tier: '', tags: '', price: '', docs: '', description: '', owner: '', contact: '', logo: '', version: '' });
+      setForm({ name: '', tier: '', tags: '', price: '', docs: '', description: '', owner: '', contact: '', logo: '', version: '', templatePack: '' });
       fetchApis();
     } else {
       setMessage(data.message || 'Error publishing API');
     }
   };
-
-  React.useEffect(() => { fetchApis(); }, []);
 
   return (
     <div style={{ padding: 24 }}>
@@ -53,6 +59,12 @@ export default function MarketplacePage() {
         <input name="owner" placeholder="Owner/Publisher" value={form.owner} onChange={handleChange} />{' '}
         <input name="contact" placeholder="Contact Email or Link" value={form.contact} onChange={handleChange} />{' '}
         <input name="logo" placeholder="Logo URL" value={form.logo} onChange={handleChange} />{' '}
+        <select name="templatePack" value={form.templatePack} onChange={handleChange}>
+          <option value="">Select SDK Template Pack (optional)</option>
+          {templates.map(t => (
+            <option key={t.id} value={t.id}>{t.name} ({t.language}) v{t.version}</option>
+          ))}
+        </select>{' '}
         <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} style={{ verticalAlign: 'top', width: 300, height: 60 }} />{' '}
         <button type="submit">Publish</button>
         {message && <div style={{ color: message.includes('Error') ? 'red' : 'green', marginTop: 8 }}>{message}</div>}

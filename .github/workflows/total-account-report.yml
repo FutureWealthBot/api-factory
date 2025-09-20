@@ -1,12 +1,11 @@
-name: Total Account Status Report
 
+name: Total Account Status Report
 on:
   schedule:
     - cron: '0 0 * * *' # daily at 00:00 UTC
   push:
     branches:
       - main
-
 jobs:
   generate:
     name: Generate reports
@@ -16,23 +15,18 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           persist-credentials: true
-
       - name: Setup Node
-  uses: actions/setup-node@v4
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
-
       - name: Install pnpm
         run: |
           corepack enable
           corepack prepare pnpm@latest --activate
-
       - name: Install dependencies
         run: pnpm install
-
       - name: Build report-cli
         run: pnpm -w --filter ./tools/report-cli... run build
-
       - name: Generate reports
         run: |
           set -euo pipefail
@@ -45,7 +39,6 @@ jobs:
               node tools/report-cli/dist/index.js "$d" "$out" || true
             fi
           done
-
       - name: Commit reports to branch & open PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -8,7 +8,10 @@ const WINDOW_MS = 60 * 1000;
 
 export default async function actionsRoutes(fastify: FastifyInstance) {
   fastify.post('/api/v1/actions', { preHandler: apiKeyAuth }, async (request: FastifyRequest, reply: FastifyReply) => {
-    const apiKey = request.headers['x-api-key'] || request.query['api_key'];
+    let apiKey = request.headers['x-api-key'];
+    if (!apiKey && typeof request.query === 'object' && request.query !== null && 'api_key' in request.query) {
+      apiKey = (request.query as any)['api_key'];
+    }
     if (!apiKey || typeof apiKey !== 'string') {
       return reply.status(401).send({ error: 'Missing API key' });
     }

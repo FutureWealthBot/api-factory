@@ -27,7 +27,7 @@ const DashboardPage = () => {
             {loading && <p>Loading usage metrics...</p>}
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {!loading && !error && (
-                <table border="1" cellPadding={6} style={{ marginTop: 12 }}>
+                <table border={1} cellPadding={6} style={{ marginTop: 12 }}>
                     <thead>
                         <tr>
                             <th>API Key</th>

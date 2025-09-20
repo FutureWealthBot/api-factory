@@ -12,7 +12,7 @@ export function registerAuditTrail(server: FastifyInstance) {
         audit: true,
         method: request.method,
         url: request.url,
-        user: request.user?.id || 'anonymous',
+  user: (request as any).user?.id || 'anonymous',
         time: new Date().toISOString(),
       }, 'Audit trail event');
     }

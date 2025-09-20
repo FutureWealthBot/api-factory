@@ -4,12 +4,11 @@
     { "src": "package.json", "use": "@vercel/static-build" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "rewrites": [
-    { "source": "/_api/(.*)", "destination": "${VITE_API_BASE_URL}/_api/$1" }
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
   ],
   "env": {
     "ADMIN_API_URL": "https://your-api-url.example.com"
-  }
+  },
+  "outputDirectory": "dist"
 }
