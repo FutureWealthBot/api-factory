@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+interface UsageRow { api_key: string; count: number; }
 const DashboardPage = () => {
-    const [usage, setUsage] = useState<any[]>([]);
+    const [usage, setUsage] = useState<UsageRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -13,7 +14,7 @@ const DashboardPage = () => {
                 setUsage(data.usage || []);
                 setLoading(false);
             })
-            .catch(err => {
+            .catch(_err => {
                 setError('Failed to load usage metrics');
                 setLoading(false);
             });

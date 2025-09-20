@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-  const [apis, setApis] = useState([]);
+// Component wrapper was missing which caused top-level hook usage errors.
+export default function MarketplacePage() {
+  const [apis, setApis] = useState<any[]>([]);
   const [form, setForm] = useState({ name: '', tier: '', tags: '', price: '', docs: '', description: '', owner: '', contact: '', logo: '', version: '', templatePack: '' });
   const [message, setMessage] = useState('');
   const [templates, setTemplates] = useState<any[]>([]);

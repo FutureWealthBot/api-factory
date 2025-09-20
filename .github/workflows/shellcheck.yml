@@ -38,3 +38,4 @@ jobs:
         run: |
           chmod +x scripts/ci-monitor-smoke.sh
           bash scripts/ci-monitor-smoke.sh
+

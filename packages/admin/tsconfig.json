@@ -4,11 +4,11 @@
     "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "allowJs": true,
+    "allowJs": false,
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
-  "types": []
+  "types": ["react", "react-dom"]
   },
   "include": ["./**/*"],
   "exclude": ["node_modules", "dist"]

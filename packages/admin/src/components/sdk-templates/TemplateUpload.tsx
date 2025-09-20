@@ -1,14 +1,14 @@
-import React from 'react';
+import { useState } from 'react';
 
 export default function TemplateUpload() {
-  const [name, setName] = React.useState('');
-  const [language, setLanguage] = React.useState('');
-  const [version, setVersion] = React.useState('');
-  const [tags, setTags] = React.useState('');
-  const [author, setAuthor] = React.useState('');
-  const [readme, setReadme] = React.useState('');
-  const [file, setFile] = React.useState<File | null>(null);
-  const [status, setStatus] = React.useState('');
+  const [name, setName] = useState('');
+  const [language, setLanguage] = useState('');
+  const [version, setVersion] = useState('');
+  const [tags, setTags] = useState('');
+  const [author, setAuthor] = useState('');
+  const [readme, setReadme] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [status, setStatus] = useState('');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,7 +22,7 @@ export default function TemplateUpload() {
         name,
         language,
         version,
-        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+  tags: tags.split(',').map((t: string) => t.trim()).filter(Boolean),
         author,
         readme,
         fileContent: base64,

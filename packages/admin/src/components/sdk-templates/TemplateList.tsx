@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 
 import TemplateVote from './TemplateVote';
 
@@ -16,9 +16,9 @@ type SdkTemplate = {
 };
 
 export default function TemplateList() {
-  const [templates, setTemplates] = React.useState<SdkTemplate[]>([]);
-  const [isAdmin, setIsAdmin] = React.useState(false);
-  React.useEffect(() => {
+  const [templates, setTemplates] = useState<SdkTemplate[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
     fetch('/sdk-templates').then(r => r.json()).then(data => setTemplates(data.templates || []));
     // TODO: Replace with real admin check
     setIsAdmin(true);
@@ -33,7 +33,7 @@ export default function TemplateList() {
     <div>
       <h2>SDK Templates</h2>
       <ul>
-        {templates.map(t => (
+  {templates.map((t: SdkTemplate) => (
           <li key={t.id} style={{ marginBottom: 16, border: t.approved ? '1px solid #0a0' : '1px solid #aaa', padding: 8 }}>
             <b>{t.name}</b> ({t.language}) v{t.version} by {t.author} [votes: {t.votes}]
             <br />

@@ -16,3 +16,13 @@ declare module 'mime' {
 declare module '@fastify/swagger';
 declare module '@fastify/swagger-ui';
 declare module '@fastify/static';
+
+// Provide a minimal JSX namespace to satisfy isolated TS projects that
+// may not automatically include the react-jsx runtime types in certain build contexts.
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+}

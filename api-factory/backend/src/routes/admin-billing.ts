@@ -1,8 +1,13 @@
 // Stripe admin endpoints: fetch subscriptions and events
-import Stripe from 'stripe';
+// Using CommonJS require pattern for Stripe to avoid ESM default import typing ambiguity under current TS config.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Stripe = require('stripe');
 
 const STRIPE_API_KEY = process.env.STRIPE_API_KEY;
-const stripe = STRIPE_API_KEY ? new Stripe(STRIPE_API_KEY, { apiVersion: '2022-11-15' }) : null;
+// Stripe constructor default export returns an instance whose type is Stripe (the namespace also provides types)
+// Use InstanceType to avoid "refers to a value, but is being used as a type" confusion with esModuleInterop.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const stripe: any = STRIPE_API_KEY ? new Stripe.Stripe(STRIPE_API_KEY, { apiVersion: '2022-11-15' }) : null;
 
 import type { FastifyPluginAsync } from 'fastify';
 import { getKey, upsertKey, type KeyRecord } from '../lib/key-store.js';

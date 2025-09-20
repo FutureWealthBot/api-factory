@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const TIERS = [
   { name: 'core', description: 'Minimal, public, open API. Health, ping, echo, docs.' },
@@ -7,6 +7,7 @@ const TIERS = [
   { name: 'enterprise', description: 'Multi-region, SLA, dedicated gateway, white-label.' },
 ];
 
+export default function ApiPublish() {
   const [tier, setTier] = useState('core');
   const [apiDef, setApiDef] = useState('{}');
   const [result, setResult] = useState<string[]>([]);

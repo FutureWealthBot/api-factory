@@ -1,4 +1,4 @@
-import React from 'react';
+// React import unnecessary with automatic JSX runtime.
 import Header from './components/Header';
 import '../styles/globals.css';
 

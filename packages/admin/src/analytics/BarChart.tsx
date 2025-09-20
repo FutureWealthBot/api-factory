@@ -1,5 +1,5 @@
 // Simple charting utility for AnalyticsDashboard (wrapper for Chart.js or similar)
-import React from 'react';
+// React import not required for JSX with React 17+ transform.
 
 export type ChartProps = {
   labels: string[];

@@ -5,7 +5,8 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
-    "types": ["node", "jest"],
+  // Provide global test/runtime types for monorepo (jest & node). Individual packages can still narrow via their own tsconfig.
+  "types": ["node", "jest"],
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
@@ -17,9 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@api-factory/core": ["packages/core/src", "packages/core/dist"]
-    }
-  ,
-  "typeRoots": ["./types", "./node_modules/@types"]
+    },
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
   "files": ["types/global-shims.d.ts"]
 }

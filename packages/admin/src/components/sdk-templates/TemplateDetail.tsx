@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 
 type SdkTemplate = {
   id: string;
@@ -14,9 +14,9 @@ type SdkTemplate = {
 };
 
 export default function TemplateDetail({ templateId }: { templateId: string }) {
-  const [template, setTemplate] = React.useState<SdkTemplate | null>(null);
-  const [isAdmin, setIsAdmin] = React.useState(false);
-  React.useEffect(() => {
+  const [template, setTemplate] = useState<SdkTemplate | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
     fetch(`/sdk-templates/${templateId}`)
       .then(r => r.json())
       .then(data => setTemplate(data.template || null));

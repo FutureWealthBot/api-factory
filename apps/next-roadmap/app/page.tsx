@@ -1,4 +1,4 @@
-import React from 'react';
+// React import not required
 
 const HomePage = () => {
     return (

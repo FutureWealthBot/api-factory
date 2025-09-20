@@ -4,7 +4,7 @@ import resourcesRoutes from './resources';
 import keysRoutes from './keys';
 import apiKeyMiddleware from '../middleware/api-key';
 import blockGovDomains from '../middleware/block-gov-domains';
-import usageRoutes from './usage.js';
+import usageRoutes from './usage';
 
 export default async function routes(fastify: FastifyInstance) {
   // Register usage analytics endpoints

@@ -1,4 +1,5 @@
-import React from 'react';
+// React 19 types no longer provide a default export; with the new JSX transform
+// we don't need to import React for JSX usage.
 import AnalyticsDashboard from './analytics/AnalyticsDashboard';
 import TemplateUpload from './components/sdk-templates/TemplateUpload';
 import TemplateList from './components/sdk-templates/TemplateList';
