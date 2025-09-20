@@ -1,7 +1,39 @@
+// Stripe admin endpoints: fetch subscriptions and events
+// Using CommonJS require pattern for Stripe to avoid ESM default import typing ambiguity under current TS config.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Stripe = require('stripe');
+
+const STRIPE_API_KEY = process.env.STRIPE_API_KEY;
+// Stripe constructor default export returns an instance whose type is Stripe (the namespace also provides types)
+// Use InstanceType to avoid "refers to a value, but is being used as a type" confusion with esModuleInterop.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const stripe: any = STRIPE_API_KEY ? new Stripe.Stripe(STRIPE_API_KEY, { apiVersion: '2022-11-15' }) : null;
+
 import type { FastifyPluginAsync } from 'fastify';
 import { getKey, upsertKey, type KeyRecord } from '../lib/key-store.js';
 
 const adminBilling: FastifyPluginAsync = async (fastify) => {
+  // List all Stripe subscriptions (paginated, for admin)
+  fastify.get('/api/admin/billing/stripe/subscriptions', async (_req, reply) => {
+    if (!stripe) return reply.status(501).send({ error: 'Stripe not configured' });
+    try {
+      const subs = await stripe.subscriptions.list({ limit: 20 });
+      return reply.send({ data: subs.data });
+    } catch (err: any) {
+      return reply.status(500).send({ error: err.message });
+    }
+  });
+
+  // List recent Stripe events (for admin audit)
+  fastify.get('/api/admin/billing/stripe/events', async (_req, reply) => {
+    if (!stripe) return reply.status(501).send({ error: 'Stripe not configured' });
+    try {
+      const events = await stripe.events.list({ limit: 20 });
+      return reply.send({ data: events.data });
+    } catch (err: any) {
+      return reply.status(500).send({ error: err.message });
+    }
+  });
   // GET -> fetch key record
   fastify.get('/api/admin/billing/key', async (request, reply) => {
     const q = (request.query as Record<string, string | undefined>) || {};

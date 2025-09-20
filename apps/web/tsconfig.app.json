@@ -14,7 +14,8 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["node", "jest"],
+  // Remove test runner/global node types for production app build to avoid missing type def noise; tests should configure their own tsconfig.
+  "types": [],
 
     /* Linting */
     "strict": true,

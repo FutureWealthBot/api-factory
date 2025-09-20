@@ -4,6 +4,11 @@
     { "src": "package.json", "use": "@vercel/next" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/$1" }
-  ]
+    { "src": "/_next/static/(.*)", "dest": "/_next/static/$1" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "env": {
+    "NEXT_PUBLIC_ENABLE_RETIREMENT_PLANNER": ""
+  }
 }

@@ -3,11 +3,12 @@ export type KeyRecord = { key: string; status?: string; quota?: number; plan?: s
 // Constant-time string compare to avoid timing attacks
 export function constantTimeEqual(a?: string, b?: string) {
   if (!a || !b) return false;
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) return false;
+  // Compare by char code to avoid depending on TextEncoder/Buffer in different runtimes
+  if (a!.length !== b!.length) return false;
   let res = 0;
-  for (let i = 0; i < bufA.length; i++) res |= bufA[i] ^ bufB[i];
+  for (let i = 0; i < a!.length; i++) {
+    res |= a!.charCodeAt(i) ^ b!.charCodeAt(i);
+  }
   return res === 0;
 }
 

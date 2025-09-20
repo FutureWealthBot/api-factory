@@ -1,8 +1,11 @@
-import React from 'react';
+// React 19 types no longer provide a default export; with the new JSX transform
+// we don't need to import React for JSX usage.
+import AnalyticsDashboard from './analytics/AnalyticsDashboard';
 import TemplateUpload from './components/sdk-templates/TemplateUpload';
 import TemplateList from './components/sdk-templates/TemplateList';
 import BillingManager from './components/billing/BillingManager';
 import MarketplaceList from './components/marketplace/MarketplaceList';
+import MarketplacePage from './components/marketplace/MarketplacePage';
 import TierManager from './components/tiers/TierManager';
 import ApiPublish from './components/tiers/ApiPublish';
 import ComplianceLink from './components/tiers/ComplianceLink';
@@ -12,13 +15,17 @@ export default function App() {
     <div style={{ padding: 24 }}>
       <h1>Admin Dashboard</h1>
       <section>
+        <h2>Usage Analytics</h2>
+        <AnalyticsDashboard />
+      </section>
+      <section>
         <h2>SDK Templates</h2>
         <TemplateUpload />
         <TemplateList />
       </section>
       <section>
         <h2>API Marketplace</h2>
-        <MarketplaceList />
+        <MarketplacePage />
       </section>
       <section>
         <h2>Billing</h2>

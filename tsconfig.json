@@ -30,7 +30,8 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "types": ["node", "jest"]
   },
   "files": [
     "types/global-shims.d.ts"

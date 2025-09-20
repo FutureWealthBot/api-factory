@@ -1,5 +1,5 @@
-import Fortification from './screens/Fortification';
+import Subscriptions from './screens/Subscriptions';
 
 export default [
-  { path: '/fortress', element: <Fortification /> },
+  { path: '/subscriptions', element: <Subscriptions /> },
 ];

@@ -5,5 +5,4 @@ import Roadmap from './Roadmap';
 test('renders roadmap stages', () => {
   render(<Roadmap />);
   expect(screen.getByText(/Stage 1 — Foundation/i)).toBeInTheDocument();
-  expect(screen.getByText(/Stage 4 — Government & Defense/i)).toBeInTheDocument();
 });

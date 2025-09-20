@@ -1,3 +1,4 @@
+
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { getKey } from '../lib/key-store';
 
@@ -23,6 +24,15 @@ export default async function apiKeyMiddleware(request: FastifyRequest, reply: F
   if (!rec || rec.status !== 'active') {
     reply.status(403).send({ error: 'Invalid API key' });
     return;
+  }
+  // Check for expiration if expiresAt is present
+  if (rec.expiresAt) {
+    const now = Date.now();
+    const expires = new Date(rec.expiresAt).getTime();
+    if (Number.isFinite(expires) && now > expires) {
+      reply.status(403).send({ error: 'API key expired' });
+      return;
+    }
   }
   // attach to request for handlers (typed as unknown to avoid `any`)
   (request as unknown as { apiKeyRecord?: unknown }).apiKeyRecord = rec;

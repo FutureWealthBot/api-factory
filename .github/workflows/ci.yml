@@ -22,13 +22,10 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-
       - name: Enable corepack / pnpm
         run: |
           corepack enable
-          corepack prepare pnpm@9.9.0 --activate
+          corepack prepare pnpm@10.17.0 --activate
           pnpm -v
 
       - name: Cache pnpm store
@@ -57,6 +54,17 @@ jobs:
       - name: Build (if present)
         run: |
           pnpm -r --silent run | grep -q '^build$' && pnpm -r build || echo "no build scripts"
+
+      - name: Build next-roadmap explicitly
+        run: |
+          pnpm --filter next-roadmap run build || echo "next-roadmap build failed" && exit 1
+
+      - name: Upload next-roadmap .next
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-roadmap-build-${{ matrix.node }}
+          path: apps/next-roadmap/.next
+          if-no-files-found: ignore
 
       - name: Upload build artifacts (admin-web dist if exists)
         uses: actions/upload-artifact@v4
