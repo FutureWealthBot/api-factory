@@ -12,6 +12,7 @@
     "test": "pnpm exec jest --config ./jest.config.cjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
     "chokidar": "^4.0.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
