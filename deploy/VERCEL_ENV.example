@@ -1,0 +1,17 @@
+# Environment variables required for Vercel deployment
+# Copy to .vercel/.env or add in Vercel project settings
+
+# Feature flags (build-time)
+NEXT_PUBLIC_ENABLE_RETIREMENT_PLANNER=true
+
+# API keys and secrets (server-only)
+API_KEY=changeme
+STRIPE_SECRET=
+
+# Fastify / backend (if used)
+BACKEND_URL=https://api.example.com
+
+# Analytics/third-party
+SENTRY_DSN=
+
+# Add any additional env vars required for your runtime here
